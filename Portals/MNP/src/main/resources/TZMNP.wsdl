@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://np.systor.st/sp" 
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" 
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+                  xmlns:commontypes="http://np.systor.st/commontypes" 
+                  targetNamespace="http://np.systor.st/sp">
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://np.systor.st/sp" xmlns:commontypes="http://np.systor.st/commontypes" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://np.systor.st/sp">
+            <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:import namespace="http://np.systor.st/commontypes" schemaLocation="TZMNPxsd.xsd"/>
+            <xsd:element name="Noop" type="commontypes:Noop_Type">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        This message can be used to test that the Web service is available.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="NoopResponse" type="commontypes:NoopResponse_Type">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        This response will confirm that the Web service is available.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:complexType name="SpMessageAck_Type">
+                <xsd:sequence>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPRequestToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="EmergencyRestoreID" type="commontypes:NpcdbID" minOccurs="0"/>
+                    <xsd:element name="BlockOrderID" type="commontypes:BlockOrderID" minOccurs="0"/>
+                    <xsd:element name="BlockOrderCount" type="xsd:integer" minOccurs="0"/>
+                    <xsd:element name="ValidationMSISDN" type="commontypes:PhoneNumber" minOccurs="0"/>
+                    <xsd:element name="HandleManually" type="commontypes:HandleManually" minOccurs="0"/>
+                    <xsd:element name="RecipientID" type="commontypes:OperatorID" />
+                    <xsd:element name="DonorID" type="commontypes:OperatorID" />
+                    <xsd:element name="CustomerName" type="xsd:string"/>
+                    <xsd:element name="CustomerIDType" type="commontypes:CustomerIDType"/>
+                    <xsd:element name="CustomerID" type="xsd:string"/>
+                    <xsd:element name="DateOfBirth" type="xsd:date" minOccurs="0"/>
+                    <xsd:element name="ServiceType" type="commontypes:ServiceType"/>
+                    <xsd:element name="CustomerType" type="commontypes:CustomerType"/>
+                    <xsd:element name="SubscriptionType" type="commontypes:SubscriptionType" minOccurs="0"/>
+                    <xsd:element name="RoutingInfoList" type="commontypes:RoutingInfoList"/>
+                    <xsd:element name="PortingTime" type="xsd:dateTime" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPRequestRejectToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="NpcdbRejectReason" type="xsd:integer"/>
+                    <xsd:element name="NpcdbRejectMessage" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPRequestConfirmationToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPRequestCancelToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="CancelReason" type="xsd:integer"/>
+                    <xsd:element name="CancelMessage" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPDonorRejectToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="DonorRejectList" type="commontypes:DonorRejectList"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPDonorAcceptToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="AutomaticAccept" type="commontypes:AutomaticAccept"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPActivatedToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="xsd:long"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPDeactivatedToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="xsd:long"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPExecuteBroadcastToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="xsd:long"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="RecipientID" type="commontypes:OperatorID"/>
+                    <xsd:element name="DonorID" type="commontypes:OperatorID"/>
+                    <xsd:element name="RoutingInfoList" type="commontypes:RoutingInfoList"/>
+                    <xsd:element name="PortingTime" type="xsd:dateTime"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPExecuteCancelToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="xsd:long"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="CancelReason" type="xsd:integer"/>
+                    <xsd:element name="CancelMessage" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPReturnBroadcastToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="xsd:long"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="SubscriptionProviderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="RangeHolderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="PhoneNumberList" type="commontypes:PhoneNumberList"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPRingFenceDenyToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="xsd:long"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="NpcdbRejectReason" type="xsd:integer"/>
+                    <xsd:element name="NpcdbRejectMessage" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPRingFenceApproveToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="xsd:long"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="PhoneNumberList" type="commontypes:PhoneNumberList"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPEmergencyRestoreDenyToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="xsd:long"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="NpcdbRejectReason" type="xsd:integer"/>
+                    <xsd:element name="NpcdbRejectMessage" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPEmergencyRestoreApproveToSp_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="xsd:long"/>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="EmergencyRestoreID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="OriginalNPOrderID" type="commontypes:NpcdbID"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="MessageAck" type="SpMessageAck_Type"/>
+            <xsd:element name="AccessFault" type="commontypes:AccessFault_Type"/>
+            <xsd:element name="TechnicalFault" type="commontypes:TechnicalFault_Type"/>
+            <xsd:element name="ErrorNotification" type="commontypes:ErrorNotification_Type"/>
+            <xsd:element name="NPRequest" type="NPRequestToSp_Type"/>
+            <xsd:element name="NPRequestReject" type="NPRequestRejectToSp_Type"/>
+            <xsd:element name="NPRequestConfirmation" type="NPRequestConfirmationToSp_Type"/>
+            <xsd:element name="NPRequestCancel" type="NPRequestCancelToSp_Type"/>
+            <xsd:element name="NPDonorReject" type="NPDonorRejectToSp_Type"/>
+            <xsd:element name="NPDonorAccept" type="NPDonorAcceptToSp_Type"/>
+            <xsd:element name="NPActivated" type="NPActivatedToSp_Type"/>
+            <xsd:element name="NPDeactivated" type="NPDeactivatedToSp_Type"/>
+            <xsd:element name="NPExecuteBroadcast" type="NPExecuteBroadcastToSp_Type"/>
+            <xsd:element name="NPExecuteCancel" type="NPExecuteCancelToSp_Type"/>
+            <xsd:element name="NPReturnBroadcast" type="NPReturnBroadcastToSp_Type"/>
+            <xsd:element name="NPRingFenceDeny" type="NPRingFenceDenyToSp_Type"/>
+            <xsd:element name="NPRingFenceApprove" type="NPRingFenceApproveToSp_Type"/>
+            <xsd:element name="NPEmergencyRestoreDeny" type="NPEmergencyRestoreDenyToSp_Type"/>
+            <xsd:element name="NPEmergencyRestoreApprove" type="NPEmergencyRestoreApproveToSp_Type"/>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="Noop">
+        <wsdl:part name="noop" element="tns:Noop">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NoopResponse">
+        <wsdl:part name="noopResp" element="tns:NoopResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="MessageAck">
+        <wsdl:part name="ack" element="tns:MessageAck">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="ErrorNotification">
+        <wsdl:part name="error" element="tns:ErrorNotification">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPRequest">
+        <wsdl:part name="npReq" element="tns:NPRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPRequestReject">
+        <wsdl:part name="npReqRej" element="tns:NPRequestReject">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPRequestConfirmation">
+        <wsdl:part name="npReqConf" element="tns:NPRequestConfirmation">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPRequestCancel">
+        <wsdl:part name="npCan" element="tns:NPRequestCancel">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPDonorReject">
+        <wsdl:part name="npRej" element="tns:NPDonorReject">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPDonorAccept">
+        <wsdl:part name="npAcc" element="tns:NPDonorAccept">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPActivated">
+        <wsdl:part name="npAct" element="tns:NPActivated">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPDeactivated">
+        <wsdl:part name="npDeact" element="tns:NPDeactivated">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPExecuteBroadcast">
+        <wsdl:part name="npExecBrcast" element="tns:NPExecuteBroadcast">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPExecuteCancel">
+        <wsdl:part name="npExecCan" element="tns:NPExecuteCancel">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPReturnBroadcast">
+        <wsdl:part name="npRetBrcast" element="tns:NPReturnBroadcast">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPRingFenceDeny">
+        <wsdl:part name="npRingFenceDeny" element="tns:NPRingFenceDeny">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPRingFenceApprove">
+        <wsdl:part name="npRingFenceApprove" element="tns:NPRingFenceApprove">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPEmergencyRestoreDeny">
+        <wsdl:part name="npEmergRestDeny" element="tns:NPEmergencyRestoreDeny">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPEmergencyRestoreApprove">
+        <wsdl:part name="npEmergRestApp" element="tns:NPEmergencyRestoreApprove">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SpAccessFault">
+        <wsdl:part name="accessFault" element="tns:AccessFault">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SpTechnicalFault">
+        <wsdl:part name="technicalFault" element="tns:TechnicalFault">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="SpPort">
+        <wsdl:operation name="Noop">
+            <wsdl:input message="tns:Noop" name="Noop">
+            </wsdl:input>
+            <wsdl:output message="tns:NoopResponse" name="NoopResponse">
+            </wsdl:output>
+            <wsdl:fault message="tns:SpTechnicalFault" name="SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleErrorNotification">
+            <wsdl:input name="ErrorNotification" message="tns:ErrorNotification">
+            </wsdl:input>
+            <wsdl:output name="ErrorNotificationAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRequest">
+            <wsdl:input name="NPRequest" message="tns:NPRequest">
+            </wsdl:input>
+            <wsdl:output name="NPRequestAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRequestReject">
+            <wsdl:input name="NPRequestReject" message="tns:NPRequestReject">
+            </wsdl:input>
+            <wsdl:output name="NPRequestRejectAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRequestConfirmation">
+            <wsdl:input name="NPRequestConfirmation" message="tns:NPRequestConfirmation">
+            </wsdl:input>
+            <wsdl:output name="NPRequestConfirmationAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRequestCancel">
+            <wsdl:input name="NPRequestCancel" message="tns:NPRequestCancel">
+            </wsdl:input>
+            <wsdl:output name="NPRequestCancelAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPDonorReject">
+            <wsdl:input name="NPDonorReject" message="tns:NPDonorReject">
+            </wsdl:input>
+            <wsdl:output name="NPDonorRejectAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPDonorAccept">
+            <wsdl:input name="NPDonorAccept" message="tns:NPDonorAccept">
+            </wsdl:input>
+            <wsdl:output name="NPDonorAcceptAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPActivated">
+            <wsdl:input name="NPActivated" message="tns:NPActivated">
+            </wsdl:input>
+            <wsdl:output name="NPActivatedAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPDeactivated">
+            <wsdl:input name="NPDeactivated" message="tns:NPDeactivated">
+            </wsdl:input>
+            <wsdl:output name="NPDeactivatedAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPExecuteBroadcast">
+            <wsdl:input name="NPExecuteBroadcast" message="tns:NPExecuteBroadcast">
+            </wsdl:input>
+            <wsdl:output name="NPExecuteBroadcastAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPExecuteCancel">
+            <wsdl:input name="NPExecuteCancel" message="tns:NPExecuteCancel">
+            </wsdl:input>
+            <wsdl:output name="NPExecuteCancelAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPReturnBroadcast">
+            <wsdl:input name="NPReturnBroadcast" message="tns:NPReturnBroadcast">
+            </wsdl:input>
+            <wsdl:output name="NPReturnBroadcastAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRingFenceDeny">
+            <wsdl:input name="NPRingFenceDeny" message="tns:NPRingFenceDeny">
+            </wsdl:input>
+            <wsdl:output name="NPRingFenceDenyAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRingFenceApprove">
+            <wsdl:input name="NPRingFenceApprove" message="tns:NPRingFenceApprove">
+            </wsdl:input>
+            <wsdl:output name="NPRingFenceApproveAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPEmergencyRestoreDeny">
+            <wsdl:input name="NPEmergencyRestoreDeny" message="tns:NPEmergencyRestoreDeny">
+            </wsdl:input>
+            <wsdl:output name="NPEmergencyRestoreDenyAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPEmergencyRestoreApprove">
+            <wsdl:input name="NPEmergencyRestoreApprove" message="tns:NPEmergencyRestoreApprove">
+            </wsdl:input>
+            <wsdl:output name="NPEmergencyRestoreApproveAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault" message="tns:SpAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault" message="tns:SpTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="SpSoap" type="tns:SpPort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="Noop">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/Noop" />
+            <wsdl:input name="Noop">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="NoopResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleErrorNotification">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/ErrorNotification"/>
+            <wsdl:input name="ErrorNotification">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ErrorNotificationAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRequest">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPRequest"/>
+            <wsdl:input name="NPRequest">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPRequestAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRequestReject">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPRequestReject"/>
+            <wsdl:input name="NPRequestReject">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPRequestRejectAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRequestConfirmation">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPRequestConfirmation"/>
+            <wsdl:input name="NPRequestConfirmation">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPRequestConfirmationAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRequestCancel">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPRequestCancel"/>
+            <wsdl:input name="NPRequestCancel">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPRequestCancelAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPDonorReject">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPDonorReject"/>
+            <wsdl:input name="NPDonorReject">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPDonorRejectAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPDonorAccept">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPDonorAccept"/>
+            <wsdl:input name="NPDonorAccept">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPDonorAcceptAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPActivated">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPActivated"/>
+            <wsdl:input name="NPActivated">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPActivatedAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPDeactivated">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPDeactivated"/>
+            <wsdl:input name="NPDeactivated">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPDeactivatedAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPExecuteBroadcast">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPExecuteBroadcast"/>
+            <wsdl:input name="NPExecuteBroadcast">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPExecuteBroadcastAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPExecuteCancel">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPExecuteCancel"/>
+            <wsdl:input name="NPExecuteCancel">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPExecuteCancelAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPReturnBroadcast">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPReturnBroadcast"/>
+            <wsdl:input name="NPReturnBroadcast">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPReturnBroadcastAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRingFenceDeny">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPRingFenceDeny"/>
+            <wsdl:input name="NPRingFenceDeny">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPRingFenceDenyAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPRingFenceApprove">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPRingFenceApprove"/>
+            <wsdl:input name="NPRingFenceApprove">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPRingFenceApproveAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPEmergencyRestoreDeny">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPEmergencyRestoreDeny"/>
+            <wsdl:input name="NPEmergencyRestoreDeny">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPEmergencyRestoreDenyAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="HandleNPEmergencyRestoreApprove">
+            <soap:operation soapAction="http://np.systor.st/sp/SpPort/NPEmergencyRestoreApprove"/>
+            <wsdl:input name="NPEmergencyRestoreApprove">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPEmergencyRestoreApproveAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="SpAccessFault">
+                <soap:fault name="SpAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="SpTechnicalFault">
+                <soap:fault name="SpTechnicalFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="SpService">
+        <wsdl:port name="SpSoap" binding="tns:SpSoap">
+            <soap:address location="http://localhost:${HttpDefaultPort}/MNP/TZMNP"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

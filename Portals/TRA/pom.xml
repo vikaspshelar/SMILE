@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>Portals</artifactId>
+        <groupId>com.smilecoms</groupId>
+        <version>2.3.1</version>
+    </parent>
+    <artifactId>TRA</artifactId>
+    <packaging>war</packaging>
+    <name>HOBIT :: Portals :: TRA</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+                <version>${hobit.maven-compiler.version}</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${hobit.maven-ant-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>Copy</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <target>
+                                <copy tofile="/tmp/webapps/tra.war">
+                                    <fileset dir="./target/">
+                                        <include name="TRA.war"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-util</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-base</artifactId>
+            <version>${hobit.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${hobit.slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${hobit.j2ee.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${hobit.jackson-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${hobit.jackson-databind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${hobit.org.json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${hobit.commons-lang.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    
+</project>

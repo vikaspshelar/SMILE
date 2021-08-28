@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.smilecoms</groupId>
+        <artifactId>Portals</artifactId>
+        <version>2.3.1</version>
+    </parent>
+    <artifactId>SRA</artifactId>
+    <packaging>war</packaging>
+    <name>HOBIT :: Portals :: SRA</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <pluginRepositories>
+    <pluginRepository>
+        <id>central</id>
+        <name>Central Repository</name>
+        <url>https://repo.maven.apache.org/maven2</url>
+        <layout>default</layout>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <releases>
+            <updatePolicy>never</updatePolicy>
+        </releases>
+    </pluginRepository>
+</pluginRepositories>
+    
+    <repositories>
+    <repository>
+        <id>central</id>
+        <name>Central Repository</name>
+        <url>https://repo.maven.apache.org/maven2</url>
+        <layout>default</layout>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+    
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+                <version>${hobit.maven-compiler.version}</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${hobit.maven-ant-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>Copy</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <target>
+                                <copy tofile="/tmp/webapps/sra.war">
+                                    <fileset dir="./target/">
+                                        <include name="SRA.war"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-util</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-sca-client</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-stripes</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>stripes</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-auth</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-base</artifactId>
+            <version>${hobit.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-gateway-plugins</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-platform</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${hobit.slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.johnzon</groupId>
+            <artifactId>johnzon-mapper</artifactId>
+            <version>${hobit.johnzon-mapper.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${hobit.j2ee.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${hobit.jackson-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${hobit.jackson-databind.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+            <version>3.0.4</version>
+            <scope>provided</scope>
+        </dependency>
+     
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.9.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
+        <dependency>
+            <groupId>com.currencyfair</groupId>
+            <artifactId>onesignal</artifactId>
+            <version>1.0.15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.12</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1</version>
+        </dependency>
+    </dependencies>
+    
+    
+</project>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="RunGeneralQuery"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:ns1="http://xml.smilecoms.com/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/PM" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns3="http://xml.smilecoms.com/schema/PM" 
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2" >
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/PM" location="../Partners/PM/PMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="PM" partnerLinkType="ns2:PMServiceDefinition" partnerRole="PM"/>
+        <partnerLink name="SCA" partnerLinkType="ns1:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="ns1:SCAError"/>
+        <variable name="PMRunGeneralQueryOut" messageType="ns2:GeneralQueryResponse"/>
+        <variable name="PMRunGeneralQueryIn" messageType="ns2:GeneralQueryRequest"/>
+        <variable name="SCARunGeneralQueryOut" messageType="ns1:GeneralQueryResponse"/>
+        <variable name="SCARunGeneralQueryIn" messageType="ns1:GeneralQueryRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="pmFault" faultMessageType="ns2:PMError">
+            <sequence name="Sequence1">
+                <assign name="Assign3">
+                    <copy>
+                        <from>$pmFault.PMError/ns3:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$pmFault.PMError/ns3:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$pmFault.PMError/ns3:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="RunGeneralQuery" portType="ns1:SCASoap" faultName="ns1:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="RunGeneralQuery" portType="ns1:SCASoap" variable="SCARunGeneralQueryIn"/>
+
+
+
+
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('PM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="PM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+
+
+
+
+
+
+
+        <assign name="Assign1">
+            <copy>
+                <from>$SCARunGeneralQueryIn.GeneralQueryRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$PMRunGeneralQueryIn.GeneralQueryRequest/ns3:PlatformContext/ns3:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCARunGeneralQueryIn.GeneralQueryRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$PMRunGeneralQueryIn.GeneralQueryRequest/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCARunGeneralQueryIn.GeneralQueryRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$PMRunGeneralQueryIn.GeneralQueryRequest/ns3:PlatformContext/ns3:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCARunGeneralQueryIn.GeneralQueryRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$PMRunGeneralQueryIn.GeneralQueryRequest/ns3:PlatformContext/ns3:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCARunGeneralQueryIn.GeneralQueryRequest/ns0:QueryName</from>
+                <to>$PMRunGeneralQueryIn.GeneralQueryRequest/ns3:QueryName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCARunGeneralQueryIn.GeneralQueryRequest/ns0:Parameters</from>
+                <to>$PMRunGeneralQueryIn.GeneralQueryRequest/ns3:Parameters</to>
+            </copy>
+        </assign>
+        <invoke name="Invoke1" partnerLink="PM" operation="RunGeneralQuery" portType="ns2:PMSoap" inputVariable="PMRunGeneralQueryIn" outputVariable="PMRunGeneralQueryOut"/>
+        <assign name="Assign2">
+            <copy>
+                <from>$PMRunGeneralQueryOut.GeneralQueryResponse/ns3:Base64CompressedResult</from>
+                <to>$SCARunGeneralQueryOut.GeneralQueryResponse/ns0:Base64CompressedResult</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="RunGeneralQuery" portType="ns1:SCASoap" variable="SCARunGeneralQueryOut"/>
+    </sequence>
+</process>
+

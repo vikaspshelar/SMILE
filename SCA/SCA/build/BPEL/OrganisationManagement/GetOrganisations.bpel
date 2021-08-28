@@ -1,0 +1,355 @@
+<?xml version="1.0"?>
+<process
+    name="GetOrganisations"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml/.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/IM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="IMGetOrganisationsOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetOrganisationsResponse"/>
+        <variable name="IMGetOrganisationsIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetOrganisationsRequest"/>
+        <variable name="Fault1FaultVar" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:SCAError"/>
+        <variable name="SCAGetOrganisationsOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:GetOrganisationsResponse"/>
+        <variable name="SCAGetOrganisationsIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:GetOrganisationsRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultMessageType="IM:IMError" faultVariable="IMError" xmlns:IM="http://xml.smilecoms.com/IM">
+            <sequence name="Sequence1">
+                <assign name="AssignErr">
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetOrganisations" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetOrganisations" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAGetOrganisationsIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignQuery">
+            <copy>
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:OrganisationId</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:OrganisationId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:CustomerId</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:CustomerId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:OrganisationName</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:OrganisationName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:ResultLimit</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:ResultLimit</to>
+            </copy>
+            <copy>
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:Verbosity</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:Verbosity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:RolesResultLimit</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:RolesResultLimit</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetOrganisationsIn.OrganisationQuery/ns0:RolesOffset</from>
+                <to>$IMGetOrganisationsIn.OrganisationQuery/ns1:RolesOffset</to>
+            </copy>
+           
+        </assign>
+        <invoke name="CallIM" partnerLink="IM" operation="GetOrganisations" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetOrganisationsIn" outputVariable="IMGetOrganisationsOut"/>
+        
+        <forEach name="ForEachOrganisation" parallel="no" counterName="org">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$IMGetOrganisationsOut.OrganisationList/ns1:NumberOfOrganisations</finalCounterValue>
+            <scope name="Scope1">
+                <sequence name="CopyOrgSeq">
+                    <assign name="CheckPermissions1">
+                        <copy>
+                            <from>BPELUtils:checkPermissions($SCAGetOrganisationsIn.OrganisationQuery/ns0:SCAContext, 'Organisation', $IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationId)</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:SCAContext/ns0:Obviscated</to>
+                        </copy>
+                    </assign>
+                    <assign name="AssignOrganisation">
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationId</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:OrganisationId</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationType</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:OrganisationType</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationName</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:OrganisationName</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationStatus</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:OrganisationStatus</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:CreatedDateTime</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:CreatedDateTime</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Version</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Version</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:EmailAddress, $SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:EmailAddress</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:AlternativeContact1, $SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:AlternativeContact1</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:AlternativeContact2, $SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:AlternativeContact2</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Industry</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Industry</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Size</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Size</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:TaxNumber, $SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:TaxNumber</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:CompanyNumber, $SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:CompanyNumber</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:AccountManagerCustomerProfileId</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:AccountManagerCustomerProfileId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:ModificationRoles</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:ModificationRoles</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationSellers</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:OrganisationSellers</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:CreditAccountNumber</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:CreditAccountNumber</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:ChannelCode</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:ChannelCode</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:CreatedByCustomerProfileId
+                                <sxed:editor>
+                                    <sxed:predicate path="$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]" source="from"/>
+                                </sxed:editor>
+                            </from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:CreatedByCustomerProfileId
+                                <sxed:editor>
+                                    <sxed:predicate path="$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]" source="to"/>
+                                </sxed:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:KycStatus</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:KycStatus</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:KycComment</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:KycComment</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationSubType</from>
+                            <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:OrganisationSubType</to>
+                        </copy>
+                    </assign>
+                
+                    <forEach name="ForEachPhoto" parallel="no" counterName="photo">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>count($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationPhotographs)</finalCounterValue>
+                        <scope name="Scope2">
+                            <assign name="AssignPhoto">
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationPhotographs[$photo]/ns1:PhotoGuid</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:OrganisationPhotographs[$photo]/ns0:PhotoGuid</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationPhotographs[$photo]/ns1:PhotoType</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:OrganisationPhotographs[$photo]/ns0:PhotoType</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:OrganisationPhotographs[$photo]/ns1:Data</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:OrganisationPhotographs[$photo]/ns0:Data</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                    <forEach name="ForEachModification" counterName="roles" parallel="no">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>count($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:ModificationRoles)</finalCounterValue>
+                        <scope name="ModificationRolesScope">
+                            <assign name="AssignModificationRoles">
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:ModificationRoles</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:ModificationRoles</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                    <forEach name="ForEachAddress" parallel="no" counterName="addresscounter">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>count($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses)</finalCounterValue>
+                        <scope name="Scope1">
+                            <assign name="AssignAddresses">
+                                <copy>
+                                    <from>BPELUtils:obviscate($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:Line1, $SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:SCAContext/ns0:Obviscated)</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:Line1</to>
+                                </copy>
+                                <copy>
+                                    <from>BPELUtils:obviscate($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:Line2, $SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:SCAContext/ns0:Obviscated)</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:Line2</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:Town</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:Town</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:Country</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:Country</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:Code</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:Code</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:Type</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:Type</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:PostalMatchesPhysical</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:PostalMatchesPhysical</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:Zone</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:Zone</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:OrganisationId</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:OrganisationId</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:AddressId
+                                    </from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:AddressId
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:Addresses[$addresscounter]/ns1:State
+                                    </from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:Addresses[$addresscounter]/ns0:State
+                                    </to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                    <forEach name="ForEachRole" parallel="no" counterName="role">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>count($IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:CustomerRoles)</finalCounterValue>
+                        <scope name="RoleScope">
+                            <assign name="AssignRole">
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:CustomerRoles[$role]/ns1:OrganisationName</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:CustomerRoles[$role]/ns0:OrganisationName</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:CustomerRoles[$role]/ns1:OrganisationId</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:CustomerRoles[$role]/ns0:OrganisationId</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:CustomerRoles[$role]/ns1:RoleName</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:CustomerRoles[$role]/ns0:RoleName</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:CustomerRoles[$role]/ns1:CustomerId</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:CustomerRoles[$role]/ns0:CustomerId</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetOrganisationsOut.OrganisationList/ns1:Organisations[$org]/ns1:CustomerRoles[$role]/ns1:CustomerName</from>
+                                    <to>$SCAGetOrganisationsOut.OrganisationList/ns0:Organisations[$org]/ns0:CustomerRoles[$role]/ns0:CustomerName</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                </sequence>
+            </scope>
+        </forEach>
+        <assign name="AssignCnt">
+            <copy>
+                <from>$IMGetOrganisationsOut.OrganisationList/ns1:NumberOfOrganisations</from>
+                <to>$SCAGetOrganisationsOut.OrganisationList/ns0:NumberOfOrganisations</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="GetOrganisations" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAGetOrganisationsOut"/>
+    </sequence>
+</process>

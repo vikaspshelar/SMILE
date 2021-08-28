@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+<process
+    name="ModifyOrganisation"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml/.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/IM">
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+    </partnerLinks>
+    <variables>
+        <variable name="IMModifyOrganisationOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:Done"/>
+        <variable name="IMModifyOrganisationIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyOrganisationRequest"/>
+        <variable name="Fault1FaultVar" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:SCAError"/>
+        <variable name="SCAModifyOrganisationOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:Done"/>
+        <variable name="SCAModifyOrganisationIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ModifyOrganisationRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultMessageType="IM:IMError" faultVariable="IMError" xmlns:IM="http://xml.smilecoms.com/IM">
+            <sequence name="Sequence1">
+                <assign name="AssignErr">
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ModifyOrganisation" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ModifyOrganisation" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAModifyOrganisationIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignOrg">
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:SCAContext/ns0:Tenant</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:OrganisationId</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:OrganisationId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:OrganisationType</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:OrganisationType</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:OrganisationName</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:OrganisationName</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:OrganisationStatus</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:OrganisationStatus</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:Version</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:Version</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:EmailAddress</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:EmailAddress</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:AlternativeContact1</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:AlternativeContact1</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:AlternativeContact2</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:AlternativeContact2</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:Industry</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:Industry</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:Size</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:Size</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:TaxNumber</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:TaxNumber</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:CompanyNumber</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:CompanyNumber</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:AccountManagerCustomerProfileId</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:AccountManagerCustomerProfileId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:CreditAccountNumber</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:CreditAccountNumber</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:ChannelCode</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:ChannelCode</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:ModificationRoles</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:ModificationRoles</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:OrganisationSellers</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:OrganisationSellers</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:KycStatus</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:KycStatus</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:KycComment</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:KycComment</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:OrganisationSubType</from>
+                <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:OrganisationSubType</to>
+            </copy>
+        </assign>
+        
+        <forEach name="ForEachPhoto" parallel="no" counterName="photo">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCAModifyOrganisationIn.ModifiedOrganisation/ns0:OrganisationPhotographs)</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="AssignPhoto">
+                    <copy>
+                        <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:OrganisationPhotographs[$photo]/ns0:PhotoGuid</from>
+                        <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:OrganisationPhotographs[$photo]/ns1:PhotoGuid</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:OrganisationPhotographs[$photo]/ns0:PhotoType</from>
+                        <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:OrganisationPhotographs[$photo]/ns1:PhotoType</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAModifyOrganisationIn.ModifiedOrganisation/ns0:OrganisationPhotographs[$photo]/ns0:Data</from>
+                        <to>$IMModifyOrganisationIn.ModifiedOrganisation/ns1:OrganisationPhotographs[$photo]/ns1:Data</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <invoke name="CallIM" partnerLink="IM" operation="ModifyOrganisation" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMModifyOrganisationIn" outputVariable="IMModifyOrganisationOut"/>
+        <assign name="Assign1">
+            <copy>
+                <from>$IMModifyOrganisationOut.Done/ns1:Done</from>
+                <to>$SCAModifyOrganisationOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="ModifyOrganisation" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAModifyOrganisationOut"/>
+    </sequence>
+</process>

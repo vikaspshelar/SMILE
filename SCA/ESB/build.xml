@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="" default="default" basedir="." xmlns:web="http://www.netbeans.org/ns/j2ee-ejbjarproject/1">
+    <import file="nbproject/build-impl.xml"/>
+    <target name="init-esb-ide" if="netbeans.home">
+        <property name="esb.netbeans.platform" value="${netbeans.home}"/>
+    </target>
+    <target name="init-esb-cli">
+        <property name="from.commandline" value="true"/>
+        <property name="netbeans.dir" value="${esb.netbeans.home}"/>
+        <property name="netbeans.user" value="${esb.netbeans.user}"/>
+        <property file="${basedir}/nbproject/private/private.properties"/>
+        <property name="esb.netbeans.platform" value="${esb.netbeans.home}/platform"/>
+    </target>
+    <target name="check-catd-context">
+        <condition property="no.catd.context">
+            <not>
+                <isset property="org.netbeans.modules.compapp.catd.context"/>
+            </not>
+        </condition>
+    </target>
+    <target name="init-catd" if="no.catd.context">
+        <property name="org.netbeans.modules.compapp.catd.context" value=""/>
+    </target>
+    <target name="pre-init" depends="init-esb-ide,init-esb-cli,check-catd-context,init-catd,Check_jaxws_handlers"/>
+    
+    <target name="Check_jaxws_handlers">
+        <property name="casa.file" value="${basedir}/src/conf/ESB.casa"/>
+        <echo message="Checking File ${casa.file} has Smiles SoapCacheHandler"/>
+        <loadfile property="casa.results" srcFile="${casa.file}"/>
+        <fail message="ESB.casa does not have SoapCacheHandler.jar as a JAX-WS Soap Handler!">
+            <condition>
+                <not>
+                    <contains string="${casa.results}" substring="SoapCacheHandler.jar"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+    
+    <target name="run-jbi-deploy" depends="">        
+        <exec executable="./deploy.sh">
+        </exec>
+    </target>
+    
+</project>

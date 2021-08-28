@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/PM"
+            elementFormDefault="qualified" xmlns:tns="http://xml.smilecoms.com/schema/PM">
+    <xsd:element name="Done" type="tns:Done">
+    </xsd:element>
+    <xsd:complexType name="Done" >
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PropertyListResponse">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PropertyValues" type="xsd:string" minOccurs="1" maxOccurs="unbounded">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PropertyListRequest">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PropertyNames" type="xsd:string" maxOccurs="unbounded">
+                    </xsd:element>
+                    <xsd:element name="Client" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="SkipCache" type="xsd:boolean"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformInteger"  >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Integer" type="xsd:int">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject"  >
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformString"  >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="String" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PMError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PropertyRequest">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PropertyName" type="xsd:string"/>
+                    <xsd:element name="Client" type="xsd:string"/>
+                    <xsd:element name="SkipCache" type="xsd:boolean"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="FlushCacheRequest">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="FlushCache" type="xsd:boolean"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="FlushCacheRequest" type="tns:FlushCacheRequest"/>
+    <xsd:element name="PropertyRequest" type="tns:PropertyRequest"/>
+    <xsd:complexType name="PropertyResponse">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PropertyValue" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="PropertyResponse" type="tns:PropertyResponse">
+    </xsd:element>
+    <xsd:element name="StaleTest" type="tns:PlatformDateTime">
+    </xsd:element>
+    <xsd:element name="StaleResponse" type="tns:PlatformBoolean">
+    </xsd:element>
+    <xsd:element name="PMError" type="tns:PMError">
+    </xsd:element>
+    <xsd:complexType name="PlatformBoolean">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/PM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Boolean" type="xsd:boolean">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformDateTime">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/PM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="DateTime" type="xsd:dateTime">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="PropertyListRequest" type="tns:PropertyListRequest">
+    </xsd:element>
+    <xsd:element name="PropertyListResponse" type="tns:PropertyListResponse">
+    </xsd:element>
+    <xsd:complexType name="Resource">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/PM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Key" type="xsd:string"></xsd:element>
+                    <xsd:element name="Value" type="xsd:string"></xsd:element>
+                    <xsd:element name="Locale" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="ResourceList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/PM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Resources" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="ResourceListRequest" type="tns:PlatformString"></xsd:element>
+    <xsd:element name="ResourceList" type="tns:ResourceList"></xsd:element>
+    <xsd:element name="NewResource" type="tns:Resource"></xsd:element>
+    <xsd:complexType name="ReplaceWithPropertiesRequest">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/PM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Client" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="PropertyString" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="ReplaceWithPropertiesRequest" type="tns:ReplaceWithPropertiesRequest"></xsd:element>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+    <xsd:complexType name="UpdatePropertyRequest">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/PM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Client" type="xsd:string"></xsd:element>
+                    <xsd:element name="PropertyName" type="xsd:string"></xsd:element>
+                    <xsd:element name="PropertyValue" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="UpdatePropertyRequest" type="tns:UpdatePropertyRequest"></xsd:element>
+    
+    
+     <xsd:complexType name="GeneralQueryRequest">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="QueryName" type="xsd:string"/>
+                    <xsd:element name="Parameters" type="xsd:string"  maxOccurs="unbounded" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="GeneralQueryResponse">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Base64CompressedResult" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="GeneralQueryRequest" type="tns:GeneralQueryRequest"></xsd:element>
+    <xsd:element name="GeneralQueryResponse" type="tns:GeneralQueryResponse"></xsd:element>
+    
+</xsd:schema>

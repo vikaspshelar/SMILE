@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/MM"
+            xmlns:tns="http://xml.smilecoms.com/schema/MM"
+            elementFormDefault="qualified">
+
+    
+    
+    <xsd:complexType name="MessageId">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/MM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="MessageId" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="MessageResendData" type="tns:MessageId"></xsd:element>
+    
+    
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="stPriority">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="HIGH"/>
+            <xsd:enumeration value="MEDIUM"/>
+            <xsd:enumeration value="LOW"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject">
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="MMError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="Done">
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="Done" type="tns:Done">
+    </xsd:element>
+    
+    <xsd:complexType name="ShortMessage">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/MM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Source" type="xsd:string"></xsd:element>
+                    <xsd:element name="Destination" type="xsd:string"></xsd:element>
+                    <xsd:element name="DataAsString" type="xsd:string"></xsd:element>
+                    <xsd:element name="DataCodingScheme" type="xsd:byte"></xsd:element>
+                    <xsd:element name="DataAsBase64" type="xsd:string"></xsd:element>
+                    <xsd:element name="CampaignId" type="xsd:string"></xsd:element>
+                    <xsd:element name="Priority" type="tns:stPriority"></xsd:element>
+                    <xsd:element name="ValiditySeconds" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="CampaignEngineRequest">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/MM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="CampaignId" type="xsd:string"></xsd:element>
+                    <xsd:element name="EmailAddress" type="xsd:string"></xsd:element>
+                    <xsd:element name="AttachmentAsBase64" type="xsd:string"></xsd:element>
+                    <xsd:element name="AttachmentName" type="xsd:string"></xsd:element>
+                    <xsd:element name="Personalisations" type="tns:Personalisation" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="DirectPersonalisationXML" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+     <xsd:complexType name="Personalisation">
+        <xsd:sequence>
+            <xsd:element name="TagName" type="xsd:string"></xsd:element>
+            <xsd:element name="Value" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+     </xsd:complexType>
+     
+    <xsd:complexType name="EngineMessage">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/MM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="SerialisedMessageAsBase64" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="MMError" type="tns:MMError"></xsd:element>
+    <xsd:element name="NewShortMessage" type="tns:ShortMessage"></xsd:element>
+    <xsd:element name="EngineMessage" type="tns:EngineMessage"></xsd:element>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+    <xsd:element name="CampaignEngineRequest" type="tns:CampaignEngineRequest"></xsd:element>
+    
+    <xsd:complexType name="Email">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/MM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Language" type="xsd:string"></xsd:element>
+                    <xsd:element name="FromAddress" type="xsd:string"></xsd:element>
+                    <xsd:element name="ToAddress" type="xsd:string"></xsd:element>
+                    <xsd:element name="CCAddress" type="xsd:string"></xsd:element>
+                    <xsd:element name="BCCAddress" type="xsd:string"></xsd:element>
+                    <xsd:element name="SubjectResourceName" type="xsd:string"></xsd:element>
+                    <xsd:element name="SubjectParameters" type="xsd:string" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="BodyResourceName" type="xsd:string"></xsd:element>
+                    <xsd:element name="BodyParameters" type="xsd:string" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="BodyXML" type="xsd:string"></xsd:element>
+                    <xsd:element name="AttachmentResourceName" type="xsd:string"/>
+                    <xsd:element name="AttachmentXML" type="xsd:string"/>
+                    <xsd:element name="AttachmentFileName" type="xsd:string"/>
+                    <xsd:element name="AttachmentStorageLocation" type="xsd:string"/>
+                    <xsd:element name="AttachmentBase64" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="Email" type="tns:Email"></xsd:element> 
+</xsd:schema>
+
+
+
+
+

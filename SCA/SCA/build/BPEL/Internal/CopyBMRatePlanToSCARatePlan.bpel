@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CopyBMRatePlanToSCARatePlan"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/BM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="avpCount" type="xsd:int"/>
+        <variable name="CopyBMRatePlanToSCARatePlanOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:RatePlanResponse"/>
+        <variable name="CopyBMRatePlanToSCARatePlanIn" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:RatePlanResponse"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="CopyBMRatePlanToSCARatePlan" portType="tns:SCASubFlowsSoap" variable="CopyBMRatePlanToSCARatePlanIn"/>
+        <assign name="Assign1">
+            <copy ignoreMissingFromData="yes">
+                <from>count($CopyBMRatePlanToSCARatePlanIn.RatePlan/ns0:AVPs)</from>
+                <to variable="avpCount"/>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyBMRatePlanToSCARatePlanIn.RatePlan/ns0:RatePlanId</from>
+                <to>$CopyBMRatePlanToSCARatePlanOut.RatePlan/ns1:RatePlanId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyBMRatePlanToSCARatePlanIn.RatePlan/ns0:Name</from>
+                <to>$CopyBMRatePlanToSCARatePlanOut.RatePlan/ns1:Name</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyBMRatePlanToSCARatePlanIn.RatePlan/ns0:Description</from>
+                <to>$CopyBMRatePlanToSCARatePlanOut.RatePlan/ns1:Description</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyBMRatePlanToSCARatePlanIn.RatePlan/ns0:RatingEngineClass</from>
+                <to>$CopyBMRatePlanToSCARatePlanOut.RatePlan/ns1:RatingEngineClass</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyBMRatePlanToSCARatePlanIn.RatePlan/ns0:EventBased</from>
+                <to>$CopyBMRatePlanToSCARatePlanOut.RatePlan/ns1:EventBased</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyBMRatePlanToSCARatePlanIn.RatePlan/ns0:SessionBased</from>
+                <to>$CopyBMRatePlanToSCARatePlanOut.RatePlan/ns1:SessionBased</to>
+            </copy>
+        </assign>
+        <forEach name="ForEach_AVP" parallel="no" counterName="idxAVP">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$avpCount</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="Assign2">
+                    <copy ignoreMissingFromData="yes">
+                        <from>$CopyBMRatePlanToSCARatePlanIn.RatePlan/ns0:AVPs[$idxAVP]/ns0:Attribute
+                        </from>
+                        <to>$CopyBMRatePlanToSCARatePlanOut.RatePlan/ns1:AVPs[$idxAVP]/ns1:Attribute
+                        </to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$CopyBMRatePlanToSCARatePlanIn.RatePlan/ns0:AVPs[$idxAVP]/ns0:Value
+                        </from>
+                        <to>$CopyBMRatePlanToSCARatePlanOut.RatePlan/ns1:AVPs[$idxAVP]/ns1:Value
+                        </to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="CopyBMRatePlanToSCARatePlan" portType="tns:SCASubFlowsSoap" variable="CopyBMRatePlanToSCARatePlanOut"/>
+    </sequence>
+</process>

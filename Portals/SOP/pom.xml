@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.smilecoms</groupId>
+        <artifactId>Portals</artifactId>
+        <version>2.3.1</version>
+    </parent>
+    <artifactId>SOP</artifactId>
+    <packaging>war</packaging>
+    <name>HOBIT :: Portals :: SOP</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+                <version>${hobit.maven-compiler.version}</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${hobit.maven-ant-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>Copy</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <target>
+                                <copy tofile="/tmp/webapps/sop.war">
+                                    <fileset dir="./target/">
+                                        <include name="SOP.war"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-util</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-sca-client</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-stripes</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>stripes</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-auth</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-base</artifactId>
+            <version>${hobit.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${hobit.slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${hobit.j2ee.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.rrd4j</groupId>
+            <artifactId>rrd4j</artifactId>
+            <version>${hobit.rrd4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.influxdb</groupId>
+            <artifactId>influxdb-java</artifactId>
+            <version>${hobit.influxdb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asteriskjava</groupId>
+            <artifactId>asterisk-java</artifactId>
+            <version>${hobit.asterisk-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.toastcoders</groupId>
+            <artifactId>yavijava</artifactId>
+            <version>${hobit.yavijava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>${hobit.jfreechart.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cewolf</groupId>
+            <artifactId>cewolf</artifactId>
+            <version>${hobit.cewolf.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>sshtools</groupId>
+            <artifactId>j2ssh-core</artifactId>
+            <version>${hobit.sshtools.version}</version>
+        </dependency>
+        <!-- <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>SSHTools</artifactId>
+            <version>${hobit.version}</version>
+        </dependency> -->
+    </dependencies>
+    
+    
+</project>

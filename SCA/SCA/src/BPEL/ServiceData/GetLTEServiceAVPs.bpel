@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetLTEServiceAVPs"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/IM" xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="IMGetIMSPrivateIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPrivateIdentityResponse"/>
+        <variable name="IMGetIMSPrivateIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPrivateIdentityRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SubFlowError"/>
+        <variable name="SubFlowGetLTEServiceAVPsOut" messageType="tns:ServiceAVPsResponse"/>
+        <variable name="SubFlowGetLTEServiceAVPsIn" messageType="tns:GetLTEServiceAVPsRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:IM="http://xml.smilecoms.com/IM" faultMessageType="IM:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCASubFlows" operation="GetLTEServiceAVPs" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar">
+                    <sxt:trace>
+                        <sxt:log level="severe" location="onStart">
+                            <from>concat('GetLTEServiceAVPs got IM Error. Returning with error desc:', $Fault1FaultVar.SubFlowError/ErrorDesc)</from>
+                        </sxt:log>
+                        <sxt:log level="severe" location="onComplete">
+                            <from>'Sent error reply in GetLTEServiceAVPs'</from>
+                        </sxt:log>
+                    </sxt:trace>
+                </reply>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="GetLTEServiceAVPs" portType="tns:SCASubFlowsSoap" variable="SubFlowGetLTEServiceAVPsIn"/>
+        
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+
+        <assign name="AssignIM">
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetLTEServiceAVPsIn.LTEServiceLookupInfo/SubFlowContext/TxId</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetLTEServiceAVPsIn.LTEServiceLookupInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetLTEServiceAVPsIn.LTEServiceLookupInfo/SubFlowContext/OriginatingIP</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetLTEServiceAVPsIn.LTEServiceLookupInfo/SubFlowContext/Tenant</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>substring-after($SubFlowGetLTEServiceAVPsIn.LTEServiceLookupInfo/RemoteResourceId, '-')</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:OSSBSSReferenceId</to>
+            </copy>
+        </assign>
+        <invoke name="GetIMPI" partnerLink="IM" operation="GetIMSPrivateIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSPrivateIdentityIn" outputVariable="IMGetIMSPrivateIdentityOut"/>
+        <assign name="AssignAVPs">
+            <copy>
+                <from>'IntegratedCircuitCardIdentifier'</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[1]/ns1:Attribute</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:IntegratedCircuitCardIdentifier</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[1]/ns1:Value</to>
+            </copy>
+            <copy>
+                <from>'PrivateIdentity'</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[2]/ns1:Attribute</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:Identity</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[2]/ns1:Value</to>
+            </copy>
+            <copy>
+                <from>'IPv4Address'</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[3]/ns1:Attribute</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>''</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[3]/ns1:Value</to>
+            </copy>
+            <copy>
+                <from>'IPv6Address'</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[4]/ns1:Attribute</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>''</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[4]/ns1:Value</to>
+            </copy>
+            <copy>
+                <from>'SIMLockedIMEIList'</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[5]/ns1:Attribute</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:SIMLockedIMEIList</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[5]/ns1:Value</to>
+            </copy>
+            <copy>
+                <from>'APNList'</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[6]/ns1:Attribute</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[6]/ns1:Value</to>
+            </copy>
+            <copy>
+                <from>'RegionalSubscriptionZoneCodes'</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[7]/ns1:Attribute</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:RegionalSubscriptionZoneCodes</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[7]/ns1:Value</to>
+            </copy>
+            <copy>
+                <from>'Info'</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[8]/ns1:Attribute</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:Info</from>
+                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[8]/ns1:Value</to>
+            </copy>
+        </assign>
+        <forEach name="ForEachAPN" parallel="no" counterName="apnCounter">
+            <!--sxt:trace>
+                <sxt:log level="finest" location="onStart">
+                    <from>'Going to loop through APNs in APNlist'</from>
+                </sxt:log>
+            </sxt:trace-->
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList)</finalCounterValue>
+            <scope name="APNLoop_Scope">
+                <sequence>
+                    <if name="IfAPNIsDefault">
+                        <condition>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:Type = 1</condition>
+                        <sequence>
+                            <assign name="AssignAPNAsDefault">
+                                <copy>
+                                    <from>concat($IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:APNName, ',',  $SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[6]/ns1:Value)</from>
+                                    <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[6]/ns1:Value</to>
+                                </copy>
+                            </assign>   
+                        </sequence>
+                        <else>
+                            <sequence>
+                                <assign name="AssignAPNAsNonDefault">
+                                    <copy>
+                                        <from>concat($SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[6]/ns1:Value, $IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:APNName, ',')</from>
+                                        <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[6]/ns1:Value</to>
+                                    </copy>
+                                </assign>   
+                            </sequence>
+                        </else>
+                    </if>
+                    <if name="IfThisIsLastAPN">
+                        <condition>$apnCounter = count($IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList)</condition>
+                        <sequence>
+                            <assign name="AssignCleanAPNListFormat">
+                                <copy>
+                                    <from>BPELUtils:removeTerminatingCommaFromString($SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[6]/ns1:Value)</from>
+                                    <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[6]/ns1:Value</to>
+                                </copy>
+                            </assign>   
+                        </sequence>
+                    </if>
+                    <sequence>
+                        <assign name="AssignAPNStaticIP">
+                            <copy ignoreMissingFromData="yes">
+                                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv4Address</from>
+                                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[3]/ns1:Value</to>
+                            </copy>
+                            <copy ignoreMissingFromData="yes">
+                                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv6Address</from>
+                                <to>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[4]/ns1:Value</to>
+                            </copy>
+                        </assign>   
+                    </sequence>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="GetLTEServiceAVPs" portType="tns:SCASubFlowsSoap" variable="SubFlowGetLTEServiceAVPsOut"/>
+    </sequence>
+</process>

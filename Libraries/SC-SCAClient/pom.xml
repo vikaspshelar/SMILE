@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.smilecoms</groupId>
+        <artifactId>Libraries</artifactId>
+        <version>2.3.1</version>
+    </parent>
+    <artifactId>smile-commons-sca-client</artifactId>
+    <packaging>jar</packaging>
+    <name>HOBIT :: Libraries :: SC-SCAClient</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+                <version>${hobit.maven-compiler.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <version>${hobit.cxf-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <wsdlOptions>
+                                <wsdlOption>
+                                    <wsdl>src/main/resources/SCAServiceDefinition.wsdl</wsdl>
+                                    <extraargs>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>com.smilecoms.commons.sca</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
+                                <wsdlOption>
+                                    <wsdl>src/main/resources/AMServiceDefinition.wsdl</wsdl>
+                                    <extraargs>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>com.smilecoms.commons.sca.direct.am</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
+                                <wsdlOption>
+                                    <wsdl>src/main/resources/BMServiceDefinition.wsdl</wsdl>
+                                    <extraargs>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>com.smilecoms.commons.sca.direct.bm</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
+                                <wsdlOption>
+                                    <wsdl>src/main/resources/ETServiceDefinition.wsdl</wsdl>
+                                    <extraargs>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>com.smilecoms.commons.sca.direct.et</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
+                                <wsdlOption>
+                                    <wsdl>src/main/resources/HWFServiceDefinition.wsdl</wsdl>
+                                    <extraargs>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>com.smilecoms.commons.sca.direct.hwf</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
+                                <wsdlOption>
+                                    <wsdl>src/main/resources/IMServiceDefinition.wsdl</wsdl>
+                                    <extraargs>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>com.smilecoms.commons.sca.direct.im</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
+                                <wsdlOption>
+                                    <wsdl>src/main/resources/MMServiceDefinition.wsdl</wsdl>
+                                    <extraargs>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>com.smilecoms.commons.sca.direct.mm</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
+                                <wsdlOption>
+                                    <wsdl>src/main/resources/PVSServiceDefinition.wsdl</wsdl>
+                                    <extraargs>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>com.smilecoms.commons.sca.direct.pvs</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
+                            </wsdlOptions>
+                        </configuration>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${hobit.maven-ant-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>Copy</id>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <target>
+                                <delete>
+                                    <fileset dir="src/main/resources" includes="*.wsdl"/>
+                                </delete>
+                                <delete>
+                                    <fileset dir="src/main/resources" includes="*.xsd"/>
+                                </delete>
+                                <copy flatten="true" overwrite="true" todir="src/main/resources">
+                                    <fileset dir="../../SCA/SCA/src/wsdl" >                
+                                        <include name="**/*.wsdl"/>
+                                        <include name="**/*.xsd"/>
+                                    </fileset>
+                                </copy>
+                                <copy flatten="true" overwrite="true" todir="src/main/resources">
+                                    <fileset dir="../../Platforms/PVS/src/main/resources" >                
+                                        <include name="**/*.wsdl"/>
+                                        <include name="**/*.xsd"/>
+                                    </fileset>
+                                </copy>
+                                <copy flatten="true" overwrite="true" todir="src/main/resources">
+                                    <fileset dir="../../Platforms/BM/src/main/resources" >                
+                                        <include name="**/*.wsdl"/>
+                                        <include name="**/*.xsd"/>
+                                    </fileset>
+                                </copy>
+                                <copy flatten="true" overwrite="true" todir="src/main/resources">
+                                    <fileset dir="../../Platforms/ET/src/main/resources" >                
+                                        <include name="**/*.wsdl"/>
+                                        <include name="**/*.xsd"/>
+                                    </fileset>
+                                </copy>
+                                <copy flatten="true" overwrite="true" todir="src/main/resources">
+                                    <fileset dir="../../Platforms/IM/src/main/resources" >                
+                                        <include name="**/*.wsdl"/>
+                                        <include name="**/*.xsd"/>
+                                    </fileset>
+                                </copy>
+                                <copy flatten="true" overwrite="true" todir="src/main/resources">
+                                    <fileset dir="../../Platforms/HWF/src/main/resources" >                
+                                        <include name="**/*.wsdl"/>
+                                        <include name="**/*.xsd"/>
+                                    </fileset>
+                                </copy>
+                                <copy flatten="true" overwrite="true" todir="src/main/resources">
+                                    <fileset dir="../../Platforms/MM/src/main/resources" >                
+                                        <include name="**/*.wsdl"/>
+                                        <include name="**/*.xsd"/>
+                                    </fileset>
+                                </copy>
+                                <copy flatten="true" overwrite="true" todir="src/main/resources">
+                                    <fileset dir="../../Platforms/AM/src/main/resources" >                
+                                        <include name="AMServiceDefinition.wsdl"/>
+                                        <include name="AMSchema.xsd"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <target>
+                                <javadoc doclet="com.jeldoclet.JELDoclet" docletpath="${hobit.jeldoclet.location}" author="true" packagenames="*" 
+                                         destdir="target" private="true" additionalparam="-J-Xmx50m">
+                                    <fileset dir="target/generated-sources/cxf/com/smilecoms/commons/sca" includes="**/*Soap.java"/>
+                                    <classpath>
+                                        <path path="target/generated-sources/cxf" />
+                                    </classpath>
+                                </javadoc>
+                                <xslt style="src/main/resources/SCA_Wrapper_Generator.xsl"
+                                      force="true"
+                                      in="target/jel.xml" 
+                                      out="src/main/java/com/smilecoms/commons/sca/AbstractSCAWrapper.java">
+                                </xslt>
+        
+                                <xslt style="src/main/resources/SCA_Types_Generator_Stage1.xsl"
+                                      force="true"
+                                      in="target/jel.xml" 
+                                      out="target/tmp.xml">
+                                </xslt>
+                                <xslt style="src/main/resources/SCA_Types_Generator_Stage2.xsl"
+                                      force="true"
+                                      in="target/tmp.xml" 
+                                      out="src/main/java/com/smilecoms/commons/sca/SCATypes.java">
+                                </xslt>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+   
+    <dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${hobit.j2ee.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-base</artifactId>
+            <version>${hobit.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-util</artifactId>
+            <version>${hobit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.smilecoms</groupId>
+            <artifactId>smile-commons-auth</artifactId>
+            <version>${hobit.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${hobit.slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>${hobit.cxf.version}</version>
+            <!-- <scope>provided</scope> -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${hobit.cxf.version}</version>
+            <!-- <scope>provided</scope> -->
+        </dependency>
+        <dependency>
+            <groupId>com.currencyfair</groupId>
+            <artifactId>onesignal</artifactId>
+            <version>1.0.15</version>
+        </dependency>
+    </dependencies>
+    
+    
+</project>

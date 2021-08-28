@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="CTIServiceDefinition" targetNamespace="http://xml.smilecoms.com/CTI"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xml.smilecoms.com/CTI" 
+    xmlns:ns="http://xml.smilecoms.com/schema/CTI" 
+    xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/CTI">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/CTI" schemaLocation="CTISchema.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="CTIError">
+        <part name="CTIError" element="ns:CTIError"/>
+    </message>
+    <message name="LogCCAgentIntoQueuesRequest">
+        <part name="QueueLoginData" element="ns:QueueLoginData"/>
+    </message>
+    <message name="LogCCAgentIntoQueuesResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="LogCCAgentOutQueuesRequest">
+        <part name="QueueLogoutData" element="ns:QueueLogoutData"/>
+    </message>
+    <message name="LogCCAgentOutQueuesResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="CheckForNewCCAgentCallRequest">
+        <part name="NewCallQueryData" element="ns:NewCallQueryData"/>
+    </message>
+    <message name="CheckForNewCCAgentCallResponse">
+        <part name="IncomingCallData" element="ns:IncomingCallData"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <portType name="CTISoap">
+        <operation name="LogCCAgentIntoQueues">
+            <input name="input1" message="tns:LogCCAgentIntoQueuesRequest"/>
+            <output name="output1" message="tns:LogCCAgentIntoQueuesResponse"/>
+            <fault name="fault1" message="tns:CTIError"/>
+        </operation>
+        <operation name="LogCCAgentOutQueues">
+            <input name="input2" message="tns:LogCCAgentOutQueuesRequest"/>
+            <output name="output2" message="tns:LogCCAgentOutQueuesResponse"/>
+            <fault name="fault1" message="tns:CTIError"/>
+        </operation>
+        <operation name="CheckForNewCCAgentCall">
+            <input name="input3" message="tns:CheckForNewCCAgentCallRequest"/>
+            <output name="output3" message="tns:CheckForNewCCAgentCallResponse"/>
+            <fault name="fault1" message="tns:CTIError"/>
+        </operation>
+        <operation name="IsUp">
+            <input name="input4" message="tns:IsUpRequest"/>
+            <output name="output4" message="tns:Done"/>
+            <fault name="fault1" message="tns:CTIError"/>
+        </operation>
+    </portType>
+    <binding name="CTIBinding" type="tns:CTISoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="LogCCAgentIntoQueues">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="LogCCAgentOutQueues">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CheckForNewCCAgentCall">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsUp">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="CTI">
+        <port name="CTISoap" binding="tns:CTIBinding">
+            <soap:address location="http://DummyHost:${HttpDefaultPort}/CTI/CTISoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="CTIServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes. 
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="CTI" portType="tns:CTISoap"/>
+    </plnk:partnerLinkType>
+</definitions>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="StoreCampaignData"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/CM" xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+    </partnerLinks>
+    <variables>
+        <variable name="CMStoreCampaignDataOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:Done"/>
+        <variable name="CMStoreCampaignDataIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:StoreCampaignDataRequest"/>
+        <variable name="SCAStoreCampaignDataOut" messageType="tns:Done"/>
+        <variable name="SCAStoreCampaignDataIn" messageType="tns:StoreCampaignDataRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="CMError" xmlns:CM="http://xml.smilecoms.com/CM" faultMessageType="CM:CMError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$CMError.CMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="StoreCampaignData" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="StoreCampaignData" portType="tns:SCASoap" variable="SCAStoreCampaignDataIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignCM">
+            <copy>
+                <from>$SCAStoreCampaignDataIn.CampaignData/ns1:SCAContext/ns1:TxId</from>
+                <to>$CMStoreCampaignDataIn.CampaignData/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAStoreCampaignDataIn.CampaignData/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$CMStoreCampaignDataIn.CampaignData/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAStoreCampaignDataIn.CampaignData/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$CMStoreCampaignDataIn.CampaignData/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy>
+                <from>$SCAStoreCampaignDataIn.CampaignData/ns1:CampaignId</from>
+                <to>$CMStoreCampaignDataIn.CampaignData/ns0:CampaignId</to>
+            </copy>
+            <copy>
+                <from>$SCAStoreCampaignDataIn.CampaignData/ns1:SCAContext/ns1:Tenant</from>
+                <to>$CMStoreCampaignDataIn.CampaignData/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAStoreCampaignDataIn.CampaignData/ns1:SCAContext/ns1:Comment</from>
+                <to>$CMStoreCampaignDataIn.CampaignData/ns0:PlatformContext/ns0:Comment</to>
+            </copy>
+            <copy>
+                <from>$SCAStoreCampaignDataIn.CampaignData/ns1:ProductInstanceIds</from>
+                <to>$CMStoreCampaignDataIn.CampaignData/ns0:ProductInstanceIds</to>
+            </copy>
+        </assign>
+        <invoke name="CallCM" partnerLink="CM" operation="StoreCampaignData" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMStoreCampaignDataIn" outputVariable="CMStoreCampaignDataOut"/>
+        <assign name="AssignResult">
+            <copy>
+                <from>$CMStoreCampaignDataOut.Done/ns0:Done</from>
+                <to>$SCAStoreCampaignDataOut.Done/ns1:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="StoreCampaignData" portType="tns:SCASoap" variable="SCAStoreCampaignDataOut"/>
+    </sequence>
+</process>

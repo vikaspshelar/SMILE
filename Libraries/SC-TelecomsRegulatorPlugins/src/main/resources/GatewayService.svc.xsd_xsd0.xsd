@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://tempuri.org/">
+    <xs:import schemaLocation="GatewayService.svc.xsd_xsd2.xsd" namespace="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+    <xs:import schemaLocation="GatewayService.svc.xsd_xsd5.xsd" namespace="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+    <xs:element name="QueryBasicDemographic">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="iRequest" nillable="true" type="q1:GetBasicDemographicDataRequest" xmlns:q1="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryBasicDemographicResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="QueryBasicDemographicResult" nillable="true" type="q2:GetBasicDemographicDataResponse" xmlns:q2="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryFullDemographic">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="iRequest" nillable="true" type="q3:GetFullDemographicDataRequest" xmlns:q3="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryFullDemographicResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="QueryFullDemographicResult" nillable="true" type="q4:GetFullDemographicDataResponse" xmlns:q4="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryBiometrics">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="iRequest" nillable="true" type="q5:GetBiometricsDataRequest" xmlns:q5="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryBiometricsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="QueryBiometricsResult" nillable="true" type="q6:GetBiometricsDataResponse" xmlns:q6="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryCardDetails">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="iRequest" nillable="true" type="q7:GetCardDetailsRequest" xmlns:q7="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryCardDetailsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="QueryCardDetailsResult" nillable="true" type="q8:GetCardDetailsResponse" xmlns:q8="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryFingerprintRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="iRequest" nillable="true" type="q9:QueryFingerprintRequestRequest" xmlns:q9="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryFingerprintRequestResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="QueryFingerprintRequestResult" nillable="true" type="q10:QueryFingerprintRequestResponse" xmlns:q10="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryFingerprintResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="iRequest" nillable="true" type="q11:QueryFingerprintResponseRequest" xmlns:q11="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="QueryFingerprintResponseResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="QueryFingerprintResponseResult" nillable="true" type="q12:QueryFingerprintResponseResponse" xmlns:q12="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="UpdateCitizenStatus">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="iRequest" nillable="true" type="q13:UpdateCitizenStatusRequest" xmlns:q13="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="UpdateCitizenStatusResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="UpdateCitizenStatusResult" nillable="true" type="q14:UpdateCitizenStatusResponse" xmlns:q14="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="UpdateExtendedInfo">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="iRequest" nillable="true" type="q15:UpdateExtendedInformationRequest" xmlns:q15="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="UpdateExtendedInfoResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="UpdateExtendedInfoResult" nillable="true" type="q16:UpdateExtendedInformationResponse" xmlns:q16="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="UpdateAddress">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="iRequest" nillable="true" type="q17:UpdateAddressRequest" xmlns:q17="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="UpdateAddressResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="UpdateAddressResult" nillable="true" type="q18:UpdateAddressResponse" xmlns:q18="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="UpdateBlacklist">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="iRequest" nillable="true" type="q19:UpdateBlacklistRequest" xmlns:q19="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="UpdateBlacklistResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="UpdateBlacklistResult" nillable="true" type="q20:UpdateBlacklistResponse" xmlns:q20="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="SplitUnitCredit"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/BM" xmlns:ns2="http://xml.smilecoms.com/schema/CM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCACalling" partnerLinkType="tns:SCA" partnerRole="SCAImplementation"/>
+        <partnerLink name="BM" xmlns:tns="http://xml.smilecoms.com/BM" partnerLinkType="tns:BMServiceDefinition" partnerRole="BM"/>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="CMGetProductInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductInstancesResponse"/>
+        <variable name="CMGetProductInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetProductInstancesRequest"/>
+        <variable name="SCACallingGetAccountsOut" messageType="tns:AccountsResponse"/>
+        <variable name="SCACallingGetAccountsIn" messageType="tns:GetAccountsRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="BMSplitUnitCreditOut" messageType="BM:Done"/>
+        <variable name="SourceOrgId" type="xsd:int"/>
+        <variable name="TargetOrgId" type="xsd:int"/>
+        <variable name="SourceCustId" type="xsd:int"/>
+        <variable name="TargetCustId" type="xsd:int"/>
+        <variable name="SourceProdId" type="xsd:int"/>
+        <variable name="TargetProdId" type="xsd:int"/>
+        <variable name="BMSplitUnitCreditIn" messageType="BM:SplitUnitCreditRequest"/>
+        <variable name="SCASplitUnitCreditOut" messageType="tns:Done"/>
+        <variable name="SCASplitUnitCreditIn" messageType="tns:SplitUnitCreditRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="BM:BMError" faultVariable="BMError">
+            <sequence name="Sequence1">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$BMError.BMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="SplitUnitCredit" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch faultMessageType="tns:SCAError" faultVariable="SCAError">
+            <sequence name="Sequence3">
+                <assign name="Assign3">
+                    <copy>
+                        <from>$SCAError.SCAError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAError.SCAError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAError.SCAError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply4" partnerLink="SCA" operation="SplitUnitCredit" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="SplitUnitCredit" portType="tns:SCASoap" variable="SCASplitUnitCreditIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('BM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        <assign name="AssignGetSourceAccount">
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$SCACallingGetAccountsIn.AccountQuery/ns0:SCAContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>'admin'</from>
+                <to>$SCACallingGetAccountsIn.AccountQuery/ns0:SCAContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$SCACallingGetAccountsIn.AccountQuery/ns0:SCAContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$SCACallingGetAccountsIn.AccountQuery/ns0:SCAContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>'getAccounts'</from>
+                <to>$SCACallingGetAccountsIn.AccountQuery/ns0:SCAContext/ns0:Method</to>
+            </copy>
+            <copy>
+                <from>'ACCOUNT_UNITCREDITS_RESERVATIONS_SERVICEINSTANCES'</from>
+                <to>$SCACallingGetAccountsIn.AccountQuery/ns0:Verbosity</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:UnitCreditInstanceId</from>
+                <to>$SCACallingGetAccountsIn.AccountQuery/ns0:UnitCreditInstanceId</to>
+            </copy>
+            <copy>
+                <from>'Administrator'</from>
+                <to>$SCACallingGetAccountsIn.AccountQuery/ns0:SCAContext/ns0:Roles</to>
+            </copy>
+        </assign>
+        <invoke name="GetSourceAccount" partnerLink="SCACalling" operation="GetAccounts" portType="tns:SCASoap" inputVariable="SCACallingGetAccountsIn" outputVariable="SCACallingGetAccountsOut"/>
+        <assign name="AssignSourceFirstProdId">
+            <copy>
+                <from>$SCACallingGetAccountsOut.AccountList/ns0:Accounts[1]/ns0:ServiceInstances[1]/ns0:ProductInstanceId</from>
+                <to variable="SourceProdId"/>
+            </copy>
+        </assign>
+        <assign name="AssignGetTargetAccount">
+            <copy>
+                <from>0</from>
+                <to>$SCACallingGetAccountsIn.AccountQuery/ns0:UnitCreditInstanceId</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:TargetAccountId</from>
+                <to>$SCACallingGetAccountsIn.AccountQuery/ns0:AccountId</to>
+            </copy>
+            <copy>
+                <from>-1</from>
+                <to variable="TargetProdId"/>
+            </copy>
+        </assign>
+        <invoke name="GetTargetAccount" partnerLink="SCACalling" operation="GetAccounts" portType="tns:SCASoap" inputVariable="SCACallingGetAccountsIn" outputVariable="SCACallingGetAccountsOut"/>
+        <assign name="AssignTargetFirstProdId">
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACallingGetAccountsOut.AccountList/ns0:Accounts[1]/ns0:ServiceInstances[1]/ns0:ProductInstanceId</from>
+                <to variable="TargetProdId"/>
+            </copy>
+        </assign>
+        <assign name="AssignGetProd1">
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>'MAIN'</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:Verbosity</to>
+            </copy>
+            <copy>
+                <from variable="SourceProdId"/>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:ProductInstanceId</to>
+            </copy>
+        </assign>
+        <invoke name="GetSourceProd" partnerLink="CM" operation="GetProductInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOut"/>
+        <assign name="AssignOrg1">
+            <copy>
+                <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[1]/ns2:OrganisationId</from>
+                <to variable="SourceOrgId"/>
+            </copy>
+            <copy>
+                <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[1]/ns2:CustomerId</from>
+                <to variable="SourceCustId"/>
+            </copy>
+        </assign>
+        <assign name="AssignGetProd2">
+            <copy>
+                <from variable="TargetProdId"/>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:ProductInstanceId</to>
+            </copy>
+        </assign>
+        <invoke name="GetTargetProd" partnerLink="CM" operation="GetProductInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOut"/>
+        <assign name="AssignOrg2">
+            <copy>
+                <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[1]/ns2:OrganisationId</from>
+                <to variable="TargetOrgId"/>
+            </copy>
+            <copy>
+                <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[1]/ns2:CustomerId</from>
+                <to variable="TargetCustId"/>
+            </copy>
+        </assign>
+        <if name="IfAcrossOrgs">
+            <condition>BPELUtils:getProperty('env.uc.allow.split.across.org', 'false') = 'false' and ($SourceOrgId &gt; 0 or $TargetOrgId &gt; 0) and $SourceOrgId != $TargetOrgId and not(BPELUtils:doesPropertySetContain('env.uc.diaspora.icps', string($SourceOrgId)))</condition>
+            <sequence name="Sequence2">
+                <assign name="AssignErr">
+                    <copy>
+                        <from>'Cannot split a unit credit across organisations'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'Business'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0032'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyAcrossOrgs" partnerLink="SCA" operation="SplitUnitCredit" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                <exit name="Exit1"/>
+            </sequence>
+        </if>
+        <if name="IfAcrossCustomers">
+            <condition>BPELUtils:getProperty('env.uc.allow.split.across.cust', 'false') = 'false' and $SourceOrgId = 0 and $SourceCustId != $TargetCustId</condition>
+            <sequence name="SequenceAcrossCust">
+                <assign name="AssignErrAcrossCust">
+                    <copy>
+                        <from>'Cannot split a unit credit across customers'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'Business'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0036'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyAcrossCust" partnerLink="SCA" operation="SplitUnitCredit" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                <exit name="Exit2"/>
+            </sequence>
+        </if>
+        <assign name="AssignBM">
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$BMSplitUnitCreditIn.SplitUnitCreditRequest/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$BMSplitUnitCreditIn.SplitUnitCreditRequest/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$BMSplitUnitCreditIn.SplitUnitCreditRequest/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$BMSplitUnitCreditIn.SplitUnitCreditRequest/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:UnitCreditInstanceId</from>
+                <to>$BMSplitUnitCreditIn.SplitUnitCreditRequest/ns1:UnitCreditInstanceId</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:TargetAccountId</from>
+                <to>$BMSplitUnitCreditIn.SplitUnitCreditRequest/ns1:TargetAccountId</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:TargetProductInstanceId</from>
+                <to>$BMSplitUnitCreditIn.SplitUnitCreditRequest/ns1:TargetProductInstanceId</to>
+            </copy>
+            <copy>
+                <from>$SCASplitUnitCreditIn.SplitUnitCreditRequest/ns0:Units</from>
+                <to>$BMSplitUnitCreditIn.SplitUnitCreditRequest/ns1:Units</to>
+            </copy>
+        </assign>
+        <invoke name="Call_BM" partnerLink="BM" operation="SplitUnitCredit" portType="BM:BMSoap" inputVariable="BMSplitUnitCreditIn" outputVariable="BMSplitUnitCreditOut"/>
+        <assign name="AssignResult">
+            <copy>
+                <from>$BMSplitUnitCreditOut.Done/ns1:Done</from>
+                <to>$SCASplitUnitCreditOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="SplitUnitCredit" portType="tns:SCASoap" variable="SCASplitUnitCreditOut"/>
+    </sequence>
+</process>

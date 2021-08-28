@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetPCRFData"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/PC"
+    xmlns:ns2="http://xml.smilecoms.com/PC" xmlns:ns3="java://com.smilecoms.lt.LT">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/PC" location="../Partners/PC/PCServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/schema/PC" location="../Partners/PC/PCSchema.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
+    <partnerLinks>
+        
+        <partnerLink name="PC" xmlns:tns="http://xml.smilecoms.com/PC" partnerLinkType="tns:PCServiceDefinition" partnerRole="PC"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        
+        <variable name="IPCANSessions" type="xs:int"/>
+        <variable name="AFSessions" type="xs:int"/>
+        <variable name="PCCRules" type="xs:int"/>
+        <variable name="PCGetPCRFDataIn" xmlns:tns="http://xml.smilecoms.com/PC" messageType="tns:GetPCRFDataRequest"/>
+        <variable name="SCAGetPCRFDataOut" messageType="tns:PCRFDataResponse"/>
+        <variable name="SCAGetPCRFDataIn" messageType="tns:GetPCRFDataRequest"/>
+        <variable name="PCGetPCRFDataOut" xmlns:tns="http://xml.smilecoms.com/PC" messageType="tns:PCRFDataResponse"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="PCError" faultMessageType="ns2:PCError">
+            <sequence name="Sequence4">
+                <assign name="AssignErr">
+                    <copy>
+                        <from>$PCError.PCError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$PCError.PCError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$PCError.PCError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErr" partnerLink="SCA" operation="GetPCRFData" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence name="Sequence6">
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetPCRFData" portType="tns:SCASoap" variable="SCAGetPCRFDataIn"/>
+                
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('PC')</from>
+                        <to variable="EndPoint"/>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="PC"/>
+                    </copy>
+                </assign>                
+            </sequence>
+        </scope>
+                
+        <assign name="AssignPCRFQueryData">
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetPCRFDataIn.PCRFDataQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$PCGetPCRFDataIn.PCRFDataQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetPCRFDataIn.PCRFDataQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$PCGetPCRFDataIn.PCRFDataQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetPCRFDataIn.PCRFDataQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$PCGetPCRFDataIn.PCRFDataQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetPCRFDataIn.PCRFDataQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$PCGetPCRFDataIn.PCRFDataQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetPCRFDataIn.PCRFDataQuery/ns0:IMSPrivateIdentity</from>
+                <to>$PCGetPCRFDataIn.PCRFDataQuery/ns1:IMSPrivateIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetPCRFDataIn.PCRFDataQuery/ns0:Verbosity</from>
+                <to>$PCGetPCRFDataIn.PCRFDataQuery/ns1:Verbosity</to>
+            </copy>
+        </assign>
+        <invoke name="CALL_PC" partnerLink="PC" operation="GetPCRFData" portType="ns2:PCSoap" inputVariable="PCGetPCRFDataIn" outputVariable="PCGetPCRFDataOut"/>
+        
+        <assign name="AssignPCRFData">
+            <copy>
+                <from>$PCGetPCRFDataOut.PCRFData/ns1:hasIPCANSessions</from>
+                <to>$SCAGetPCRFDataOut.PCRFData/ns0:hasIPCANSessions</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$PCGetPCRFDataOut.PCRFData/ns1:hasAFSessions</from>
+                <to>$SCAGetPCRFDataOut.PCRFData/ns0:hasAFSessions</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$PCGetPCRFDataOut.PCRFData/ns1:hasPCCRules</from>
+                <to>$SCAGetPCRFDataOut.PCRFData/ns0:hasPCCRules</to>
+            </copy>
+            <copy>
+                <from>count($PCGetPCRFDataOut.PCRFData/ns1:IPCANSessions)</from>
+                <to variable="IPCANSessions"/>
+            </copy>
+            <copy>
+                <from>count($PCGetPCRFDataOut.PCRFData/ns1:AFSessions)</from>
+                <to variable="AFSessions"/>
+            </copy>
+            <copy>
+                <from>count($PCGetPCRFDataOut.PCRFData/ns1:PCCRules)</from>
+                <to variable="PCCRules"/>
+            </copy>
+            
+        </assign>
+        
+        <forEach name="ForEachIPCANSession" parallel="no" counterName="ipcansessionsloop">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$IPCANSessions</finalCounterValue>
+            <scope name="Scope1">
+                <sequence name="Sequence5">
+                    <assign name="AssignIPCANSessionSessionData">
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:IPCANSessions[$ipcansessionsloop]/ns1:GxServerSessionId</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:IPCANSessions[$ipcansessionsloop]/ns0:GxServerSessionId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:IPCANSessions[$ipcansessionsloop]/ns1:BindingIdentifier</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:IPCANSessions[$ipcansessionsloop]/ns0:BindingIdentifier</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:IPCANSessions[$ipcansessionsloop]/ns1:Type</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:IPCANSessions[$ipcansessionsloop]/ns0:Type</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:IPCANSessions[$ipcansessionsloop]/ns1:State</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:IPCANSessions[$ipcansessionsloop]/ns0:State</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:IPCANSessions[$ipcansessionsloop]/ns1:CalledStationId</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:IPCANSessions[$ipcansessionsloop]/ns0:CalledStationId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:IPCANSessions[$ipcansessionsloop]/ns1:HighestPriorityServiceId</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:IPCANSessions[$ipcansessionsloop]/ns0:HighestPriorityServiceId</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+
+        
+        <forEach name="ForEachAFSession" parallel="no" counterName="afsessionsloop">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$AFSessions</finalCounterValue>
+            <scope name="Scope2">
+                <sequence name="Sequence6">
+                    <assign name="AssignAFSessionData">
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:AFSessions[$afsessionsloop]/ns1:RxServerSessionId</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:AFSessions[$afsessionsloop]/ns0:RxServerSessionId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:AFSessions[$afsessionsloop]/ns1:BindingIdentifier</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:AFSessions[$afsessionsloop]/ns0:BindingIdentifier</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:AFSessions[$afsessionsloop]/ns1:Type</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:AFSessions[$afsessionsloop]/ns0:Type</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:AFSessions[$afsessionsloop]/ns1:State</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:AFSessions[$afsessionsloop]/ns0:State</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <forEach name="ForEachPCCRule" parallel="no" counterName="pccrulesloop">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$PCCRules</finalCounterValue>
+            <scope name="Scope3">
+                <sequence name="Sequence7">
+                    <assign name="AssignPCCRuleData">
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:PCCRules[$pccrulesloop]/ns1:PCCRuleName</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:PCCRules[$pccrulesloop]/ns0:PCCRuleName</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:PCCRules[$pccrulesloop]/ns1:BindingIdentifier</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:PCCRules[$pccrulesloop]/ns0:BindingIdentifier</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$PCGetPCRFDataOut.PCRFData/ns1:PCCRules[$pccrulesloop]/ns1:Type</from>
+                            <to>$SCAGetPCRFDataOut.PCRFData/ns0:PCCRules[$pccrulesloop]/ns0:Type</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+
+        
+        
+        <reply name="Reply1" partnerLink="SCA" operation="GetPCRFData" portType="tns:SCASoap" variable="SCAGetPCRFDataOut"/>
+    </sequence>
+</process>

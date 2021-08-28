@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="CMServiceDefinition" targetNamespace="http://xml.smilecoms.com/CM"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xml.smilecoms.com/CM" xmlns:ns="http://xml.smilecoms.com/schema/CM" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/CM">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/CM" schemaLocation="CMSchema.xsd"/>
+        </xsd:schema>
+    </types> 
+    <message name="CMError">
+        <part name="CMError" element="ns:CMError"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetProductSpecificationsRequest">
+        <part name="ProductSpecificationQuery" element="ns:ProductSpecificationQuery"/>
+    </message>
+    <message name="ProductSpecificationsResponse">
+        <part name="ProductSpecificationList" element="ns:ProductSpecificationList"/>
+    </message>
+    <message name="CreateProductInstanceRequest">
+        <part name="NewProductInstance" element="ns:NewProductInstance"/>
+    </message>
+    <message name="ServiceInstanceResponse">
+        <part name="ServiceInstance" element="ns:ServiceInstance"/>
+    </message>
+    <message name="ProductInstanceResponse">
+        <part name="ProductInstance" element="ns:ProductInstance"/>
+    </message>
+    <message name="CreateServiceInstanceRequest">
+        <part name="NewServiceInstance" element="ns:NewServiceInstance"/>
+    </message>
+    <message name="CreateServiceInstanceResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetServiceSpecificationRequest">
+        <part name="ServiceSpecificationQuery" element="ns:ServiceSpecificationQuery"/>
+    </message>
+    <message name="ServiceSpecificationResponse">
+        <part name="ServiceSpecification" element="ns:ServiceSpecification"/>
+    </message>
+    <message name="GetUnitCreditSpecificationsRequest">
+        <part name="UnitCreditSpecificationQuery" element="ns:UnitCreditSpecificationQuery"/>
+    </message>
+    <message name="UnitCreditSpecificationsResponse">
+        <part name="UnitCreditSpecificationList" element="ns:UnitCreditSpecificationList"/>
+    </message>
+    <message name="GetProductInstancesRequest">
+        <part name="ProductInstanceQuery" element="ns:ProductInstanceQuery"/>
+    </message>
+    <message name="ProductInstancesResponse">
+        <part name="ProductInstanceList" element="ns:ProductInstanceList"/>
+    </message>
+    <message name="GetServiceInstanceRequest">
+        <part name="ServiceInstanceId" element="ns:ServiceInstanceId"/>
+    </message>
+    <message name="GetServiceInstancesRequest">
+        <part name="ServiceInstanceQuery" element="ns:ServiceInstanceQuery"/>
+    </message>
+    <message name="DeleteServiceInstanceRequest">
+        <part name="ServiceInstanceIdToDelete" element="ns:ServiceInstanceIdToDelete"/>
+    </message>
+    <message name="DeleteProductInstanceRequest">
+        <part name="ProductInstanceIdToDelete" element="ns:ProductInstanceIdToDelete"/>
+    </message>
+    <message name="ServiceInstancesResponse">
+        <part name="ServiceInstanceList" element="ns:ServiceInstanceList"/>
+    </message>
+    <message name="UpdateProductInstanceRequest">
+        <part name="ProductInstance" element="ns:ProductInstance"/>
+    </message>
+    <message name="UpdateServiceInstanceRequest">
+        <part name="ServiceInstance" element="ns:ServiceInstance"/>
+    </message>
+    <message name="UpdateServiceInstanceResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="ValidateOrderRequest">
+        <part name="OrderData" element="ns:OrderData"/>
+    </message>
+    <message name="ValidateOrderResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="StoreCampaignDataRequest">
+        <part name="CampaignData" element="ns:CampaignData"/>
+    </message>
+        
+    <portType name="CMSoap">
+        
+        <operation name="IsUp">
+            <input name="input1" message="tns:IsUpRequest"/>
+            <output name="output1" message="tns:Done"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        Product Functions
+        #################################################
+        -->
+                     
+        <operation name="GetProductSpecifications">
+            <documentation></documentation>
+            <input name="input2" message="tns:GetProductSpecificationsRequest"/>
+            <output name="output2" message="tns:ProductSpecificationsResponse"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+           
+        <operation name="CreateProductInstance">
+            <documentation></documentation>
+            <input  name="input3"  message="tns:CreateProductInstanceRequest"/>
+            <output name="output3" message="tns:ProductInstanceResponse"/>
+            <fault name="fault1"   message="tns:CMError"/>
+        </operation>
+       
+        <operation name="GetProductInstances">
+            <documentation></documentation>
+            <input name="input4"   message="tns:GetProductInstancesRequest"/>
+            <output name="output4" message="tns:ProductInstancesResponse"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+        
+        <operation name="DeleteProductInstance">
+            <documentation></documentation>
+            <input name="input5" message="tns:DeleteProductInstanceRequest"/>
+            <output name="output5" message="tns:Done"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+        
+        <operation name="UpdateProductInstance">
+            <documentation></documentation>
+            <input name="input6" message="tns:UpdateProductInstanceRequest"/>
+            <output name="output6" message="tns:Done"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+        
+        <operation name="ValidateOrder">
+            <documentation></documentation>
+            <input name="input14" message="tns:ValidateOrderRequest"/>
+            <output name="output14" message="tns:ValidateOrderResponse"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        Service Functions
+        #################################################
+        -->
+               
+        <operation name="GetServiceSpecification">
+            <documentation></documentation>
+            <input name="input7"   message="tns:GetServiceSpecificationRequest"/>
+            <output name="output7" message="tns:ServiceSpecificationResponse"/>
+            <fault name="fault1"   message="tns:CMError"/>
+        </operation>
+        
+        <operation name="GetServiceInstances">
+            <documentation></documentation>
+            <input  name="input8"  message="tns:GetServiceInstancesRequest"/>
+            <output name="output8" message="tns:ServiceInstancesResponse"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+        
+        <operation name="CreateServiceInstance">
+            <documentation></documentation>
+            <input name="input9" message="tns:CreateServiceInstanceRequest"/>
+            <output name="output9" message="tns:ServiceInstanceResponse"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+        
+        <operation name="DeleteServiceInstance">
+            <documentation></documentation>
+            <input name="input10" message="tns:DeleteServiceInstanceRequest"/>
+            <output name="output10" message="tns:Done"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+        
+        <operation name="UpdateServiceInstance">
+            <documentation></documentation>
+            <input name="input11" message="tns:UpdateServiceInstanceRequest"/>
+            <output name="output11" message="tns:UpdateServiceInstanceResponse"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+                
+        <!--
+        #################################################
+        Unit Credit (Bundles) Functions
+        #################################################
+        -->
+        <operation name="GetUnitCreditSpecifications">
+            <documentation></documentation>
+            <input name="input12" message="tns:GetUnitCreditSpecificationsRequest"/>
+            <output name="output12" message="tns:UnitCreditSpecificationsResponse"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        Campaign Functions
+        #################################################
+        -->
+        <operation name="StoreCampaignData">
+            <documentation></documentation>
+            <input name="input13" message="tns:StoreCampaignDataRequest"/>
+            <output name="output13" message="tns:Done"/>
+            <fault name="fault1" message="tns:CMError"/>
+        </operation>
+
+    </portType>
+    
+    <binding name="CMBinding" type="tns:CMSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        
+        <operation name="IsUp">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetProductSpecifications">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="CreateProductInstance">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetProductInstances">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="DeleteProductInstance">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="UpdateProductInstance">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetServiceSpecification">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetServiceInstances">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="CreateServiceInstance">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+               
+        <operation name="DeleteServiceInstance">
+            <input name="input10">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output10">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+               
+        <operation name="UpdateServiceInstance">
+            <input name="input11">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output11">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetUnitCreditSpecifications">
+            <input name="input12">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output12">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="StoreCampaignData">
+            <input name="input13">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output13">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="ValidateOrder">
+            <input name="input14">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output14">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+    </binding>
+    
+    <service name="CM">
+        <port name="CMSoap" binding="tns:CMBinding">
+            <soap:address location="http://localhost:${HttpDefaultPort}/CM/CMSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="CMServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+        In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+        A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="CM" portType="tns:CMSoap"/>
+    </plnk:partnerLinkType>
+</definitions>
+

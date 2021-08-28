@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CopyCMProdInstancesToSCAProdInstances"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/CM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCASubFlowsInvoke" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SubFlowError"/>
+        <variable name="CopyCMProdInstancesToSCAProdInstancesOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ProductInstancesResponse"/>
+        <variable name="CopyCMProdInstancesToSCAProdInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductInstancesResponse"/>
+        <variable name="prodSvcInstMappingCount" type="xsd:int"/>
+    </variables>
+    <faultHandlers>
+        <catch faultMessageType="tns:SubFlowError" faultVariable="SubFlowError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$SubFlowError.SubFlowError/ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowError.SubFlowError/ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowError.SubFlowError/ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCASubFlows" operation="CopyCMProdInstancesToSCAProdInstances" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="CopyCMProdInstancesToSCAProdInstances" portType="tns:SCASubFlowsSoap" variable="CopyCMProdInstancesToSCAProdInstancesIn"/>
+        <forEach name="ForEachPI" parallel="no" counterName="pi">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances)</finalCounterValue>
+            <scope name="LoopScope">
+                <variables>
+                    <variable name="SFCopyCMSvcInstancesToSCASvcInstancesOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ServiceInstancesResponse"/>
+                    <variable name="SFCopyCMSvcInstancesToSCASvcInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+                </variables>
+                <sequence name="LoopSequence">
+                    <!--sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>concat('In Copy CMPIs to SCAPIs and copying PI ', $CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductInstanceId)</from>
+                        </sxt:log>
+                        <sxt:log level="finest" location="onComplete">
+                            <from>concat('In Copy CMPIs to SCAPIs and finished copying PI ', $CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductInstanceId)</from>
+                        </sxt:log>
+                    </sxt:trace-->
+                    
+                    <assign name="AssignProdData">
+                        <copy ignoreMissingFromData="yes">
+                            <from>count($CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductServiceInstanceMappings)</from>
+                            <to variable="prodSvcInstMappingCount"/>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductInstanceId</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:ProductInstanceId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductSpecificationId</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:ProductSpecificationId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:CustomerId</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:CustomerId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:OrganisationId</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:OrganisationId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Segment</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Segment</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:FriendlyName</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:FriendlyName</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:CreatedDateTime</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:CreatedDateTime</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:PromotionCode</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:PromotionCode</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:LastDevice</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:LastDevice</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:LogicalId</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:LogicalId</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:PhysicalId</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:PhysicalId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ReferralCode</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:ReferralCode</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:FirstActivityDateTime</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:FirstActivityDateTime</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:LastActivityDateTime</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:LastActivityDateTime</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Status</from>
+                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Status</to>
+                        </copy>
+                    </assign>
+                    
+                    
+                    <forEach name="ForEachSI1" parallel="no" counterName="si">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>$prodSvcInstMappingCount</finalCounterValue>
+                        <scope name="Scope1">
+                            <assign name="AssignCopySvcInstance">
+                                <copy>
+                                    <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductServiceInstanceMappings[$si]/ns0:ServiceInstance</from>
+                                    <to>$SFCopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns0:ServiceInstances[$si]</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                    <if name="IfWorkToDo">
+                        <condition>$prodSvcInstMappingCount &gt; 0</condition>
+                        <sequence name="Sequence3">
+                            <invoke name="CallSubFlowToCopyCMSIsToSCASIs" partnerLink="SCASubFlowsInvoke" operation="CopyCMSvcInstancesToSCASvcInstances" portType="tns:SCASubFlowsSoap" inputVariable="SFCopyCMSvcInstancesToSCASvcInstancesIn" outputVariable="SFCopyCMSvcInstancesToSCASvcInstancesOut">
+                                <!--sxt:trace>
+                                    <sxt:log level="finest" location="onStart">
+                                        <from>'In Copy CMPIs to SCAPIs and calling Copy CMSIs to SCASIs'</from>
+                                    </sxt:log>
+                                    <sxt:log level="finest" location="onComplete">
+                                        <from>'In Copy CMPIs to SCAPIs and called Copy CMSIs to SCASIs'</from>
+                                    </sxt:log>
+                                </sxt:trace-->
+                            </invoke>
+                            <forEach name="ForEachSI2" parallel="no" counterName="si">
+                                <startCounterValue>1</startCounterValue>
+                                <finalCounterValue>$prodSvcInstMappingCount</finalCounterValue>
+                                <scope name="Scope2">
+                                    <assign name="AssignServiceInstance">
+                                        <copy>
+                                            <from>$SFCopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]</from>
+                                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:ProductServiceInstanceMappings[$si]/ns1:ServiceInstance</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$CopyCMProdInstancesToSCAProdInstancesIn.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductServiceInstanceMappings[$si]/ns0:RatePlanId</from>
+                                            <to>$CopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:ProductServiceInstanceMappings[$si]/ns1:RatePlanId</to>
+                                        </copy>
+                                    </assign>
+                                </scope>
+                            </forEach>
+                        </sequence>
+                    </if>
+                    
+                </sequence>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="CopyCMProdInstancesToSCAProdInstances" portType="tns:SCASubFlowsSoap" variable="CopyCMProdInstancesToSCAProdInstancesOut"/>
+    </sequence>
+</process>

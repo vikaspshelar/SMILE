@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://xml.smilecoms.com/schema/IMSSC"
+    xmlns:tns="http://xml.smilecoms.com/schema/IMSSC"
+    elementFormDefault="qualified">
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PlatformString" >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="String" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformInteger" >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Integer" type="xsd:int">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject">
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="IMSSCError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="IMSSCError" type="tns:IMSSCError">
+    </xsd:element>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+    <xsd:complexType name="Done">
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="Done" type="tns:Done">
+    </xsd:element>
+    <xsd:element name="ScscfStatusRequest" type="xsd:string"></xsd:element>
+    <xsd:complexType name="SCSCFStatusData">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/IMSSC" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="usrlocHashSize" type="xsd:integer"></xsd:element>
+                    <xsd:element name="usrlocMaxSlots" type="xsd:integer"></xsd:element>
+                    <xsd:element name="usrlocRecords" type="xsd:integer"></xsd:element>
+                    <xsd:element name="uptime" type="xsd:integer"></xsd:element>
+                    <xsd:element name="totalMemory" type="xsd:integer"></xsd:element>
+                    <xsd:element name="freeMemory" type="xsd:integer"></xsd:element>
+                    <xsd:element name="usedMemory" type="xsd:integer"></xsd:element>
+                    <xsd:element name="maxUsedMemory" type="xsd:integer"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="SCSCFIMPUData">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/IMSSC" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMPU" type="xsd:string"></xsd:element>
+                    <xsd:element name="State" type="xsd:string"></xsd:element>
+                    <xsd:element name="Barring" type="xsd:int"></xsd:element>
+                    <xsd:element name="ccf1" type="xsd:string"></xsd:element>
+                    <xsd:element name="ccf2" type="xsd:string"></xsd:element>
+                    <xsd:element name="ecf1" type="xsd:string"></xsd:element>
+                    <xsd:element name="ecf2" type="xsd:string"></xsd:element>
+                    <xsd:element name="Subscription" type="tns:IMPUSubscription"></xsd:element>
+                    <xsd:element name="Contacts" type="tns:IMPUContact" minOccurs="0" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="SCSCFStatusData" type="tns:SCSCFStatusData"></xsd:element>
+    <xsd:complexType name="SCSCFIMPUQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/IMSSC" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="SCSCF" type="xsd:string"></xsd:element>
+                    <xsd:element name="IMPU" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="SCSCFIMPUQuery" type="tns:SCSCFIMPUQuery"></xsd:element>
+    
+    <xsd:complexType name="DeregisterIMPUQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/IMSSC" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="SCSCF" type="xsd:string"></xsd:element>
+                    <xsd:element name="IMPU" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="DeregisterIMPUQuery" type="tns:DeregisterIMPUQuery"></xsd:element>
+    
+    <xsd:element name="SCSCFIMPUData" type="tns:SCSCFIMPUData"></xsd:element>
+    <xsd:complexType name="IMPUSubscription">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/IMSSC" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMPI" type="xsd:string"></xsd:element>
+                    <xsd:element name="ServiceProfiles" type="tns:IMPUServiceProfile" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="IMPUContact">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/IMSSC" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="AoR" type="xsd:string"></xsd:element>
+                    <xsd:element name="Expires" type="xsd:integer"></xsd:element>
+                    <xsd:element name="UserAgent" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="IMPUServiceProfile">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/IMSSC" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMPU" type="xsd:string" minOccurs="0" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

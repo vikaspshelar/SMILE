@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ProcessSale"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:POS="http://xml.smilecoms.com/POS"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:CM="http://xml.smilecoms.com/CM"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/POS" 
+    xmlns:ns3="http://xml.smilecoms.com/schema/BM" xmlns:ns4="http://xml.smilecoms.com/schema/CM" xmlns:ns5="http://xml.smilecoms.com/schema/IM" >
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="CM" partnerLinkType="CM:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="TmpString" type="xsd:string"/>
+        <variable name="POSProcessSaleOut" messageType="POS:ProcessSaleResponse"/>
+        <variable name="POSProcessSaleIn" messageType="POS:ProcessSaleRequest"/>
+        <variable name="SCAProcessSaleOut" messageType="tns:ProcessSaleResponse"/>
+        <variable name="SCAProcessSaleIn" messageType="tns:ProcessSaleRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="CommaSeparatedListOfAllowedItemNumbers" type="xsd:string"/>
+        <variable name="StandAloneItemFound" type="xsd:boolean"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="POS:POSError" faultVariable="POSError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ProcessSale" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ProcessSale" portType="tns:SCASoap" variable="SCAProcessSaleIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+            
+        </scope>
+        <assign name="CheckPermissions1">
+            <copy>
+                <from>BPELUtils:checkPermissions($SCAProcessSaleIn.Sale/ns1:SCAContext, 'Customer', $SCAProcessSaleIn.Sale/ns1:RecipientCustomerId)</from>
+                <to>$SCAProcessSaleOut.ProcessedSale/ns1:SCAContext/ns1:Obviscated</to>
+            </copy>
+        </assign>
+        
+        <if name="IfAirtimePaymentMethod">
+            <condition>$SCAProcessSaleIn.Sale/ns1:PaymentMethod = 'Airtime'</condition>
+            <assign name="CheckPermissions2">
+                <copy>
+                    <from>BPELUtils:checkPermissions($SCAProcessSaleIn.Sale/ns1:SCAContext, 'Account', $SCAProcessSaleIn.Sale/ns1:SalesPersonAccountId)</from>
+                    <to>$SCAProcessSaleOut.ProcessedSale/ns1:SCAContext/ns1:Obviscated</to>
+                </copy>
+            </assign>
+        </if>
+        
+        <assign name="ForStandAloneItemSale">
+            <copy>
+                <from>''</from>
+                <to>$CommaSeparatedListOfAllowedItemNumbers</to>
+            </copy>
+            <copy>
+                <from>false()</from>
+                <to>$StandAloneItemFound</to>
+            </copy>
+        </assign>
+        
+        <assign name="SCAtoPOS">
+            <copy>
+                <from>BPELUtils:changeNamespace(sxxf:doMarshal($SCAProcessSaleIn.Sale), 'http://xml.smilecoms.com/schema/SCA', 'http://xml.smilecoms.com/schema/POS')</from>
+                <to>$TmpString</to>
+            </copy>
+            <copy>
+                <from>sxxf:doUnMarshal($TmpString)</from>
+                <to variable="POSProcessSaleIn" part="NewSale"/>
+            </copy>
+        </assign>
+        
+        
+        <if name="checkForIgnoreDuplicateSales">
+            <condition>$POSProcessSaleIn.NewSale/ns2:PaymentMethod = 'Contract Invoicing'</condition>
+            <assign name="Assign2">
+                <copy>
+                    <from>true()</from>
+                    <to>$POSProcessSaleIn.NewSale/ns2:IgnoreDuplicateSale</to>
+                </copy>
+            </assign>
+            <else>
+                <assign name="Assign3">
+                    <copy>
+                        <from>false()</from>
+                        <to>$POSProcessSaleIn.NewSale/ns2:IgnoreDuplicateSale</to>
+                    </copy>
+                </assign>
+            </else>
+        </if>
+        
+        <forEach name="ForEachSaleLine" parallel="no" counterName="line">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCAProcessSaleIn.Sale/ns1:SaleLines)</finalCounterValue>
+            <scope name="Scope1">
+                <variables>
+                    <variable name="CampaignUCNotAllowed" type="xs:boolean"/>
+                    <variable name="CMGetServiceInstancesOut" messageType="CM:ServiceInstancesResponse"/>
+                    <variable name="CMGetServiceInstancesIn" messageType="CM:GetServiceInstancesRequest"/>
+                    <variable name="CMGetUnitCreditSpecificationsOut" messageType="CM:UnitCreditSpecificationsResponse"/>
+                    <variable name="CMGetUnitCreditSpecificationsIn" messageType="CM:GetUnitCreditSpecificationsRequest"/>
+                </variables>
+                <sequence name="Sequence5">
+                    <if name="IfBundle">
+                        <condition>starts-with($SCAProcessSaleIn.Sale/ns1:SaleLines[$line]/ns1:InventoryItem/ns1:ItemNumber, 'BUN') and $SCAProcessSaleIn.Sale/ns1:SaleLines[$line]/ns1:InventoryItem/ns1:ItemNumber != 'BUNPG0000'
+                            <sxed:editor>
+                                <sxed:predicate path="$SCAProcessSaleIn.Sale/ns1:SaleLines[$line]" source="from"/>
+                            </sxed:editor>
+                        </condition>
+                        <sequence name="Sequence6">
+                            <assign name="CheckPermissionsUC">
+                                <!-- Check rules to provision this bundle -->
+                                <copy>
+                                    <from>BPELUtils:checkPermissions($SCAProcessSaleIn.Sale/ns1:SCAContext, 'UnitCreditSpecification', $SCAProcessSaleIn.Sale/ns1:SaleLines[$line]/ns1:InventoryItem/ns1:ItemNumber)</from>
+                                    <to>$SCAProcessSaleOut.ProcessedSale/ns1:SCAContext/ns1:Obviscated</to>
+                                </copy>
+                            </assign>
+                            <assign name="AssignGetUCSpec">
+                                <copy>
+                                    <from>$SCAProcessSaleIn.Sale/ns1:SaleLines[$line]/ns1:InventoryItem/ns1:ItemNumber</from>
+                                    <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns4:ItemNumber</to>
+                                </copy>
+                                <copy>
+                                    <from>'MAIN'</from>
+                                    <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns4:Verbosity</to>
+                                </copy>
+                                <copy>
+                                    <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:TxId</from>
+                                    <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns4:PlatformContext/ns4:TxId</to>
+                                </copy>
+                                <copy>
+                                    <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                                    <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns4:PlatformContext/ns4:OriginatingIdentity</to>
+                                </copy>
+                                <copy>
+                                    <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:OriginatingIP</from>
+                                    <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns4:PlatformContext/ns4:OriginatingIP</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:Tenant</from>
+                                    <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns4:PlatformContext/ns4:Tenant</to>
+                                </copy>
+                            </assign>
+                            <invoke name="GetUCSpec" partnerLink="CM" operation="GetUnitCreditSpecifications" portType="CM:CMSoap" inputVariable="CMGetUnitCreditSpecificationsIn" outputVariable="CMGetUnitCreditSpecificationsOut"/>
+                            <if name="IfCampaignsOnly">
+                                <condition>contains($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns4:UnitCreditSpecifications/ns4:Configuration, 'CampaignsOnly=true')</condition>
+                                <sequence name="Sequence7">
+                                    <assign name="DefaultNotAllowed">
+                                        <sxt:trace>
+                                            <sxt:log level="finest" location="onStart">
+                                                <from>'This UC is for campaigns only'</from>
+                                            </sxt:log>
+                                        </sxt:trace>
+                                        <copy>
+                                            <from>true()</from>
+                                            <to variable="CampaignUCNotAllowed"/>
+                                        </copy>
+                                    </assign>
+                                    <assign name="AssignGetSIs">
+                                        <copy>
+                                            <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:TxId</from>
+                                            <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns4:PlatformContext/ns4:TxId</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                                            <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns4:PlatformContext/ns4:OriginatingIdentity</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:OriginatingIP</from>
+                                            <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns4:PlatformContext/ns4:OriginatingIP</to>
+                                        </copy>
+                                        <copy ignoreMissingFromData="yes">
+                                            <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:Tenant</from>
+                                            <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns4:PlatformContext/ns4:Tenant</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SCAProcessSaleIn.Sale/ns1:RecipientAccountId</from>
+                                            <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns4:AccountId</to>
+                                        </copy>
+                                        <copy>
+                                            <from>'MAIN'</from>
+                                            <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns4:Verbosity</to>
+                                        </copy>
+                                    </assign>
+                                    <invoke name="getSIs" partnerLink="CM" operation="GetServiceInstances" portType="CM:CMSoap" inputVariable="CMGetServiceInstancesIn" outputVariable="CMGetServiceInstancesOut"/>
+                                    <forEach name="ForEachSI" parallel="no" counterName="SI">
+                                        <startCounterValue>1</startCounterValue>
+                                        <finalCounterValue>count($CMGetServiceInstancesOut.ServiceInstanceList/ns4:ServiceInstances)</finalCounterValue>
+                                        <scope name="ScopePICheck">
+                                            <variables>
+                                                <variable name="CMGetProductInstancesOut" messageType="CM:ProductInstancesResponse"/>
+                                                <variable name="CMGetProductInstancesIn" messageType="CM:GetProductInstancesRequest"/>
+                                            </variables>
+                                            <sequence name="Sequence8">
+                                                <assign name="AssignGetPI">
+                                                    <copy>
+                                                        <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:TxId</from>
+                                                        <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns4:PlatformContext/ns4:TxId</to>
+                                                    </copy>
+                                                    <copy>
+                                                        <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                                                        <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns4:PlatformContext/ns4:OriginatingIdentity</to>
+                                                    </copy>
+                                                    <copy>
+                                                        <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:OriginatingIP</from>
+                                                        <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns4:PlatformContext/ns4:OriginatingIP</to>
+                                                    </copy>
+                                                    <copy ignoreMissingFromData="yes">
+                                                        <from>$SCAProcessSaleIn.Sale/ns1:SCAContext/ns1:Tenant</from>
+                                                        <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns4:PlatformContext/ns4:Tenant</to>
+                                                    </copy>
+                                                    <copy>
+                                                        <from>1</from>
+                                                        <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns4:ResultLimit</to>
+                                                    </copy>
+                                                    <copy>
+                                                        <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns4:ServiceInstances[$SI]/ns4:ProductInstanceId</from>
+                                                        <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns4:ProductInstanceId</to>
+                                                    </copy>
+                                                    <copy>
+                                                        <from>'MAIN_CAMPAIGNS_CAMPAIGNUC'</from>
+                                                        <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns4:Verbosity</to>
+                                                    </copy>
+                                                </assign>
+                                                <invoke name="GetPI" partnerLink="CM" operation="GetProductInstances" portType="CM:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOut"/>
+                                                <forEach name="ForEachCampaign" parallel="no" counterName="CAMP">
+                                                    <startCounterValue>1</startCounterValue>
+                                                    <finalCounterValue>count($CMGetProductInstancesOut.ProductInstanceList/ns4:ProductInstances/ns4:Campaigns)</finalCounterValue>
+                                                    <scope name="Scope2">
+                                                        <forEach name="ForEachUC" parallel="no" counterName="UC">
+                                                            <startCounterValue>1</startCounterValue>
+                                                            <finalCounterValue>count($CMGetProductInstancesOut.ProductInstanceList/ns4:ProductInstances/ns4:Campaigns[$CAMP]/ns4:CampaignUnitCredits)</finalCounterValue>
+                                                            <scope name="ScopeCheck">
+                                                                <if name="IfMatches">
+                                                                    <condition>$CMGetProductInstancesOut.ProductInstanceList/ns4:ProductInstances/ns4:Campaigns[$CAMP]/ns4:CampaignUnitCredits[$UC] = $CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns4:UnitCreditSpecifications/ns4:UnitCreditSpecificationId</condition>
+                                                                    <assign name="AssignFound">
+                                                                        <sxt:trace>
+                                                                            <sxt:log level="finest" location="onStart">
+                                                                                <from>'UC is allowed'</from>
+                                                                            </sxt:log>
+                                                                        </sxt:trace>
+                                                                        <copy>
+                                                                            <from>false()</from>
+                                                                            <to variable="CampaignUCNotAllowed"/>
+                                                                        </copy>
+                                                                    </assign>
+                                                                </if>
+                                                            </scope>
+                                                        </forEach>
+                                                    </scope>
+                                                </forEach>
+                                            </sequence>
+                                        </scope>
+                                    </forEach>
+                                    <if name="IfNotAllowed">
+                                        <condition>$CampaignUCNotAllowed</condition>
+                                        <sequence name="Sequence9">
+                                            <assign name="AssignErr">
+                                                <copy>
+                                                    <from>'Campaign Unit Credit is not allowed on this account'</from>
+                                                    <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                                                </copy>
+                                                <copy>
+                                                    <from>'business'</from>
+                                                    <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                                                </copy>
+                                                <copy>
+                                                    <from>'SCA-0037'</from>
+                                                    <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                                                </copy>
+                                            </assign>
+                                            <reply name="ReplyErr" partnerLink="SCA" operation="ProcessSale" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                                            <exit name="Exit1"/>
+                                        </sequence>
+                                    </if>
+                                </sequence>
+                            </if>
+                            <if name="IfSellAsStandAloneNotAllowed">
+                                <condition>contains($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns4:UnitCreditSpecifications/ns4:Configuration, 'BundleCannotBeSoldAsStandAlone=true')</condition>
+                                <sequence name="SequenceSellAsStandAloneNotAllowed">
+                                    <assign name="AssignStandAloneSaleNotAllowed">
+                                        <sxt:trace>
+                                            <sxt:log level="finest" location="onStart">
+                                                <from>'This UC cannot be sold as stand-alone, going to look for allowed items on config'</from>
+                                            </sxt:log>
+                                        </sxt:trace>
+                                        <copy>
+                                            <from>BPELUtils:getPropertyFromConfig($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns4:UnitCreditSpecifications/ns4:Configuration, 'CanOnlyBeSoldWithTheseLineItems')</from>
+                                            <to>$CommaSeparatedListOfAllowedItemNumbers</to>
+                                        </copy>
+                                        <copy>
+                                            <from>true()</from>
+                                            <to>$StandAloneItemFound</to>
+                                        </copy>
+                                    </assign>
+                                </sequence>
+                            </if>        
+        
+                        </sequence>
+                    </if>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <if name="IfItemsForNonStandAloneFound">
+            <condition>$StandAloneItemFound</condition>
+            <sequence name="SequenceItemsForNonStandAloneFound">
+                <scope name="Scope2">
+                    <variables>
+                        <variable name="ItemToSellWithStandAloneFound" type="xsd:boolean"/>
+                    </variables>
+                    <sequence name="Sequence5">
+                        <assign name="CheckItemFound1">
+                            <copy>
+                                <from>false()</from>
+                                <to>$ItemToSellWithStandAloneFound</to>
+                            </copy>
+                        </assign>
+                        <forEach name="ForEachSaleLine2" parallel="no" counterName="line">
+                            <startCounterValue>1</startCounterValue>
+                            <finalCounterValue>count($SCAProcessSaleIn.Sale/ns1:SaleLines)</finalCounterValue>
+                            <scope name="Scope3">
+                                <if name="IfBundle2">
+                                    <condition>starts-with($SCAProcessSaleIn.Sale/ns1:SaleLines[$line]/ns1:InventoryItem/ns1:ItemNumber, 'BUN') and $SCAProcessSaleIn.Sale/ns1:SaleLines[$line]/ns1:InventoryItem/ns1:ItemNumber != 'BUNPG0000'
+                                        <sxed:editor>
+                                            <sxed:predicate path="$SCAProcessSaleIn.Sale/ns1:SaleLines[$line]" source="from"/>
+                                        </sxed:editor>
+                                    </condition>
+                                    <sequence name="Sequence6">
+                                        <if name="IfListContainsLineItemNumber">
+                                            <condition>contains($CommaSeparatedListOfAllowedItemNumbers, $SCAProcessSaleIn.Sale/ns1:SaleLines[$line]/ns1:InventoryItem/ns1:ItemNumber)</condition>
+                                            <sequence name="SequenceListContainsLineItemNumber">
+                                                <assign name="CheckItemFound2">
+                                                    <sxt:trace>
+                                                        <sxt:log level="finest" location="onStart">
+                                                            <from>'Items to sell with none stand-alone bundle found from sale line'</from>
+                                                        </sxt:log>
+                                                    </sxt:trace>
+                                                    <copy>
+                                                        <from>true()</from>
+                                                        <to>$ItemToSellWithStandAloneFound</to>
+                                                    </copy>
+                                                </assign>
+                                            </sequence>
+                                        </if>
+                                    </sequence>
+                                </if>
+                            </scope>
+                        </forEach>
+                        <if name="IfItemToSellWithStandAloneNotFound">
+                            <condition>not($ItemToSellWithStandAloneFound)</condition>
+                            <sequence name="SequenceSellAsStandAloneNotAllowed">
+                                <assign name="AssignErrorStandAloneSaleNotAllowed">
+                                    <copy>
+                                        <from>'This bundle cannot be sold as stand-alone'</from>
+                                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                                    </copy>
+                                    <copy>
+                                        <from>'business'</from>
+                                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                                    </copy>
+                                    <copy>
+                                        <from>'SCA-0039'</from>
+                                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                                    </copy>
+                                </assign>
+                                <reply name="ReplyError2" partnerLink="SCA" operation="ProcessSale" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                                <exit name="Exit2"/>
+                            </sequence>
+                        </if>
+                    </sequence>
+                </scope>
+            </sequence>
+        </if>
+        
+        
+        <invoke name="CallPOS" partnerLink="POS" operation="ProcessSale" portType="POS:POSSoap" inputVariable="POSProcessSaleIn" outputVariable="POSProcessSaleOut"/>
+        
+        
+        <assign name="POSToSCA">
+            <copy>
+                <from>BPELUtils:changeNamespace(sxxf:doMarshal($POSProcessSaleOut.Sale), 'http://xml.smilecoms.com/schema/POS', 'http://xml.smilecoms.com/schema/SCA')</from>
+                <to>$TmpString</to>
+            </copy>
+            <copy>
+                <from>sxxf:doUnMarshal($TmpString)</from>
+                <to variable="SCAProcessSaleOut" part="ProcessedSale"/>
+            </copy>
+        </assign>
+        
+        
+        <reply name="Reply3" partnerLink="SCA" operation="ProcessSale" portType="tns:SCASoap" variable="SCAProcessSaleOut"/>
+    </sequence>
+</process>

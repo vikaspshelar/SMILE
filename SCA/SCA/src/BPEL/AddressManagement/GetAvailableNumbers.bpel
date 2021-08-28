@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetAvailableNumbers"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/AM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/AM" location="../Partners/AM/AMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="AM" xmlns:tns="http://xml.smilecoms.com/AM" partnerLinkType="tns:AMServiceDefinition" partnerRole="AM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="AMGetAvailableNumbersOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:GetAvailableNumbersResponse"/>
+        <variable name="AMGetAvailableNumbersIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:GetAvailableNumbersRequest"/>
+        <variable name="SCAGetAvailableNumbersOut" messageType="tns:GetAvailableNumbersResponse"/>
+        <variable name="SCAGetAvailableNumbersIn" messageType="tns:GetAvailableNumbersRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:AM="http://xml.smilecoms.com/AM" faultMessageType="AM:AMError" faultVariable="AMError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$AMError.AMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$AMError.AMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$AMError.AMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetAvailableNumbers" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetAvailableNumbers" portType="tns:SCASoap" variable="SCAGetAvailableNumbersIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('AM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="AM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignAM">
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetAvailableNumbersIn.AvailableNumbersQuery/ns0:Pattern</from>
+                <to>$AMGetAvailableNumbersIn.AvailableNumberQuery/ns1:Pattern</to>
+            </copy>
+            <copy>
+                <from>$SCAGetAvailableNumbersIn.AvailableNumbersQuery/ns0:ResultLimit</from>
+                <to>$AMGetAvailableNumbersIn.AvailableNumberQuery/ns1:ResultLimit</to>
+            </copy>
+            <copy>
+                <from>$SCAGetAvailableNumbersIn.AvailableNumbersQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$AMGetAvailableNumbersIn.AvailableNumberQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetAvailableNumbersIn.AvailableNumbersQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$AMGetAvailableNumbersIn.AvailableNumberQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetAvailableNumbersIn.AvailableNumbersQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$AMGetAvailableNumbersIn.AvailableNumberQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetAvailableNumbersIn.AvailableNumbersQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$AMGetAvailableNumbersIn.AvailableNumberQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAGetAvailableNumbersIn.AvailableNumbersQuery/ns0:PriceLimitCents</from>
+                <to>$AMGetAvailableNumbersIn.AvailableNumberQuery/ns1:PriceLimitCents</to>
+            </copy>
+            <copy>
+                <from>$SCAGetAvailableNumbersIn.AvailableNumbersQuery/ns0:OwnedByCustomerProfileId</from>
+                <to>$AMGetAvailableNumbersIn.AvailableNumberQuery/ns1:OwnedByCustomerProfileId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetAvailableNumbersIn.AvailableNumbersQuery/ns0:OwnedByOrganisationId</from>
+                <to>$AMGetAvailableNumbersIn.AvailableNumberQuery/ns1:OwnedByOrganisationId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetAvailableNumbersIn.AvailableNumbersQuery/ns0:ICCID</from>
+                <to>$AMGetAvailableNumbersIn.AvailableNumberQuery/ns1:ICCID</to>
+            </copy>
+        </assign>
+        <invoke name="CallAM" partnerLink="AM" operation="GetAvailableNumbers" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMGetAvailableNumbersIn" outputVariable="AMGetAvailableNumbersOut"/>
+        <assign name="Assign2">
+            <copy>
+                <from>$AMGetAvailableNumbersOut.AvailableNumbersResult/ns1:NumberOfNumbers</from>
+                <to>$SCAGetAvailableNumbersOut.AvailableNumbersList/ns0:NumberOfNumbers</to>
+            </copy>
+        </assign>
+        <forEach name="ForEachNumber" parallel="no" counterName="num">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($AMGetAvailableNumbersOut.AvailableNumbersResult/ns1:Numbers)</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="AssignNumber">
+                    <copy>
+                        <from>$AMGetAvailableNumbersOut.AvailableNumbersResult/ns1:Numbers[$num]/ns1:IMPU</from>
+                        <to>$SCAGetAvailableNumbersOut.AvailableNumbersList/ns0:Numbers[$num]/ns0:IMPU</to>
+                    </copy>
+                    <copy>
+                        <from>$AMGetAvailableNumbersOut.AvailableNumbersResult/ns1:Numbers[$num]/ns1:PriceCents</from>
+                        <to>$SCAGetAvailableNumbersOut.AvailableNumbersList/ns0:Numbers[$num]/ns0:PriceCents</to>
+                    </copy>
+                    <copy>
+                        <from>$AMGetAvailableNumbersOut.AvailableNumbersResult/ns1:Numbers[$num]/ns1:OwnedByCustomerProfileId
+                        </from>
+                        <to>$SCAGetAvailableNumbersOut.AvailableNumbersList/ns0:Numbers[$num]/ns0:OwnedByCustomerProfileId
+                        </to>
+                    </copy>
+                    <copy>
+                        <from>$AMGetAvailableNumbersOut.AvailableNumbersResult/ns1:Numbers[$num]/ns1:OwnedByOrganisationId
+                        </from>
+                        <to>$SCAGetAvailableNumbersOut.AvailableNumbersList/ns0:Numbers[$num]/ns0:OwnedByOrganisationId
+                        </to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$AMGetAvailableNumbersOut.AvailableNumbersResult/ns1:Numbers[$num]/ns1:ICCID
+                        </from>
+                        <to>$SCAGetAvailableNumbersOut.AvailableNumbersList/ns0:Numbers[$num]/ns0:ICCID
+                        </to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <reply name="Reply3" partnerLink="SCA" operation="GetAvailableNumbers" portType="tns:SCASoap" variable="SCAGetAvailableNumbersOut"/>
+    </sequence>
+</process>

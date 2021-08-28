@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="POSServiceDefinition" targetNamespace="http://xml.smilecoms.com/POS"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+             xmlns:tns="http://xml.smilecoms.com/POS" 
+             xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" 
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+             xmlns:ns1="http://xml.smilecoms.com/POSSchema" 
+             xmlns:ns="http://xml.smilecoms.com/schema/POS"
+>
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/POS" xmlns:ns1="http://xml.smilecoms.com/schema/POS">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/POS" schemaLocation="POSSchema.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="POSError">
+        <part name="POSError" element="ns:POSError"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetStripCountInSaleRequest">
+        <part name="StripCountQuery" element="ns:StripCountQuery"/>
+    </message>
+    <message name="GetStripCountInSaleResponse">
+        <part name="StripCount" element="ns:StripCount"/>
+    </message>
+    <message name="GetInventoryRequest">
+        <part name="InventoryQuery" element="ns:InventoryQuery"/>
+    </message>
+    <message name="GetInventoryResponse">
+        <part name="InventoryList" element="ns:InventoryList"/>
+    </message>
+    
+    
+    <message name="GetUpSizeInventoryRequest">
+        <part name="UpSizeInventoryQuery" element="ns:UpSizeInventoryQuery"/>
+    </message>
+    
+    <message name="GetUpSizeInventoryResponse">
+        <part name="InventoryList" element="ns:InventoryList"/>
+    </message>
+    
+    <message name="ProcessSaleRequest">
+        <part name="NewSale" element="ns:NewSale"/>
+    </message>
+    <message name="ProcessSaleResponse">
+        <part name="Sale" element="ns:Sale"/>
+    </message>
+    <message name="GetSalesRequest">
+        <part name="SalesQuery" element="ns:SalesQuery"/>
+    </message>
+    <message name="GetSalesResponse">
+        <part name="SalesList" element="ns:SalesList"/>
+    </message>
+    <message name="GetSoldStockLocationsRequest">
+        <part name="SoldStockLocationQuery" element="ns:SoldStockLocationQuery"/>
+    </message>
+    <message name="GetSoldStockLocationsResponse">
+        <part name="SoldStockLocationList" element="ns:SoldStockLocationList"/>
+    </message>
+    <message name="SetSoldStockLocationsRequest">
+        <part name="SoldStockLocationData" element="ns:SoldStockLocationData"/>
+    </message>
+    <message name="SetSoldStockLocationsResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="ProcessCashInRequest">
+        <part name="CashInData" element="ns:CashInData"/>
+    </message>
+    <message name="ProcessCashInResponse">
+        <part name="CashedInData" element="ns:CashedInData"/>
+    </message>
+    <message name="GenerateQuoteRequest">
+        <part name="SaleDataForQuote" element="ns:SaleDataForQuote"/>
+    </message>
+    <message name="GenerateQuoteResponse">
+        <part name="Quote" element="ns:Quote"/>
+    </message>
+    <message name="ModifySaleRequest">
+        <part name="SaleModificationData" element="ns:SaleModificationData"/>
+    </message>
+    <message name="ModifySaleResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="ApprovePromotionCodeRequest">
+        <part name="PromotionCodeApprovalData" element="ns:PromotionCodeApprovalData"/>
+    </message>
+    <message name="ApprovePromotionCodeResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="ProcessReturnRequest">
+        <part name="ReturnData" element="ns:ReturnData"/>
+    </message>
+    <message name="ProcessReturnResponse">
+        <part name="CreditNote" element="ns:CreditNote"/>
+    </message>
+    <message name="GetCreditNotesRequest">
+        <part name="CreditNoteQuery" element="ns:CreditNoteQuery"/>
+    </message>
+    <message name="GetCreditNotesResponse">
+        <part name="CreditNoteList" element="ns:CreditNoteList"/>
+    </message>
+    <message name="CashInsQueryRequest">
+        <part name="CashInQuery" element="ns:CashInQuery"/>
+    </message>
+    <message name="CashInsQueryResponse">
+        <part name="CashInList" element="ns:CashInList"/>
+    </message>
+    <message name="AddContractRequest">
+        <part name="NewContract" element="ns:NewContract"/>
+    </message>
+    <message name="AddContractResponse">
+        <part name="ContractId" element="ns:ContractId"/>
+    </message>
+    <message name="PostProcessSaleRequest">
+        <part name="SalePostProcessingData" element="ns:SalePostProcessingData"/>
+    </message>
+    <message name="ContractQueryRequest">
+        <part name="ContractQuery" element="ns:ContractQuery"/>
+    </message>
+    <message name="ContractQueryResponse">
+        <part name="ContractList" element="ns:ContractList"/>
+    </message>
+    <message name="DeleteContractRequest">
+        <part name="ContractIdToDelete" element="ns:ContractIdToDelete"/>
+    </message>
+    <message name="ModifyContractRequest">
+        <part name="ModifiedContract" element="ns:ModifiedContract"/>
+    </message>
+    <message name="ProcessReturnOrReplacementRequest">
+        <part name="Return" element="ns:Return"/>
+    </message>
+    <message name="PaymentNotificationRequest">
+        <part name="PaymentNotificationData" element="ns:PaymentNotificationData"/>
+    </message>
+    
+    <message name="CreateStandardGLRequest">
+        <part name="CreateStandardGLData" element="ns:CreateStandardGLData"/>
+    </message>
+    
+    <message name="CreateStandardGLResponse">
+        <part name="CreateStandardGLOut" element="ns:CreateStandardGLOut"/>
+    </message>
+    
+    <message name="ReverseGLRequest">
+        <part name="ReverseGLData" element="ns:ReverseGLData"/>
+    </message>
+    
+    <message name="ReverseGLResponse">
+        <part name="ReverseGLOut" element="ns:ReverseGLOut"/>
+    </message>
+    
+
+    <portType name="POSSoap">
+        <operation name="IsUp">
+            <input name="input1" message="tns:IsUpRequest"/>
+            <output name="output1" message="tns:Done"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="GetStripCountInSale">
+            <input name="input2" message="tns:GetStripCountInSaleRequest"/>
+            <output name="output2" message="tns:GetStripCountInSaleResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="GetInventory">
+            <input name="input3" message="tns:GetInventoryRequest"/>
+            <output name="output3" message="tns:GetInventoryResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="ProcessSale">
+            <input name="input4" message="tns:ProcessSaleRequest"/>
+            <output name="output4" message="tns:ProcessSaleResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="GetSales">
+            <input name="input5" message="tns:GetSalesRequest"/>
+            <output name="output5" message="tns:GetSalesResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="ProcessCashIn">
+            <input name="input6" message="tns:ProcessCashInRequest"/>
+            <output name="output6" message="tns:ProcessCashInResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="GenerateQuote">
+            <input name="input7" message="tns:GenerateQuoteRequest"/>
+            <output name="output7" message="tns:GenerateQuoteResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="ModifySale">
+            <input name="input8" message="tns:ModifySaleRequest"/>
+            <output name="output8" message="tns:ModifySaleResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="ProcessReturn">
+            <input name="input9" message="tns:ProcessReturnRequest"/>
+            <output name="output9" message="tns:ProcessReturnResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="GetCreditNotes">
+            <input name="input10" message="tns:GetCreditNotesRequest"/>
+            <output name="output10" message="tns:GetCreditNotesResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="GetCashIns">
+            <input name="input11" message="tns:CashInsQueryRequest"/>
+            <output name="output11" message="tns:CashInsQueryResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="AddContract">
+            <input name="input12"   message="tns:AddContractRequest"/>
+            <output name="output12" message="tns:AddContractResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation> 
+        <operation name="GetContracts">
+            <input name="input13"   message="tns:ContractQueryRequest"/>
+            <output name="output13" message="tns:ContractQueryResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation> 
+        <operation name="DeleteContract">
+            <input name="input14"   message="tns:DeleteContractRequest"/>
+            <output name="output14" message="tns:Done"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation> 
+        <operation name="ModifyContract">
+            <input name="input15"   message="tns:ModifyContractRequest"/>
+            <output name="output15" message="tns:Done"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation> 
+        <operation name="PostProcessSale">
+            <input name="input16"   message="tns:PostProcessSaleRequest"/>
+            <output name="output16" message="tns:Done"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation> 
+        <operation name="ProcessReturnOrReplacement">
+            <input name="input17"   message="tns:ProcessReturnOrReplacementRequest"/>
+            <output name="output17" message="tns:Done"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation> 
+        <operation name="GetSoldStockLocations">
+            <input name="input18" message="tns:GetSoldStockLocationsRequest"/>
+            <output name="output18" message="tns:GetSoldStockLocationsResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="SetSoldStockLocations">
+            <input name="input19" message="tns:SetSoldStockLocationsRequest"/>
+            <output name="output19" message="tns:SetSoldStockLocationsResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="ApprovePromotionCode">
+            <input name="input20" message="tns:ApprovePromotionCodeRequest"/>
+            <output name="output20" message="tns:ApprovePromotionCodeResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        <operation name="ProcessPaymentNotification">
+            <input name="input21" message="tns:PaymentNotificationRequest"/>
+            <output name="output21" message="tns:Done"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        
+        <operation name="GetUpSizeInventory">
+            <input name="input22" message="tns:GetUpSizeInventoryRequest"/>
+            <output name="output22" message="tns:GetUpSizeInventoryResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>     
+        
+        <operation name="CreateStandardGL">
+            <input name="input23" message="tns:CreateStandardGLRequest"/>
+            <output name="output23" message="tns:CreateStandardGLResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        
+        <operation name="ReverseGL">
+            <input name="input24" message="tns:ReverseGLRequest"/>
+            <output name="output24" message="tns:ReverseGLResponse"/>
+            <fault name="fault1" message="tns:POSError"/>
+        </operation>
+        
+        
+    </portType>
+    <binding name="POSBinding" type="tns:POSSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="IsUp">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetStripCountInSale">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetInventory">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessSale">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetSales">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessCashIn">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GenerateQuote">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifySale">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessReturn">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetCreditNotes">
+            <input name="input10">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output10">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetCashIns">
+            <input name="input11">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output11">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddContract">
+            <input name="input12">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output12">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetContracts">
+            <input name="input13">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output13">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteContract">
+            <input name="input14">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output14">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyContract">
+            <input name="input15">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output15">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="PostProcessSale">
+            <input name="input16">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output16">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessReturnOrReplacement">
+            <input name="input17">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output17">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetSoldStockLocations">
+            <input name="input18">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output18">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SetSoldStockLocations">
+            <input name="input19">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output19">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ApprovePromotionCode">
+            <input name="input20">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output20">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessPaymentNotification">
+            <input name="input21">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output21">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+                
+        <operation name="GetUpSizeInventory">
+            <input name="input22">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output22">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="CreateStandardGL">
+            <input name="input23">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output23">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+                
+        <operation name="ReverseGL">
+            <input name="input24">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output24">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        
+    </binding>
+    <service name="POS">
+        <port name="POSSoap" binding="tns:POSBinding">
+            <soap:address location="http://dummyhost:${HttpDefaultPort}/POS/POSManager"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="POSServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes. 
+        In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+        A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="POS" portType="tns:POSSoap"/>
+    </plnk:partnerLinkType>
+</definitions>

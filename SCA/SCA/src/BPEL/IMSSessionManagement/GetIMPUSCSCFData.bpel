@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetIMPUSCSCFData"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/PC"
+    xmlns:ns2="http://xml.smilecoms.com/IMSSC" xmlns:ns3="java://com.smilecoms.lt.LT" xmlns:ns4="http://xml.smilecoms.com/schema/IMSSC">
+    <import namespace="http://xml.smilecoms.com/IMSSC" location="../Partners/IMSSC/IMSSCServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+        <partnerLink name="IMSSC" partnerLinkType="ns2:IMSSCServiceDefinition" partnerRole="IMSSC"/>
+    </partnerLinks>
+    
+    <variables>
+        <variable name="ServiceProfiles" type="xs:int"/>
+        <variable name="IMPUCount" type="xs:int"/>
+        <variable name="Contacts" type="xs:int"/>
+        <variable name="SCAGetSCSCFIMPUDataOut" messageType="tns:SCSCFIMPUDataResponse"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="GetSCSCFIMPUInfoOut" messageType="ns2:GetSCSCFIMPUInfoResponse"/>
+        <variable name="GetSCSCFIMPUInfoIn" messageType="ns2:GetSCSCFIMPUInfoRequest"/>
+        <variable name="SCAGetSCSCFIMPUDataIn" messageType="tns:SCSCFIMPUDataRequest"/>
+    </variables>
+    
+    <faultHandlers>
+        <catch faultVariable="IMSSCError" faultMessageType="ns2:IMSSCError">
+            <sequence name="Sequence6">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$IMSSCError.IMSSCError/ns4:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMSSCError.IMSSCError/ns4:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMSSCError.IMSSCError/ns4:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyError" partnerLink="SCA" operation="GetSCSCFIMPUData" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    
+    <sequence name="Sequence5">
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetSCSCFIMPUData" portType="tns:SCASoap" variable="SCAGetSCSCFIMPUDataIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IMSSC')</from>
+                        <to variable="EndPoint"/>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IMSSC"/>
+                    </copy>
+                </assign>                
+            </sequence>
+        </scope>
+        <assign name="Assign2">
+            <copy>
+                <from>$SCAGetSCSCFIMPUDataIn.SCSCFIMPUQuery/ns0:SCSCF</from>
+                <to>$GetSCSCFIMPUInfoIn.SCSCFIMPUQuery/ns4:SCSCF</to>
+            </copy>
+            <copy>
+                <from>$SCAGetSCSCFIMPUDataIn.SCSCFIMPUQuery/ns0:IMPU</from>
+                <to>$GetSCSCFIMPUInfoIn.SCSCFIMPUQuery/ns4:IMPU</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetSCSCFIMPUDataIn.SCSCFIMPUQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$GetSCSCFIMPUInfoIn.SCSCFIMPUQuery/ns4:PlatformContext/ns4:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetSCSCFIMPUDataIn.SCSCFIMPUQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$GetSCSCFIMPUInfoIn.SCSCFIMPUQuery/ns4:PlatformContext/ns4:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetSCSCFIMPUDataIn.SCSCFIMPUQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$GetSCSCFIMPUInfoIn.SCSCFIMPUQuery/ns4:PlatformContext/ns4:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetSCSCFIMPUDataIn.SCSCFIMPUQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$GetSCSCFIMPUInfoIn.SCSCFIMPUQuery/ns4:PlatformContext/ns4:Tenant</to>
+            </copy>
+        </assign>
+        <invoke name="Invoke1" partnerLink="IMSSC" operation="GetSCSCFIMPUInfo" portType="ns2:IMSSCSoap" inputVariable="GetSCSCFIMPUInfoIn" outputVariable="GetSCSCFIMPUInfoOut"/>
+        <assign name="Assign3">
+            <copy>
+                <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:IMPU</from>
+                <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:IMPU</to>
+            </copy>
+            <copy>
+                <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:State</from>
+                <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:State</to>
+            </copy>
+            <copy>
+                <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:Barring</from>
+                <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:Barring</to>
+            </copy>
+            <copy>
+                <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:ccf1</from>
+                <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:CCF1</to>
+            </copy>
+            <copy>
+                <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:ccf2</from>
+                <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:CCF2</to>
+            </copy>
+            <copy>
+                <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:ecf1</from>
+                <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:ECF1</to>
+            </copy>
+            <copy>
+                <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:ecf2</from>
+                <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:ECF2</to>
+            </copy>
+            <copy>
+                <from>count($GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:Subscription/ns4:ServiceProfiles)</from>
+                <to variable="ServiceProfiles"/>
+            </copy>
+            <copy>
+                <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:Subscription/ns4:IMPI</from>
+                <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:Subscription/ns0:IMPI</to>
+            </copy>
+            <copy>
+                <from>count($GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:Contacts)</from>
+                <to variable="Contacts"/>
+            </copy>
+        </assign>
+        <forEach name="ForEachContact" parallel="no" counterName="contactloop">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$Contacts</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="Assign4">
+                    <copy>
+                        <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:Contacts[$contactloop]/ns4:AoR</from>
+                        <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:Contact[$contactloop]/ns0:AoR</to>
+                    </copy>
+                    <copy>
+                        <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:Contacts[$contactloop]/ns4:Expires</from>
+                        <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:Contact[$contactloop]/ns0:Expires</to>
+                    </copy>
+                    <copy>
+                        <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:Contacts[$contactloop]/ns4:UserAgent</from>
+                        <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:Contact[$contactloop]/ns0:UserAgent</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <forEach name="ForEachServiceProfile" parallel="no" counterName="serviceprofileloop">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$ServiceProfiles</finalCounterValue>
+            <scope name="Scope2">
+                <sequence name="Sequence7">
+                    <assign name="Assign5">
+                        <copy>
+                                <from>count($GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:Subscription/ns4:ServiceProfiles[$serviceprofileloop]/ns4:IMPU)</from>
+                                    <to variable="IMPUCount"/>
+                            </copy>
+                    </assign>
+                    <forEach name="ForEachIMPU" parallel="no" counterName="impucounter">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>$IMPUCount</finalCounterValue>
+                        <scope name="Scope3">
+                            <assign name="Assign6">
+                                <copy>
+                                    <from>$GetSCSCFIMPUInfoOut.SCSCFIMPUData/ns4:Subscription/ns4:ServiceProfiles[$serviceprofileloop]/ns4:IMPU[$impucounter]</from>
+                                    <to>$SCAGetSCSCFIMPUDataOut.SCSCFIMPUData/ns0:Subscription/ns0:ServiceProfile[$serviceprofileloop]/ns0:IMPU[$impucounter]</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                </sequence>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCA" operation="GetSCSCFIMPUData" portType="tns:SCASoap" variable="SCAGetSCSCFIMPUDataOut"/>
+    </sequence>
+</process>

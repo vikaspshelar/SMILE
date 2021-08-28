@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/TNF"
+            xmlns:tns="http://xml.smilecoms.com/schema/TNF"
+            elementFormDefault="qualified">
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject"  >
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="Done"  >
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="TNFError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="NonEmptyString">
+        <xsd:annotation >
+            <xsd:documentation >String with length of trimmed value greater or equal than zero</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:whiteSpace value="collapse"/>
+            <xsd:minLength value="1"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="TNFData">
+        <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="TNFXmlData" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+             
+    <xsd:complexType name="TNFQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element maxOccurs="1" minOccurs="1" name="LogicalSimId" type="tns:NonEmptyString"/>
+                    <xsd:element maxOccurs="1" minOccurs="1" name="TNFMethod" type="tns:NonEmptyString"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="TimeRange" type="tns:TimeRange"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ParameterSet" type="tns:ParameterSet"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="AttributeNames" type="tns:AttributeNames"/>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ReportIds" type="tns:ReportIds"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>  
+    <xsd:complexType name="ReportIds">
+        <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="ReportId" type="tns:NonEmptyString"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="TimeRange">
+        <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="StartTime" type="xsd:dateTime"/>
+            <xsd:element maxOccurs="1" minOccurs="1" name="EndTime" type="xsd:dateTime"/>
+            <xsd:element maxOccurs="1" minOccurs="1" name="Granularity" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="ParameterSet">
+        <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="Parameter" type="tns:Parameter"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="Parameter">
+        <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="ParameterKey" type="xsd:string"/>
+            <xsd:element maxOccurs="1" minOccurs="1" name="ParameterVal" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>    
+    <xsd:complexType name="AttributeNames">
+        <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="AttributeName" type="tns:NonEmptyString"/>
+        </xsd:sequence>
+    </xsd:complexType>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+      
+    <xsd:element name="Done" type="tns:Done">
+    </xsd:element>
+    <xsd:element name="TNFError" type="tns:TNFError">
+    </xsd:element>
+
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+    <xsd:element name="TNFData" type="tns:TNFData"></xsd:element>
+    <xsd:element name="TNFQuery" type="tns:TNFQuery"></xsd:element>
+</xsd:schema>

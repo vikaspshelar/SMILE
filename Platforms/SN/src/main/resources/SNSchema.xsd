@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/SN"
+            xmlns:tns="http://xml.smilecoms.com/schema/SN"
+            elementFormDefault="qualified" xmlns:ns="http://xml.smilecoms.com/schema/SN">
+    <xsd:complexType name="Done" xmlns:tns="http://xml.smilecoms.com/schema/SN">
+        <xsd:sequence>
+            <xsd:element name="Done" type="ns:stDone">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PlatformString" >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="String" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject" >
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformInteger" >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Integer" type="xsd:int">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="SNError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="NewStickyNoteField">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="FieldType" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="FieldData" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="FieldName" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="NoteId" type="xsd:int">
+                    </xsd:element>
+                    <xsd:element name="DocumentData" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="NewStickyNote">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="TypeName" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="EntityType" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="EntityId" type="xsd:long">
+                    </xsd:element>
+                    <xsd:element name="CreatedBy" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="Fields" type="tns:NewStickyNoteField" minOccurs="1" maxOccurs="unbounded">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="StickyNote">
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="TypeName" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="NoteId" type="xsd:int">
+                    </xsd:element>
+                    <xsd:element name="Version" type="xsd:int">
+                    </xsd:element>
+                    <xsd:element name="CreatedDateTime" type="xsd:dateTime">
+                    </xsd:element>
+                    <xsd:element name="LastModified" type="xsd:dateTime">
+                    </xsd:element>
+                    <xsd:element name="EntityType" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="EntityId" type="xsd:long">
+                    </xsd:element>
+                    <xsd:element name="CreatedBy" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="LastModifiedBy" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="Fields" type="tns:StickyNoteField" minOccurs="1" maxOccurs="unbounded">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="StickyNoteField">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="FieldData" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="FieldName" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="NoteId" type="xsd:int">
+                    </xsd:element>
+                    <xsd:element name="FieldId" type="xsd:int">
+                    </xsd:element>
+                    <xsd:element name="FieldType" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="DocumentData" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="NewStickyNote" type="tns:NewStickyNote">
+    </xsd:element>
+    <xsd:element name="StickyNote" type="tns:StickyNote">
+    </xsd:element>
+    <xsd:element name="StickyNoteId" type="tns:PlatformInteger">
+    </xsd:element>
+    <xsd:complexType name="StickyNoteType">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="TypeName" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="DisplayPriority" type="xsd:short"></xsd:element>
+                    <xsd:element name="AllowedRoles" type="xsd:string"></xsd:element>
+                    <xsd:element name="FieldTypes" type="tns:StickyNoteFieldType" maxOccurs="unbounded">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="StickyNoteTypeList">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="StickyNoteTypes" type="tns:StickyNoteType" minOccurs="0" maxOccurs="unbounded">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="StickyNoteTypeList" type="tns:StickyNoteTypeList">
+    </xsd:element>
+    <xsd:element name="EntityName" type="tns:PlatformString">
+    </xsd:element>
+    <xsd:element name="StickyNoteType" type="tns:StickyNoteType">
+    </xsd:element>
+    <xsd:element name="SNError" type="tns:SNError">
+    </xsd:element>
+    <xsd:complexType name="StickyNoteList">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="StickyNotes" type="tns:StickyNote" minOccurs="0" maxOccurs="unbounded" >
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="StickyNoteList" type="tns:StickyNoteList">
+    </xsd:element>
+    <xsd:element name="EntityIdentifier" type="tns:EntityIdentifier">
+    </xsd:element>
+    <xsd:complexType name="StickyNoteFieldType">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="FieldType" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="FieldName" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="EntityIdentifier">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="EntityId" type="xsd:long">
+                    </xsd:element>
+                    <xsd:element name="EntityType" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="StickyNoteTypeName" type="tns:PlatformString"></xsd:element>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+    <xsd:element name="Done" type="tns:Done"></xsd:element>
+    <xsd:element name="StickyNoteIdToDelete" type="tns:PlatformInteger"></xsd:element>
+</xsd:schema>
+

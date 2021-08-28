@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ProvisionWLANService"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/IM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/AM">
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SubFlowError"/>
+        <variable name="ProvisionWLANServiceOut" messageType="tns:ProvisionServiceResponse"/>
+        <variable name="ProvisionWLANServiceIn" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" messageType="tns:ProvisionWLANServiceRequest"/>
+        <variable name="IMCreateNAIIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:CreateNAIIdentityResponse"/>
+        <variable name="IMCreateNAIIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:CreateNAIIdentityRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:im="http://xml.smilecoms.com/IM" faultMessageType="im:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="AssignErr">
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErr1" partnerLink="SCASubFlows" operation="ProvisionWLANService" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="ProvisionWLANService" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="ProvisionWLANServiceIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        
+        <assign name="AssignCreateNAI">
+            <copy>
+                <from>BPELUtils:getAVPValueAsString($ProvisionWLANServiceIn.WLANServiceData, 'NAIUsername')</from>
+                <to>$IMCreateNAIIdentityIn.NewNAIIdentity/ns0:NAIUsername</to>
+            </copy>
+            <copy>
+                <from>BPELUtils:getAVPValueAsString($ProvisionWLANServiceIn.WLANServiceData, 'NAIPassword')</from>
+                <to>$IMCreateNAIIdentityIn.NewNAIIdentity/ns0:NAIPassword</to>
+            </copy>
+            <copy>
+                <from>$ProvisionWLANServiceIn.WLANServiceData/SubFlowContext/TxId</from>
+                <to>$IMCreateNAIIdentityIn.NewNAIIdentity/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$ProvisionWLANServiceIn.WLANServiceData/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMCreateNAIIdentityIn.NewNAIIdentity/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$ProvisionWLANServiceIn.WLANServiceData/SubFlowContext/OriginatingIP</from>
+                <to>$IMCreateNAIIdentityIn.NewNAIIdentity/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$ProvisionWLANServiceIn.WLANServiceData/SubFlowContext/Tenant</from>
+                <to>$IMCreateNAIIdentityIn.NewNAIIdentity/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+        </assign>
+        <invoke name="CreateNAIIdentity" partnerLink="IM" operation="CreateNAIIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMCreateNAIIdentityIn" outputVariable="IMCreateNAIIdentityOut"/>
+        
+        <assign name="AssignResult">
+            <copy>
+                <from>concat('NAIOSSBSSID-', $IMCreateNAIIdentityOut.NAIIdentity/ns0:OSSBSSReferenceId)</from>
+                <to>$ProvisionWLANServiceOut.ProvisionedServiceData/ResourceId</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="ProvisionWLANService" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="ProvisionWLANServiceOut"/>
+    </sequence>
+</process>

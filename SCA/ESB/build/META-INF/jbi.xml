@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jbi xmlns="http://java.sun.com/xml/ns/jbi" xmlns:ns1="http://xml.smilecoms.com/SCA" xmlns:ns10="http://xml.smilecoms.com/TT" xmlns:ns11="http://xml.smilecoms.com/AM" xmlns:ns12="http://xml.smilecoms.com/PC" xmlns:ns13="http://xml.smilecoms.com/IMSSC" xmlns:ns14="http://xml.smilecoms.com/BS" xmlns:ns15="http://xml.smilecoms.com/SN" xmlns:ns16="http://xml.smilecoms.com/POS" xmlns:ns17="http://xml.smilecoms.com/BM" xmlns:ns18="http://xml.smilecoms.com/PM" xmlns:ns2="http://xml.smilecoms.com/CTI" xmlns:ns3="http://xml.smilecoms.com/MM" xmlns:ns4="http://xml.smilecoms.com/ET" xmlns:ns5="http://xml.smilecoms.com/SCASubFlows" xmlns:ns6="http://xml.smilecoms.com/CM" xmlns:ns7="http://xml.smilecoms.com/PVS" xmlns:ns8="http://xml.smilecoms.com/IM" xmlns:ns9="http://xml.smilecoms.com/TNF" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://java.sun.com/xml/ns/jbi ./jbi.xsd">
+    <service-assembly>
+        <identification>
+            <name>ESB</name>
+            <description>Represents the Service Assembly of ESB</description>
+        </identification>
+        <service-unit>
+            <identification>
+                <name>ESB-SCA</name>
+                <description>Represents this Service Unit</description>
+            </identification>
+            <target>
+                <artifacts-zip>SCA.jar</artifacts-zip>
+                <component-name>sun-bpel-engine</component-name>
+            </target>
+        </service-unit>
+        <service-unit>
+            <identification>
+                <name>ESB-sun-http-binding</name>
+                <description>Represents this Service Unit</description>
+            </identification>
+            <target>
+                <artifacts-zip>sun-http-binding.jar</artifacts-zip>
+                <component-name>sun-http-binding</component-name>
+            </target>
+        </service-unit>
+        <connections>
+            <connection>
+                <consumer endpoint-name="CTI_partnerRole" service-name="ns1:CTI"/>
+                <provider endpoint-name="CTISoap" service-name="ns2:CTI"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="MM_partnerRole" service-name="ns1:MM"/>
+                <provider endpoint-name="MMSoap" service-name="ns3:MM"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="ET_partnerRole" service-name="ns1:ET"/>
+                <provider endpoint-name="ETSoap" service-name="ns4:ET"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="SCASoap" service-name="ns1:SCA"/>
+                <provider endpoint-name="SCAImplementation_myRole" service-name="ns1:SCA"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="SCAImplementation_partnerRole" service-name="ns1:SCACalling"/>
+                <provider endpoint-name="SCAImplementation_myRole" service-name="ns1:SCA"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="SCAImplementation_partnerRole" service-name="ns5:SCACalling"/>
+                <provider endpoint-name="SCAImplementation_myRole" service-name="ns1:SCA"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="CM_partnerRole" service-name="ns1:CM"/>
+                <provider endpoint-name="CMSoap" service-name="ns6:CM"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="CM_partnerRole" service-name="ns5:CM"/>
+                <provider endpoint-name="CMSoap" service-name="ns6:CM"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="PVS_partnerRole" service-name="ns1:PVS"/>
+                <provider endpoint-name="PVSSoap" service-name="ns7:PVS"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="SCASubFlows_partnerRole" service-name="ns1:SCASubFlows"/>
+                <provider endpoint-name="SCASubFlows_myRole" service-name="ns5:SCASubFlows"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="SCASubFlows_partnerRole" service-name="ns5:SCASubFlowsInvoke"/>
+                <provider endpoint-name="SCASubFlows_myRole" service-name="ns5:SCASubFlows"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="IM_partnerRole" service-name="ns1:IM"/>
+                <provider endpoint-name="IMSoap" service-name="ns8:IM"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="IM_partnerRole" service-name="ns5:IM"/>
+                <provider endpoint-name="IMSoap" service-name="ns8:IM"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="TNF_partnerRole" service-name="ns1:TNF"/>
+                <provider endpoint-name="TNFSoap" service-name="ns9:TNF"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="TT_partnerRole" service-name="ns1:TT"/>
+                <provider endpoint-name="TTSoap" service-name="ns10:TT"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="AM_partnerRole" service-name="ns1:AM"/>
+                <provider endpoint-name="AMSoap" service-name="ns11:AM"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="AM_partnerRole" service-name="ns5:AM"/>
+                <provider endpoint-name="AMSoap" service-name="ns11:AM"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="PC_partnerRole" service-name="ns1:PC"/>
+                <provider endpoint-name="PCSoap" service-name="ns12:PC"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="IMSSC_partnerRole" service-name="ns1:IMSSC"/>
+                <provider endpoint-name="IMSSCSoap" service-name="ns13:IMSSC"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="BS_partnerRole" service-name="ns1:BS"/>
+                <provider endpoint-name="BSSoap" service-name="ns14:BS"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="BS_partnerRole" service-name="ns5:BS"/>
+                <provider endpoint-name="BSSoap" service-name="ns14:BS"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="SN_partnerRole" service-name="ns1:SN"/>
+                <provider endpoint-name="SNSoap" service-name="ns15:SN"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="POS_partnerRole" service-name="ns1:POS"/>
+                <provider endpoint-name="POSSoap" service-name="ns16:POS"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="BM_partnerRole" service-name="ns1:BM"/>
+                <provider endpoint-name="BMSoap" service-name="ns17:BM"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="PM_partnerRole" service-name="ns1:PM"/>
+                <provider endpoint-name="PMSoap" service-name="ns18:PM"/>
+            </connection>
+            <connection>
+                <consumer endpoint-name="PM_partnerRole" service-name="ns5:PM"/>
+                <provider endpoint-name="PMSoap" service-name="ns18:PM"/>
+            </connection>
+        </connections>
+    </service-assembly>
+</jbi>

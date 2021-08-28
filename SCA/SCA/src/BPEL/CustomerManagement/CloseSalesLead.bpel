@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CloseSalesLead"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA"
+    xmlns:ns2="http://xml.smilecoms.com/TT"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/TT"  xmlns:ns3="http://xml.smilecoms.com/schema/SN" xmlns:ns4="http://xml.smilecoms.com/SN">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/schema/SCA" location="../../wsdl/SCASchema.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
+    <import namespace="http://xml.smilecoms.com/SN" location="../Partners/SN/SNServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/TT" location="../Partners/TT/TTServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+        <partnerLink name="SN" xmlns:tns="http://xml.smilecoms.com/SN" partnerLinkType="tns:SNServiceDefinition" partnerRole="SN"/>
+        <partnerLink name="TT" xmlns:tns="http://xml.smilecoms.com/TT" partnerLinkType="tns:TTServiceDefinition" partnerRole="TT"/> 
+    </partnerLinks>
+    <variables>
+        <variable name="TTCloseSalesLeadIssueOut" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:Done"/>
+        <variable name="TTCloseSalesLeadIssueIn" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:CloseSalesLeadIssueRequest"/>
+        <variable name="CloseSalesLeadIssueIn" messageType="tns:CloseSalesLeadIssueRequest"/>
+        <variable name="CloseSalesLeadIssueOut" messageType="tns:Done"/>
+        <variable name="SNGetEntitiesStickyNotesOut" xmlns:tns="http://xml.smilecoms.com/SN" messageType="tns:GetEntitiesStickyNotesResponse">
+            <sxed:editor>
+                <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from">
+                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]" source="from"/>
+                </sxed:predicate>
+            </sxed:editor>
+        </variable>
+        <variable name="SNGetEntitiesStickyNotesIn" xmlns:tns="http://xml.smilecoms.com/SN" messageType="tns:GetEntitiesStickyNotesRequest"/>
+        
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="noteCount" type="xsd:int"/>
+        <variable name="numberOfNoteFields" type="xsd:int"/>
+        <variable name="defaultCloseSLdOutVariable" type="ns0:Done"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="TTError" faultMessageType="ns2:TTError">
+            <sequence name="Sequence1">
+                <assign name="Assign_TTError_SCAError">
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply_TTFault" partnerLink="SCA" operation="CloseSalesLead" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive" createInstance="yes" partnerLink="SCA" operation="CloseSalesLead" portType="tns:SCASoap" variable="CloseSalesLeadIssueIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('TT')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="TT"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('SN')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="SN"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        <sequence name="Initialisation">
+            <assign name="AssignDefaults">
+                <sxt:trace>
+                    <sxt:log level="finest" location="onStart">
+                        <from>'In closesaleslead. Assigning defaults'</from>
+                    </sxt:log>
+                    <sxt:log level="finest" location="onComplete">
+                        <from>'Finished assigning defaults'</from>
+                    </sxt:log>
+                </sxt:trace>
+                <copy>
+                    <from>false()</from>
+                    <to>$defaultCloseSLdOutVariable/ns0:Done</to>
+                </copy>
+                
+            </assign>
+        </sequence>
+        
+        <!-- customerId was provided to close saleslead, so will use it to check customer's attached notes-->
+        <if name="IfCustomerIdIsNotEmpty">
+            <condition>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:CustomerId != ''</condition>
+            <sequence name="CustIdSequence">
+                <sxt:trace>
+                    <sxt:log level="finest" location="onStart">
+                        <from>concat('CustomerId is set: ', $CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:CustomerId)</from>
+                    </sxt:log>
+                </sxt:trace>
+                
+                <assign name="Assign_SCA_SN">
+                    <copy>
+                        <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:CustomerId</from>
+                        <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns3:EntityId</to>
+                    </copy>
+                    <copy>
+                        <from>'Customer'</from>
+                        <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns3:EntityType</to>
+                    </copy>
+                    <copy>
+                        <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:TxId</from>
+                        <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns3:PlatformContext/ns3:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns3:PlatformContext/ns3:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns3:PlatformContext/ns3:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                        <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+                    </copy>
+                </assign>
+                <invoke name="Call_SN" partnerLink="SN" operation="GetEntitiesStickyNotes"  xmlns:tns="http://xml.smilecoms.com/SN" portType="tns:SNSoap" inputVariable="SNGetEntitiesStickyNotesIn" outputVariable="SNGetEntitiesStickyNotesOut"/>
+        
+                <assign name="Assign_Note_Count">
+                    <copy>
+                        <from>count($SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes)</from>
+                        <to variable="noteCount"/>
+                    </copy>
+                </assign>
+                <!-- customer has attached notes-->
+                <if name="IfNoteCountIsGt0">
+                    <condition>$noteCount &gt; 0</condition>
+                    <sequence name="NoteCountSequence">
+                
+                        <forEach name="ForEach_SN_TO_SCATYPE_SN_VARIABLE" parallel="no" counterName="note">
+                            <sxt:trace>
+                                <sxt:log level="finest" location="onStart">
+                                    <from>'Assigning stickynotes from SN_Plat to locally defined SN_Variable of SCAType'</from>
+                                </sxt:log>
+                                <sxt:log level="finest" location="onComplete">
+                                    <from>'Finished executing request, will return results'</from>
+                                </sxt:log>
+                            </sxt:trace>
+                            <startCounterValue>1</startCounterValue>
+                            <finalCounterValue>$noteCount</finalCounterValue>
+                            <scope name="ScopeSCATYPE_SN_VARIABLE">
+                                
+                                <variables>
+                                    <variable name="SCAGetEntitiesStickyNotesOut" messageType="tns:GetEntitiesStickyNotesResponse">
+                                        <sxed:editor>
+                                            <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to">
+                                                <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]" source="to"/>
+                                            </sxed:predicate>
+                                        </sxed:editor>
+                                    </variable>
+                                </variables>
+                                
+                                <sequence name="SequenceSCATYPE_SN_VARIABLE">
+                                    <assign name="SN_TO_SCATYPE_SN_VARIABLE">
+                                        <copy>
+                                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:TypeName
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                                </sxed:editor>
+                                            </from>
+                                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:TypeName
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to"/>
+                                                </sxed:editor>
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:NoteId
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                                </sxed:editor>
+                                            </from>
+                                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:NoteId
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to"/>
+                                                </sxed:editor>
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Version
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                                </sxed:editor>
+                                            </from>
+                                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Version
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to"/>
+                                                </sxed:editor>
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:CreatedDateTime
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                                </sxed:editor>
+                                            </from>
+                                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:CreatedDateTime
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to"/>
+                                                </sxed:editor>
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:LastModified
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                                </sxed:editor>
+                                            </from>
+                                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:LastModified
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to"/>
+                                                </sxed:editor>
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:EntityType
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                                </sxed:editor>
+                                            </from>
+                                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:EntityType
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to"/>
+                                                </sxed:editor>
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:EntityId
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                                </sxed:editor>
+                                            </from>
+                                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:EntityId
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to"/>
+                                                </sxed:editor>
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:CreatedBy
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                                </sxed:editor>
+                                            </from>
+                                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:CreatedBy
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to"/>
+                                                </sxed:editor>
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:LastModifiedBy
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                                </sxed:editor>
+                                            </from>
+                                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:LastModifiedBy
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to"/>
+                                                </sxed:editor>
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>count($SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields)
+                                                <sxed:editor>
+                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                                </sxed:editor>
+                                            </from>
+                                            <to variable="numberOfNoteFields"/>
+                                        </copy>
+                                    </assign>
+                    
+                                    <!-- the entity type for this note is SalesLeadCustomer-->
+                                    <if name="IfEntityTypeNameIsSLCustomer">
+                                        <condition>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:TypeName = 'SalesLeadCustomer'
+                                            <sxed:editor>
+                                                <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from"/>
+                                            </sxed:editor>
+                                        </condition>
+                                        <sequence name="SLCustomerSequence">
+                            
+                                            <forEach name="ForEach_SLCustomer_SNFields" parallel="no" counterName="inoteFieldsCount">
+                                                <sxt:trace>
+                                                    <sxt:log level="finest" location="onStart">
+                                                        <from>'Will iterate over all the fields for this note with type name "SalesLeadCustomer"'</from>
+                                                    </sxt:log>
+                                                    <sxt:log level="finest" location="onComplete">
+                                                        <from>'Finished iterating fields with type name "SalesLeadCustomer"'</from>
+                                                    </sxt:log>
+                                                </sxt:trace>
+                                                
+                                                <startCounterValue>1</startCounterValue>
+                                                <finalCounterValue>$numberOfNoteFields</finalCounterValue>
+                                                <scope name="Scope1FF">
+                                                    <sequence name="sequenceForScope1FF">
+                                                        <assign name="Assign_SLCustomer_SN_SCATYPE_SN_VARIABLE_Fields">
+                                                            <copy>
+                                                                <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]/ns3:FieldData
+                                                                    <sxed:editor>
+                                                                        <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from">
+                                                                            <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]" source="from"/>
+                                                                        </sxed:predicate>
+                                                                    </sxed:editor>
+                                                                </from>
+                                                                <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]/ns0:FieldData
+                                                                    <sxed:editor>
+                                                                        <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to">
+                                                                            <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]" source="to"/>
+                                                                        </sxed:predicate>
+                                                                    </sxed:editor>
+                                                                </to>
+                                                            </copy>
+                                                            <copy>
+                                                                <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]/ns3:FieldName
+                                                                    <sxed:editor>
+                                                                        <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from">
+                                                                            <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]" source="from"/>
+                                                                        </sxed:predicate>
+                                                                    </sxed:editor>
+                                                                </from>
+                                                                <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]/ns0:FieldName
+                                                                    <sxed:editor>
+                                                                        <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to">
+                                                                            <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]" source="to"/>
+                                                                        </sxed:predicate>
+                                                                    </sxed:editor>
+                                                                </to>
+                                                            </copy>
+                                                            <copy>
+                                                                <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]/ns3:NoteId
+                                                                    <sxed:editor>
+                                                                        <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from">
+                                                                            <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]" source="from"/>
+                                                                        </sxed:predicate>
+                                                                    </sxed:editor>
+                                                                </from>
+                                                                <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]/ns0:NoteId
+                                                                    <sxed:editor>
+                                                                        <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to">
+                                                                            <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]" source="to"/>
+                                                                        </sxed:predicate>
+                                                                    </sxed:editor>
+                                                                </to>
+                                                            </copy>
+                                                            <copy>
+                                                                <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]/ns3:FieldId
+                                                                    <sxed:editor>
+                                                                        <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from">
+                                                                            <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]" source="from"/>
+                                                                        </sxed:predicate>
+                                                                    </sxed:editor>
+                                                                </from>
+                                                                <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]/ns0:FieldId
+                                                                    <sxed:editor>
+                                                                        <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to">
+                                                                            <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]" source="to"/>
+                                                                        </sxed:predicate>
+                                                                    </sxed:editor>
+                                                                </to>
+                                                            </copy>
+                                                            <copy>
+                                                                <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]/ns3:FieldType
+                                                                    <sxed:editor>
+                                                                        <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from">
+                                                                            <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]" source="from"/>
+                                                                        </sxed:predicate>
+                                                                    </sxed:editor>
+                                                                </from>
+                                                                <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]/ns0:FieldType
+                                                                    <sxed:editor>
+                                                                        <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]" source="to">
+                                                                            <sxed:predicate path="$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$note]/ns0:Fields[$inoteFieldsCount]" source="to"/>
+                                                                        </sxed:predicate>
+                                                                    </sxed:editor>
+                                                                </to>
+                                                            </copy>
+                                                        </assign>
+                                                        <!-- The entity type has the field SalesLeadIssueId-->
+                                                        <if name="IfFieldNameIsSLIssueId">
+                                                            <condition>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]/ns3:FieldName = 'SalesLeadIssueId'
+                                                                <sxed:editor>
+                                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from">
+                                                                        <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]" source="from"/>
+                                                                    </sxed:predicate>
+                                                                </sxed:editor>
+                                                            </condition>
+                                                            <sequence name="sequenceSLIssueId">
+                                                        
+                                                                <assign name="AssignSLIssueId">
+                                                                    <sxt:trace>
+                                                                        <sxt:log level="finest" location="onStart">
+                                                                            <from>concat('The SalesLeadIssueId was found on this note, feildData value is: ', $SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]/ns3:FieldData)</from>
+                                                                        </sxt:log>
+                                                                    </sxt:trace>
+                                                                    <copy>
+                                                                        <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]/ns3:FieldData
+                                                                            <sxed:editor>
+                                                                                <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]" source="from">
+                                                                                    <sxed:predicate path="$SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]" source="from"/>
+                                                                                </sxed:predicate>
+                                                                            </sxed:editor>
+                                                                        </from>
+                                                                        <to>$TTCloseSalesLeadIssueIn.CloseSalesLeadIssueQuery/ns1:IssueID</to>
+                                                                    </copy>
+                                                                    <copy>
+                                                                        <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:TxId</from>
+                                                                        <to>$TTCloseSalesLeadIssueIn.CloseSalesLeadIssueQuery/ns1:PlatformContext/ns1:TxId</to>
+                                                                    </copy>
+                                                                    <copy>
+                                                                        <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                                                                        <to>$TTCloseSalesLeadIssueIn.CloseSalesLeadIssueQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+                                                                    </copy>
+                                                                    <copy>
+                                                                        <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                                                                        <to>$TTCloseSalesLeadIssueIn.CloseSalesLeadIssueQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+                                                                    </copy>
+                                                                    <copy ignoreMissingFromData="yes">
+                                                                        <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:Tenant</from>
+                                                                        <to>$TTCloseSalesLeadIssueIn.CloseSalesLeadIssueQuery/ns1:PlatformContext/ns1:Tenant</to>
+                                                                    </copy>
+                                                                </assign>
+                                                                <invoke name="Call_TT" partnerLink="TT" operation="CloseSalesLead" xmlns:tns="http://xml.smilecoms.com/TT" portType="tns:TTSoap" inputVariable="TTCloseSalesLeadIssueIn" outputVariable="TTCloseSalesLeadIssueOut"/>
+        
+                                                                <assign name="Assign_TT_SCA">
+                                                                    <copy>
+                                                                        <from>$TTCloseSalesLeadIssueOut.Done/ns1:Done</from>
+                                                                        <to>$CloseSalesLeadIssueOut.Done/ns0:Done</to>
+                                                                    </copy>
+                                                                </assign>
+                                                
+                                                            </sequence>
+                                                    
+                                                            <else>
+                                                                <sequence name="FieldNameIsNotSLIssueId">
+                                                                    <sxt:trace>
+                                                                        <sxt:log level="finest" location="onStart">
+                                                                            <from>concat('Entered else statement because was expecting fieldName "SalesLeadIssueId" but found "', $SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:Fields[$inoteFieldsCount]/ns3:FieldName, '" will return "', $defaultCloseSLdOutVariable/ns0:Done, '"')</from>
+                                                                        </sxt:log>
+                                                                    </sxt:trace>
+                    
+                                                                    <assign name="Assign_TT_SCA_ELSE_FieldNameIsNotSLIssueId">
+                                                                        <copy>
+                                                                            <from>$defaultCloseSLdOutVariable/ns0:Done</from>
+                                                                            <to>$CloseSalesLeadIssueOut.Done/ns0:Done</to>
+                                                                        </copy>
+                                                                    </assign>
+                                                                </sequence>                             
+                                                            </else>
+                                                    
+                                                        </if>
+                                        
+                                                    </sequence>
+                                                </scope>
+                                            </forEach>
+                                        </sequence>
+                                
+                                        <else>
+                                            <sequence name="EntityTypeNameIsNotSLCustomer">
+                                                <sxt:trace>
+                                                    <sxt:log level="finest" location="onStart">
+                                                        <from>concat('Entered else statement, was expecting entitytype "SalesLeadCustomer" but found "', $SNGetEntitiesStickyNotesOut.StickyNoteList/ns3:StickyNotes[$note]/ns3:TypeName, '" response default to: "', $defaultCloseSLdOutVariable/ns0:Done, '"')</from>
+                                                    </sxt:log>
+                                                </sxt:trace>
+                    
+                                                <assign name="Assign_TT_SCA_ELSE_EntityTypeNameIsNotSLCustomer">
+                                                    <copy>
+                                                        <from>$defaultCloseSLdOutVariable/ns0:Done</from>
+                                                        <to>$CloseSalesLeadIssueOut.Done/ns0:Done</to>
+                                                    </copy>
+                                                </assign>
+                                            </sequence>                             
+                                        </else>
+                                
+                                    </if>
+                                </sequence>
+                            </scope>
+                        </forEach>
+                    </sequence>
+                    <!-- customer has no sticky notes attached-->
+                    <else>
+                        <sequence name="NoteCountIsLt0">
+                            <sxt:trace>
+                                <sxt:log level="finest" location="onStart">
+                                    <from>concat('Entered else statement because customerId "', $CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:CustomerId, '" does not have any sticky notes attached')</from>
+                                </sxt:log>
+                                <sxt:log level="finest" location="onComplete">
+                                    <from>'Finished else execution of the customer with no sticky notes attached'</from>
+                                </sxt:log>
+                            </sxt:trace>
+                            <assign name="Assign_TT_SCA_ELSE_NoteCountIsLt0">
+                                <copy>
+                                    <from>$defaultCloseSLdOutVariable/ns0:Done</from>
+                                    <to>$CloseSalesLeadIssueOut.Done/ns0:Done</to>
+                                </copy>
+                            </assign>
+                        </sequence>                             
+                    </else>
+                    
+                </if>
+            </sequence>
+            <!-- customerId was not supplied so will try to use the issueId to close this saleslead-->
+            <else>
+                <sequence name="ISSUEIDSEQUENCE">
+                    <sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>concat('Entered else statement as the was no customerId supplied, will close sales lead using issue id ', $CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:IssueID)</from>
+                        </sxt:log>
+                        <sxt:log level="finest" location="onComplete">
+                            <from>'Finished else execution'</from>
+                        </sxt:log>
+                    </sxt:trace>
+                    
+                    <assign name="AssignIssueId">
+                        <copy>
+                            <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:TxId</from>
+                            <to>$TTCloseSalesLeadIssueIn.CloseSalesLeadIssueQuery/ns1:PlatformContext/ns1:TxId</to>
+                        </copy>
+                        <copy>
+                            <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                            <to>$TTCloseSalesLeadIssueIn.CloseSalesLeadIssueQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+                        </copy>
+                        <copy>
+                            <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                            <to>$TTCloseSalesLeadIssueIn.CloseSalesLeadIssueQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:SCAContext/ns0:Tenant</from>
+                            <to>$TTCloseSalesLeadIssueIn.CloseSalesLeadIssueQuery/ns1:PlatformContext/ns1:Tenant</to>
+                        </copy>
+                        <copy>
+                            <from>$CloseSalesLeadIssueIn.TTCloseSalesLeadIssueQuery/ns0:IssueID</from>
+                            <to>$TTCloseSalesLeadIssueIn.CloseSalesLeadIssueQuery/ns1:IssueID</to>
+                        </copy>
+                    </assign>
+                    <invoke name="Call_TT" partnerLink="TT" operation="CloseSalesLead" xmlns:tns="http://xml.smilecoms.com/TT" portType="tns:TTSoap" inputVariable="TTCloseSalesLeadIssueIn" outputVariable="TTCloseSalesLeadIssueOut"/>
+                    <assign name="Assign_TT_SCA_ELSE">
+                        <copy>
+                            <from>$TTCloseSalesLeadIssueOut.Done/ns1:Done</from>
+                            <to>$CloseSalesLeadIssueOut.Done/ns0:Done</to>
+                        </copy>
+                    </assign>
+                </sequence>                             
+            </else>
+        </if>
+        <reply name="Reply" partnerLink="SCA" operation="CloseSalesLead" portType="tns:SCASoap" variable="CloseSalesLeadIssueOut"/>
+    
+    </sequence>
+</process>

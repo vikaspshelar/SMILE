@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process
+    name="HandlePortingEvent"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/AM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/AM" location="../Partners/AM/AMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="AM" xmlns:tns="http://xml.smilecoms.com/AM" partnerLinkType="tns:AMServiceDefinition" partnerRole="AM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+   <variables>
+      <variable name="AMHandlePortInEventOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:HandlePortInEventResponse"/>
+      <variable name="AMHandlePortInEventIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:HandlePortInEventRequest"/>
+      <variable name="SCAHandlePortInEventOut" messageType="tns:HandlePortInEventResponse"/>
+      <variable name="SCAHandlePortInEventIn" messageType="tns:HandlePortInEventRequest"/>
+      <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+   </variables>
+   <faultHandlers>
+        <catch xmlns:AM="http://xml.smilecoms.com/AM" faultMessageType="AM:AMError" faultVariable="AMError">
+            <sequence name="Sequence11">
+                <assign name="Assign11">
+                    <copy>
+                        <from>$AMError.AMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$AMError.AMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$AMError.AMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply4" partnerLink="SCA" operation="HandlePortInEvent" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+   <sequence>
+      <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="HandlePortInEvent" portType="tns:SCASoap" variable="SCAHandlePortInEventIn"/>
+      <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('AM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="AM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+      <assign name="Assign1">
+         <copy>
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:SCAContext/ns0:TxId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PlatformContext/ns1:TxId</to>
+         </copy>
+         <copy>
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+         </copy>
+         <copy>
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PlatformContext/ns1:OriginatingIP</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:SCAContext/ns0:Tenant</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PlatformContext/ns1:Tenant</to>
+         </copy>
+         <copy>
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:PortingOrderId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PortingOrderId</to>
+         </copy>
+         <copy>
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:MessageType</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:MessageType</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:CustomerProfileId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:CustomerProfileId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:CustomerType</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:CustomerType</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:HandleManually</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:HandleManually</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:PortingDate</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PortingDate</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:DonorId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:DonorId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:MessageId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:MessageId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RangeHolderId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RangeHolderId</to>
+         </copy >
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RecipientId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RecipientId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:SenderId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:SenderId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:ErrorCode</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:ErrorCode</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:ErrorDescription</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:ErrorDescription</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:AutomaticAccept</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:AutomaticAccept</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:ValidationMSISDN</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:ValidationMSISDN</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:DateOfBirth</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:DateOfBirth</to>
+         </copy>
+         
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:CustomerIdType</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:CustomerIdType</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:SubscriptionType</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:SubscriptionType</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:ServiceType</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:ServiceType</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:CustomerLastName</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:CustomerLastName</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:CustomerFirstName</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:CustomerFirstName</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:Gender</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:Gender</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:ValidationErrors</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:ValidationErrors</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:PortingRejectionList</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PortingRejectionList</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RequestDatetime</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RequestDatetime</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:IdentityNumber</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:IdentityNumber</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:PortingDirection</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PortingDirection</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:EmergencyRestoreId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:EmergencyRestoreId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:PortRequestFormId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PortRequestFormId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RingFenceIndicator</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RingFenceIndicator</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:IsEmergencyRestore</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:IsEmergencyRestore</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:OrganisationId</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:OrganisationId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:OrganisationName</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:OrganisationName</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:OrganisationNumber</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:OrganisationNumber</to>
+         </copy>
+         <copy  ignoreMissingFromData="yes">
+            <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:OrganisationTaxNumber</from>
+            <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:OrganisationTaxNumber</to>
+         </copy>
+      </assign>
+      <forEach name="ForEachRingFenceNumber" parallel="no" counterName="idxRingFenceNumber">
+         <startCounterValue>1</startCounterValue>
+         <finalCounterValue>count($SCAHandlePortInEventIn.PortInEventRequest/ns0:RingFenceNumberList)</finalCounterValue>
+         <scope name="Scope5">
+            <assign name="Assign15">
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RingFenceNumberList[$idxRingFenceNumber]/ns0:PhoneNumberStart</from>
+                  <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RingFenceNumberList[$idxRingFenceNumber]/ns1:PhoneNumberStart</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RingFenceNumberList[$idxRingFenceNumber]/ns0:PhoneNumberEnd</from>
+                  <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RingFenceNumberList[$idxRingFenceNumber]/ns1:PhoneNumberEnd</to>
+               </copy>
+            </assign>
+         </scope>
+      </forEach>
+      <forEach name="ForEachRoutingIgnfo" parallel="no" counterName="routingInfoIndex">
+         <startCounterValue>1</startCounterValue>
+         <finalCounterValue>count($SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo)</finalCounterValue>
+         <scope name="Scope1">
+            <assign name="Assign3">
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:SelectedForPortIn</from>
+                  <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RoutingInfoList/ns1:RoutingInfo[$routingInfoIndex]/ns1:SelectedForPortIn</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:ServiceInstanceId</from>
+                  <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RoutingInfoList/ns1:RoutingInfo[$routingInfoIndex]/ns1:ServiceInstanceId</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:PhoneNumberRange/ns0:PhoneNumberStart</from>
+                  <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RoutingInfoList/ns1:RoutingInfo[$routingInfoIndex]/ns1:PhoneNumberRange/ns1:PhoneNumberStart</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:PhoneNumberRange/ns0:PhoneNumberEnd</from>
+                  <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RoutingInfoList/ns1:RoutingInfo[$routingInfoIndex]/ns1:PhoneNumberRange/ns1:PhoneNumberEnd</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:RoutingNumber</from>
+                  <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:RoutingInfoList/ns1:RoutingInfo[$routingInfoIndex]/ns1:RoutingNumber</to>
+               </copy>
+               
+            </assign>
+         </scope>
+      </forEach>
+      <forEach name="ForEachPortRequestForm" parallel="no" counterName="forEachPortRequestForm">
+         <startCounterValue>1</startCounterValue>
+         <finalCounterValue>count($SCAHandlePortInEventIn.PortInEventRequest/ns0:PortRequestForms)</finalCounterValue>
+         <scope name="Scope4">
+            <assign name="Assign14">
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:PortRequestForms[$forEachPortRequestForm]/ns0:PhotoGuid</from>
+                  <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PortRequestForms[$forEachPortRequestForm]/ns1:PhotoGuid</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:PortRequestForms[$forEachPortRequestForm]/ns0:PhotoType</from>
+                  <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PortRequestForms[$forEachPortRequestForm]/ns1:PhotoType</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:PortRequestForms[$forEachPortRequestForm]/ns0:Data</from>
+                  <to>$AMHandlePortInEventIn.PortInEventRequest/ns1:PortRequestForms[$forEachPortRequestForm]/ns1:Data</to>
+               </copy>
+            </assign>
+         </scope>
+      </forEach>
+      <invoke name="Invoke1" partnerLink="AM" operation="HandlePortInEvent" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMHandlePortInEventIn" outputVariable="AMHandlePortInEventOut"/>
+      <assign name="Assign2">
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:PlatformContext/ns1:TxId</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:SCAContext/ns0:TxId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:PlatformContext/ns1:OriginatingIdentity</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:SCAContext/ns0:OriginatingIdentity</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:PlatformContext/ns1:OriginatingIP</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:SCAContext/ns0:OriginatingIP</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:PlatformContext/ns1:Tenant</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:SCAContext/ns0:Tenant</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:PortingOrderId</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:PortingOrderId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:MessageType</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:MessageType</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:CustomerProfileId</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:CustomerProfileId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:CustomerType</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:CustomerType</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:HandleManually</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:HandleManually</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:PortingDate</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:PortingDate</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:DonorId</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:DonorId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:MessageId</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:MessageId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:RangeHolderId</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:RangeHolderId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:RecipientId</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:RecipientId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:ProcessingStatus</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:ProcessingStatus</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:ValidationErrors</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:ValidationErrors</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:ErrorCode</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:ErrorCode</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:ErrorDescription</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:ErrorDescription</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:PortingDirection</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:PortingDirection</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:EmergencyRestoreId</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:EmergencyRestoreId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:PortRequestFormId</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:PortRequestFormId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:OrganisationId</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:OrganisationId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:OrganisationName</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:OrganisationName</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:OrganisationNumber</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:OrganisationNumber</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:OrganisationTaxNumber</from>
+            <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:OrganisationTaxNumber</to>
+         </copy>
+      </assign>
+      
+      <forEach name="ForEachRoutingInfo" parallel="no" counterName="routingInfoIndex">
+         <startCounterValue>1</startCounterValue>
+         <finalCounterValue>count($SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo)</finalCounterValue>
+         <scope name="Scope3">
+            <assign name="Assign13">
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:SelectedForPortIn</from>
+                  <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:SelectedForPortIn</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:ServiceInstanceId</from>
+                  <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:ServiceInstanceId</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:PhoneNumberRange/ns0:PhoneNumberStart</from>
+                  <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:PhoneNumberRange/ns0:PhoneNumberStart</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:PhoneNumberRange/ns0:PhoneNumberEnd</from>
+                  <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:PhoneNumberRange/ns0:PhoneNumberEnd</to>
+               </copy>
+               <copy>
+                  <from>$SCAHandlePortInEventIn.PortInEventRequest/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:RoutingNumber</from>
+                  <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:RoutingNumber</to>
+               </copy>
+            </assign>
+         </scope>
+      </forEach>
+      <forEach name="ForEachRingFenceNumber2" parallel="no" counterName="idxRingFenceNumberOut">
+         <startCounterValue>1</startCounterValue>
+         <finalCounterValue>count($AMHandlePortInEventOut.PortInEventResponse/ns1:RingFenceNumberList)</finalCounterValue>
+         <scope name="Scope30">
+            <assign name="Assign35">
+               <copy>
+                  <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:RingFenceNumberList[$idxRingFenceNumberOut]/ns1:PhoneNumberStart</from>
+                  <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:RingFenceNumberList[$idxRingFenceNumberOut]/ns0:PhoneNumberStart</to>
+               </copy>
+               <copy>
+                  <from>$AMHandlePortInEventOut.PortInEventResponse/ns1:RingFenceNumberList[$idxRingFenceNumberOut]/ns1:PhoneNumberEnd</from>
+                  <to>$SCAHandlePortInEventOut.PortInEventResponse/ns0:RingFenceNumberList[$idxRingFenceNumberOut]/ns0:PhoneNumberEnd</to>
+               </copy>
+            </assign>
+         </scope>
+      </forEach>
+      <reply name="Reply1" partnerLink="SCA" operation="HandlePortInEvent" portType="tns:SCASoap" variable="SCAHandlePortInEventOut"/>
+   </sequence>
+</process>

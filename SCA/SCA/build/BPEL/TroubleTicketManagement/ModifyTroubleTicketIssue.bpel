@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ModifyTroubleTicketIssue"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/TT" xmlns:ns2="http://xml.smilecoms.com/SCASubFlows" xmlns:ns3="http://xml.smilecoms.com/TT" xmlns:ns4="http://xml.smilecoms.com/schema/IM" xmlns:ns5="http://xml.smilecoms.com/IM" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed1="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/TT" location="../Partners/TT/TTServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="TT" xmlns:tns="http://xml.smilecoms.com/TT" partnerLinkType="tns:TTServiceDefinition" partnerRole="TT"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="watcherCount" type="xsd:int"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="TTModifyIssueOut" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:ModifyIssueResponse"/>
+        <variable name="TTModifyIssueIn" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:ModifyIssueRequest"/>
+        <variable name="SCAModifyTroubleTicketIssueOut" messageType="tns:ModifyTroubleTicketIssueResponse"/>
+        <variable name="SCAModifyTroubleTicketIssueIn" messageType="tns:ModifyTroubleTicketIssueRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="TTError" faultMessageType="ns3:TTError">
+            <sequence name="Sequence1">
+                <assign name="Assign_TTError_SCAError">
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply_TTFault" partnerLink="SCA" operation="ModifyTroubleTicketIssue" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive" createInstance="yes" partnerLink="SCA" operation="ModifyTroubleTicketIssue" portType="tns:SCASoap" variable="SCAModifyTroubleTicketIssueIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('TT')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="TT"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign_SCA_TT">
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Project</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:Project</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:IssueType</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:IssueType</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Priority</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:Priority</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:DueDate</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:DueDate</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Summary</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:Summary</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Reporter</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:Reporter</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Assignee</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:Assignee</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Created</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:Created</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Resolution</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:Resolution</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Status</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:Status</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Updated</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:Updated</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:ID</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:ID</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Description</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:Description</to>
+            </copy>
+            <copy>
+                <from>count($SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Watchers)</from>
+                <to variable="watcherCount"/>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:SCAContext/ns0:TxId</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:SCAContext/ns0:Tenant</from>
+                <to>$TTModifyIssueIn.ModifiedIssue/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            
+        </assign>
+        <forEach name="ForEach_InboundWatcher" parallel="no" counterName="iWatcherCount">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$watcherCount</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="Assign_SCA_TT_Watcher">
+                    <copy>
+                        <from>$SCAModifyTroubleTicketIssueIn.ModifiedTTIssue/ns0:Watchers[$iWatcherCount]</from>
+                        <to>$TTModifyIssueIn.ModifiedIssue/ns1:Watchers[$iWatcherCount]</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <invoke name="Call_TT" partnerLink="TT" operation="ModifyIssue" xmlns:tns="http://xml.smilecoms.com/TT" portType="tns:TTSoap" inputVariable="TTModifyIssueIn" outputVariable="TTModifyIssueOut"/>
+        <assign name="Assign_TT_SCA">
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:Project</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Project</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:IssueType</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:IssueType</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:Priority</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Priority</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:DueDate</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:DueDate</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:Summary</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Summary</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:Created</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Created</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:Resolution</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Resolution</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:Status</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Status</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:Updated</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Updated</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:ID</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:ID</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:Description</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Description</to>
+            </copy>
+            <copy>
+                <from>count($TTModifyIssueOut.Issue/ns1:Watchers)</from>
+                <to variable="watcherCount"/>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:Reporter</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Reporter</to>
+            </copy>
+            <copy>
+                <from>$TTModifyIssueOut.Issue/ns1:Assignee</from>
+                <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Assignee</to>
+            </copy>
+            
+            
+        </assign>
+        <forEach name="ForEach_OutboundWatcher" parallel="no" counterName="iWatcherCount">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$watcherCount</finalCounterValue>
+            <scope name="Scope2">
+                <assign name="Assign_TT_SCA_Watcher">
+                    <copy>
+                        <from>$TTModifyIssueOut.Issue/ns1:Watchers[$iWatcherCount]</from>
+                        <to>$SCAModifyTroubleTicketIssueOut.TTIssue/ns0:Watchers[$iWatcherCount]</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <reply name="Reply" partnerLink="SCA" operation="ModifyTroubleTicketIssue" portType="tns:SCASoap" variable="SCAModifyTroubleTicketIssueOut"/>
+    </sequence>
+</process>
+
+
+
+
+
+
+

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="0.4" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://infowise.co.tz/sub-registration/" xmlns:tns="http://infowise.co.tz/sub-registration/">
+    <!-- XML Schema Generated from XML Document on Wed May 29 2019 11:21:30 GMT+0200 (South Africa Standard Time) -->
+    <!-- with XmlGrid.net Free Online Service http://xmlgrid.net -->
+    <xs:element name="subRegistration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="operatorCode" type="xs:string" />
+        <xs:element name="operatorPassword" type="xs:string" />
+        <xs:element name="timestamp" type="xs:string" />
+        <xs:element name="registrationNamesRequest">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="msisdn" type="xs:long" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="registrationNamesResponse">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="msisdn" type="xs:long" />
+              <xs:element name="firstName" type="xs:string" />
+              <xs:element name="middleName" type="xs:string" />
+              <xs:element name="lastName" type="xs:string" />
+              <xs:element name="responseCode" type="xs:string" />
+              <xs:element name="responseDesc" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:double" use="required"></xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

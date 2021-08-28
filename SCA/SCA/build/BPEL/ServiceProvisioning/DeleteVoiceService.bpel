@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="DeleteVoiceService"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:ns0="http://xml.smilecoms.com/schema/IM" xmlns:ns1="http://xml.smilecoms.com/schema/AM">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/AM" location="../Partners/AM/AMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="AM" xmlns:tns="http://xml.smilecoms.com/AM" partnerLinkType="tns:AMServiceDefinition" partnerRole="AM"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="IMGetIMSPublicIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPublicIdentityResponse"/>
+        <variable name="IMGetIMSPublicIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPublicIdentityRequest"/>
+        <variable name="AMFreeNumberOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:Done"/>
+        <variable name="AMFreeNumberIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:FreeNumberRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SubFlowError"/>
+        <variable name="IMDeleteIMSPublicIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:Done"/>
+        <variable name="IMDeleteIMSPublicIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:DeleteIMSPublicIdentityRequest"/>
+        <variable name="SubFlowDeleteVoiceServiceOut" messageType="tns:Done"/>
+        <variable name="SubFlowDeleteVoiceServiceIn" messageType="tns:DeleteVoiceServiceRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="IMError" xmlns:IM="http://xml.smilecoms.com/IM" faultMessageType="IM:IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCASubFlows" operation="DeleteVoiceService" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="DeleteVoiceService" portType="tns:SCASubFlowsSoap" variable="SubFlowDeleteVoiceServiceIn"/>
+        
+        
+       <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('AM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="AM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignGetSIP_IMPU">
+            <copy>
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/TxId</from>
+                <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/Tenant</from>
+                <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>substring-before(substring-after($SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/RemoteResourceId, '-'), ',')</from>
+                <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:IMSPublicIdentityId</to>
+            </copy>
+        </assign>
+        <invoke name="GetIMPUSIP" partnerLink="IM" operation="GetIMSPublicIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSPublicIdentityIn" outputVariable="IMGetIMSPublicIdentityOut"/>
+        <assign name="AssignDeleteIMPUSIP">
+            <copy>
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/TxId</from>
+                <to>$IMDeleteIMSPublicIdentityIn.DeleteIMSPublicIdentityRequest/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMDeleteIMSPublicIdentityIn.DeleteIMSPublicIdentityRequest/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                <to>$IMDeleteIMSPublicIdentityIn.DeleteIMSPublicIdentityRequest/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/Tenant</from>
+                <to>$IMDeleteIMSPublicIdentityIn.DeleteIMSPublicIdentityRequest/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>substring-before(substring-after($SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/RemoteResourceId, '-'), ',')</from>
+                <to>$IMDeleteIMSPublicIdentityIn.DeleteIMSPublicIdentityRequest/ns0:IMSPublicIdentityId</to>
+            </copy>
+        </assign>
+        <invoke name="DeleteIMPUSIP" partnerLink="IM" operation="DeleteIMSPublicIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMDeleteIMSPublicIdentityIn" outputVariable="IMDeleteIMSPublicIdentityOut"/>
+        
+        <assign name="AssignDeleteIMPUTEL">
+            <copy>
+                <from>substring-after($SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/RemoteResourceId, ',')</from>
+                <to>$IMDeleteIMSPublicIdentityIn.DeleteIMSPublicIdentityRequest/ns0:IMSPublicIdentityId</to>
+            </copy>
+        </assign>
+        <invoke name="DeleteIMPUTEL" partnerLink="IM" operation="DeleteIMSPublicIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMDeleteIMSPublicIdentityIn" outputVariable="IMDeleteIMSPublicIdentityOut"/>
+        <assign name="AssignFreeNumber">
+            <copy>
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/TxId</from>
+                <to>$AMFreeNumberIn.NumberToFree/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$AMFreeNumberIn.NumberToFree/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                <to>$AMFreeNumberIn.NumberToFree/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowDeleteVoiceServiceIn.VoiceServiceDeletionInfo/SubFlowContext/Tenant</from>
+                <to>$AMFreeNumberIn.NumberToFree/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$IMGetIMSPublicIdentityOut.IMSPublicIdentity/ns0:Identity</from>
+                <to>$AMFreeNumberIn.NumberToFree/ns1:String</to>
+            </copy>
+        </assign>
+        <invoke name="FreeNumber" partnerLink="AM" operation="FreeNumber" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMFreeNumberIn" outputVariable="AMFreeNumberOut"/>
+        <assign name="AssignResult">
+            <copy>
+                <from>$IMDeleteIMSPublicIdentityOut.Done/ns0:Done</from>
+                <to>$SubFlowDeleteVoiceServiceOut.Done/Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="DeleteVoiceService" portType="tns:SCASubFlowsSoap" variable="SubFlowDeleteVoiceServiceOut"/>
+    </sequence>
+</process>

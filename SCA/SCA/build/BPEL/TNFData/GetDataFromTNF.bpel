@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process
+    name="GetDataFromTNF"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:TNF="http://xml.smilecoms.com/TNF"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/TNF">
+    
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/TNF" location="../Partners/TNF/TNFServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="TNF" xmlns:tns="http://xml.smilecoms.com/TNF" partnerLinkType="tns:TNFServiceDefinition" partnerRole="TNF"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="TNFGetDataOut" messageType="TNF:TNFDataResponse"/>
+        <variable name="TNFGetDataIn" messageType="TNF:TNFDataRequest"/>
+        <variable name="SCAGetDataOut" messageType="tns:TNFDataResponse"/>
+        <variable name="SCAGetDataIn" messageType="tns:TNFDataRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="paramsCount" type="xsd:int"/>
+        <variable name="reportIdsCount" type="xsd:int"/>
+        <variable name="attribNamesCount" type="xsd:int"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="TNF:TNFError" faultVariable="TNFError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$TNFError.TNFError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$TNFError.TNFError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$TNFError.TNFError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetTNFData" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetTNFData" portType="tns:SCASoap" variable="SCAGetDataIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT">
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('TNF')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="TNF"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        
+        <assign name="Assign_SCA_TNF">
+            <copy>
+                <from>$SCAGetDataIn.TNFQuery/ns1:SCAContext/ns1:TxId</from>
+                <to>$TNFGetDataIn.TNFQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetDataIn.TNFQuery/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$TNFGetDataIn.TNFQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetDataIn.TNFQuery/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$TNFGetDataIn.TNFQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetDataIn.TNFQuery/ns1:SCAContext/ns1:Tenant</from>
+                <to>$TNFGetDataIn.TNFQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAGetDataIn.TNFQuery/ns1:LogicalSimId</from>
+                <to>$TNFGetDataIn.TNFQuery/ns2:LogicalSimId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetDataIn.TNFQuery/ns1:TNFMethod</from>
+                <to>$TNFGetDataIn.TNFQuery/ns2:TNFMethod</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetDataIn.TNFQuery/ns1:TimeRange/ns1:StartTime</from>
+                <to>$TNFGetDataIn.TNFQuery/ns2:TimeRange/ns2:StartTime</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetDataIn.TNFQuery/ns1:TimeRange/ns1:EndTime</from>
+                <to>$TNFGetDataIn.TNFQuery/ns2:TimeRange/ns2:EndTime</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetDataIn.TNFQuery/ns1:TimeRange/ns1:Granularity</from>
+                <to>$TNFGetDataIn.TNFQuery/ns2:TimeRange/ns2:Granularity</to>
+            </copy>
+            
+            <copy>
+                <from>count($SCAGetDataIn.TNFQuery/ns1:ReportIds)</from>
+                <to variable="reportIdsCount"/>
+            </copy>
+            <copy>
+                <from>count($SCAGetDataIn.TNFQuery/ns1:AttributeNames)</from>
+                <to variable="attribNamesCount"/>
+            </copy>
+            <copy>
+                <from>count($SCAGetDataIn.TNFQuery/ns1:ParameterSet)</from>
+                <to variable="paramsCount"/>
+            </copy>
+            
+        </assign>
+        
+        <forEach name="ForEach_TNFReportIds" parallel="no" counterName="reportIds">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$reportIdsCount</finalCounterValue>
+            <scope name="Scope_TNFReportIds">
+                <sequence name="Sequence_TNFReportIds">
+                    <assign name="Assign_TNFReportIds">
+                        <copy>
+                            <from>$SCAGetDataIn.TNFQuery/ns1:ReportIds[$reportIds]/ns1:ReportId</from>
+                            <to>$TNFGetDataIn.TNFQuery/ns2:ReportIds[$reportIds]/ns2:ReportId</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <forEach name="ForEach_TNFAttributeNames" parallel="no" counterName="attribNames">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$attribNamesCount</finalCounterValue>
+            <scope name="Scope_TNFAttributeNames">
+                <sequence name="Sequence_TNFAttributeNames">
+                    <assign name="Assign_TNFAttribPairCounters">
+                        <copy>
+                            <from>$SCAGetDataIn.TNFQuery/ns1:AttributeNames[$attribNames]/ns1:AttributeName</from>
+                            <to>$TNFGetDataIn.TNFQuery/ns2:AttributeNames[$attribNames]/ns2:AttributeName</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+        
+         <forEach name="ForEach_TNFParamsSet" parallel="no" counterName="paramNames">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$paramsCount</finalCounterValue>
+            <scope name="Scope_TNFMetricParamNames">
+                <sequence name="Sequence_TNFMetricParamNames">
+                    <assign name="Assign_TNFAttribPairCounters">
+                        <copy ignoreMissingFromData="yes">
+                            <from>$SCAGetDataIn.TNFQuery/ns1:ParameterSet[$paramNames]/ns1:Parameter/ns1:ParameterKey</from>
+                            <to>$TNFGetDataIn.TNFQuery/ns2:ParameterSet[$paramNames]/ns2:Parameter/ns2:ParameterKey</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$SCAGetDataIn.TNFQuery/ns1:ParameterSet[$paramNames]/ns1:Parameter/ns1:ParameterVal</from>
+                            <to>$TNFGetDataIn.TNFQuery/ns2:ParameterSet[$paramNames]/ns2:Parameter/ns2:ParameterVal</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+       
+        
+        <invoke name="Invoke_GetTNFData" partnerLink="TNF" operation="GetTNFData" portType="TNF:TNFSoap" inputVariable="TNFGetDataIn" outputVariable="TNFGetDataOut"/>
+        
+        <assign name="Assign_TNF_SCA">
+            <copy>
+                <from>$TNFGetDataOut.TNFData/ns2:TNFXmlData</from>
+                <to>$SCAGetDataOut.TNFData/ns1:TNFXmlData</to>
+            </copy>
+        </assign>
+        
+        <reply name="ReplyTNFData" partnerLink="SCA" operation="GetTNFData" portType="tns:SCASoap" variable="SCAGetDataOut"/>
+    </sequence>
+</process>

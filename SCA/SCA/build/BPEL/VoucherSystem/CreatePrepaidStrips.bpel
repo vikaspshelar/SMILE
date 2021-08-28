@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CreatePrepaidStrips"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="_NS_"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/PVS" xmlns:ns2="http://xml.smilecoms.com/schema/BM" xmlns:ns3="http://xml.smilecoms.com/PVS">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/PVS" location="../Partners/PVS/PVSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="PVS" xmlns:tns="http://xml.smilecoms.com/PVS" partnerLinkType="tns:PVSServiceDefinition" partnerRole="PVS"/>
+        
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="StripsToCreate" type="xsd:int"/>
+        <variable name="PVSCreatePrepaidStripsOut" xmlns:tns="http://xml.smilecoms.com/PVS" messageType="tns:PrepaidStrips"/>
+        <variable name="PVSCreatePrepaidStripsIn" xmlns:tns="http://xml.smilecoms.com/PVS" messageType="tns:CreatePrepaidStripsRequest"/>
+        <variable name="SCACreatePrepaidStripsOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:PrepaidStrips"/>
+        <variable name="SCACreatePrepaidStripsIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:CreatePrepaidStripsRequest"/>
+        <variable name="Fault1FaultVar" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:PVS="http://xml.smilecoms.com/PVS" faultMessageType="PVS:PVSError" faultVariable="PVSError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="CreatePrepaidStrips" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="CreatePrepaidStrips" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCACreatePrepaidStripsIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('PVS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="PVS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <if name="IfNumberLessThan100">
+            <condition>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:NumberOfStrips &lt; 100</condition>
+            <assign name="AssignVars">
+                <copy>
+                    <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:SCAContext/ns0:TxId</from>
+                    <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:PlatformContext/ns1:TxId</to>
+                </copy>
+                <copy>
+                    <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                    <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+                </copy>
+                <copy>
+                    <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:SCAContext/ns0:OriginatingIP</from>
+                    <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:PlatformContext/ns1:OriginatingIP</to>
+                </copy>
+                <copy ignoreMissingFromData="yes">
+                    <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:SCAContext/ns0:Tenant</from>
+                    <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:PlatformContext/ns1:Tenant</to>
+                </copy>
+                <copy>
+                    <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:ValueInCents</from>
+                    <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:ValueInCents</to>
+                </copy>
+                <copy>
+                    <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:NumberOfStrips</from>
+                    <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:NumberOfStrips</to>
+                </copy>
+                <copy>
+                    <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:ExpiryDate</from>
+                    <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:ExpiryDate</to>
+                </copy>
+                <copy>
+                    <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:UnitCreditSpecificationId</from>
+                    <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:UnitCreditSpecificationId</to>
+                </copy>
+                <copy>
+                    <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:AccountId</from>
+                    <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:AccountId</to>
+                </copy>
+            </assign>
+            <else>
+                <assign name="AssignVars2">
+                    <copy>
+                        <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:SCAContext/ns0:TxId</from>
+                        <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:PlatformContext/ns1:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                        <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:PlatformContext/ns1:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:PlatformContext/ns1:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:ValueInCents</from>
+                        <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:ValueInCents</to>
+                    </copy>
+                    <copy>
+                        <from>100</from>
+                        <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:NumberOfStrips</to>
+                    </copy>
+                    <copy>
+                        <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:ExpiryDate</from>
+                        <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:ExpiryDate</to>
+                    </copy>
+                    <copy>
+                        <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:UnitCreditSpecificationId</from>
+                        <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:UnitCreditSpecificationId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:AccountId</from>
+                        <to>$PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:AccountId</to>
+                    </copy>
+                </assign>
+            </else>
+        </if>
+        <assign name="AssignNumberToCreate">
+            <copy>
+                <from>$SCACreatePrepaidStripsIn.NewPrepaidStripsData/ns0:NumberOfStrips</from>
+                <to variable="StripsToCreate"/>
+            </copy>
+        </assign>                      
+        <!--<assign name="AssignDone">
+            <copy>
+                <from>'true'</from>
+                <to>$SCACreatePrepaidStripsOut.Done/ns0:Done</to>
+            </copy>
+        </assign>-->
+        <repeatUntil name="RepeatUntil1">
+            <sequence name="Sequence2">
+                <invoke name="CreateStrips" partnerLink="PVS" operation="CreatePrepaidStrips" portType="ns3:PVSSoap" inputVariable="PVSCreatePrepaidStripsIn" outputVariable="PVSCreatePrepaidStripsOut">
+                    <sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>'Calling PVS to craete another 100 strips'</from>
+                        </sxt:log>
+                    </sxt:trace>
+                </invoke>
+                <forEach name="ForEachPS" parallel="no" counterName="ps">
+                    <startCounterValue>1</startCounterValue>
+                    <finalCounterValue>count($PVSCreatePrepaidStripsOut.PrepaidStrips)</finalCounterValue>
+                    <scope name="LoopScope">
+                        <sequence name="LoopSequence">
+                            <assign name="AssignPS">
+                                <copy>
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:PrepaidStripId</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:PrepaidStripId</to>
+                                </copy>
+                                <copy>
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:ValueInCents</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:ValueInCents</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:Status</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:Status</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:RedemptionAccountId</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:RedemptionAccountId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:RedemptionAccountHistoryId</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:RedemptionAccountHistoryId</to>
+                                </copy>
+                                <copy>
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:GeneratedDate</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:GeneratedDate</to>
+                                </copy>
+                                <copy>
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:ExpiryDate</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:ExpiryDate</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:InvoiceData</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:InvoiceData</to>
+                                </copy>
+                                <copy>
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:UnitCreditSpecificationId</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:UnitCreditSpecificationId</to>
+                                </copy>
+                                <copy>
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:AccountId</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:AccountId</to>
+                                </copy>
+                                <copy>
+                                    <from>$PVSCreatePrepaidStripsOut.PrepaidStrips/ns1:PrepaidStrips/ns1:PIN</from>
+                                    <to>$SCACreatePrepaidStripsOut.PrepaidStrips/ns0:PrepaidStrips/ns0:PIN</to>
+                                </copy>
+                            </assign>
+                        </sequence>
+                    </scope>
+                </forEach>
+                <assign name="DecrementToCreate">
+                    <copy>
+                        <from>$StripsToCreate - $PVSCreatePrepaidStripsIn.NewPrepaidStripsData/ns1:NumberOfStrips</from>
+                        <to variable="StripsToCreate"/>
+                    </copy>
+                </assign>
+            </sequence>
+            <condition>$StripsToCreate &lt;= 0</condition>
+        </repeatUntil>
+        <reply name="ReplyAsync" partnerLink="SCA" operation="CreatePrepaidStrips" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCACreatePrepaidStripsOut"/>
+    </sequence>
+</process>
+

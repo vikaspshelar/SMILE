@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="IsUp"
+    xmlns:LT="java://com.smilecoms.lt.LT"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:ns1="http://xml.smilecoms.com/SCA" xmlns:ns0="http://xml.smilecoms.com/schema/SCA"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" 
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/LT" 
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCA" partnerLinkType="ns1:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="ns1:SCAError"/>
+        <variable name="IsUpOut" messageType="ns1:IsUpResponse"/>
+        <variable name="IsUpIn" messageType="ns1:IsUpRequest"/>
+    </variables>
+    <faultHandlers>
+        <catchAll>
+            <sequence name="Sequence4">
+                <assign name="Assign1">
+                    <copy>
+                        <from>'This SCA Node is down'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'system'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0000'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="IsUp" portType="ns1:SCASoap" faultName="ns1:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catchAll>
+    </faultHandlers>
+    <sequence name="Sequence1">
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="IsUp" portType="ns1:SCASoap" variable="IsUpIn"/>
+        <assign name="AssignPlatforms">
+            <copy>
+                <from>LT:getEndPointAddresses()</from>
+                <to>$IsUpOut.PlatformEndPointList/ns0:PlatformEndPoints</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="IsUp" portType="ns1:SCASoap" variable="IsUpOut"/>
+    </sequence>
+</process>
+
+
+

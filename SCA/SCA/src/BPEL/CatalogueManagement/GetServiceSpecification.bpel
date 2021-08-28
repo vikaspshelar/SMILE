@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetServiceSpecification"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/CM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="CopyCMSvcSpecToSCASvcSpecOut" messageType="tns:ServiceSpecificationResponse"/>
+        <variable name="CopyCMSvcSpecToSCASvcSpecIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceSpecificationResponse"/>
+        <variable name="SCAGetServiceSpecificationOut" messageType="tns:ServiceSpecificationResponse"/>
+        <variable name="CMGetServiceSpecificationOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceSpecificationResponse"/>
+        <variable name="CMGetServiceSpecificationIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetServiceSpecificationRequest"/>
+        <variable name="SCAGetServiceSpecificationIn" messageType="tns:GetServiceSpecificationRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetServiceSpecification" portType="tns:SCASoap" variable="SCAGetServiceSpecificationIn"/>
+        
+         <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAGetServiceSpecificationIn.ServiceSpecificationQuery/ns0:ServiceSpecificationId</from>
+                <to>$CMGetServiceSpecificationIn.ServiceSpecificationQuery/ns1:ServiceSpecificationId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetServiceSpecificationIn.ServiceSpecificationQuery/ns0:Verbosity</from>
+                <to>$CMGetServiceSpecificationIn.ServiceSpecificationQuery/ns1:Verbosity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceSpecificationIn.ServiceSpecificationQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$CMGetServiceSpecificationIn.ServiceSpecificationQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceSpecificationIn.ServiceSpecificationQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$CMGetServiceSpecificationIn.ServiceSpecificationQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceSpecificationIn.ServiceSpecificationQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$CMGetServiceSpecificationIn.ServiceSpecificationQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceSpecificationIn.ServiceSpecificationQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$CMGetServiceSpecificationIn.ServiceSpecificationQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceSpecificationIn.ServiceSpecificationQuery/ns0:SCAContext/ns0:Comment</from>
+                <to>$CMGetServiceSpecificationIn.ServiceSpecificationQuery/ns1:PlatformContext/ns1:Comment</to>
+            </copy>
+        </assign>
+        <invoke name="CallCMGetSvcSpec" partnerLink="CM" operation="GetServiceSpecification" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetServiceSpecificationIn" outputVariable="CMGetServiceSpecificationOut"/>
+        <assign name="Assign2">
+            <copy>
+                <from variable="CMGetServiceSpecificationOut" part="ServiceSpecification"/>
+                <to variable="CopyCMSvcSpecToSCASvcSpecIn" part="ServiceSpecification"/>
+            </copy>
+        </assign>
+        <invoke name="CopyCMSvcSpecToSCA" partnerLink="SCASubFlows" operation="CopyCMSvcSpecToSCASvcSpec" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" inputVariable="CopyCMSvcSpecToSCASvcSpecIn" outputVariable="CopyCMSvcSpecToSCASvcSpecOut"/>
+        <assign name="Assign3">
+            <copy>
+                <from variable="CopyCMSvcSpecToSCASvcSpecOut" part="ServiceSpecification"/>
+                <to variable="SCAGetServiceSpecificationOut" part="ServiceSpecification"/>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="GetServiceSpecification" portType="tns:SCASoap" variable="SCAGetServiceSpecificationOut"/>
+    </sequence>
+</process>

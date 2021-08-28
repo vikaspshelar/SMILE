@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/BS"
+            xmlns:tns="http://xml.smilecoms.com/schema/BS"
+            elementFormDefault="qualified">
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject"  >
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="Done"  >
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="BSError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="BatchSchedule">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/BS" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="BatchId" type="xsd:int">
+                    </xsd:element>
+                    <xsd:element name="LastStatus" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="Status" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="LastFinished" type="xsd:dateTime">
+                    </xsd:element>
+                    <xsd:element name="LastError" type="xsd:string"></xsd:element>
+                    <xsd:element name="BatchMethod" type="xsd:string"></xsd:element>
+                    <xsd:element name="ClientId" type="xsd:string"></xsd:element>
+                    <xsd:element name="Description" type="xsd:string"></xsd:element>
+                    <xsd:element name="LastRan" type="xsd:dateTime"></xsd:element>
+                    <xsd:element name="SCAEndpoint" type="xsd:string"></xsd:element>
+                    <xsd:element name="Schedule" type="xsd:string"></xsd:element>
+                    <xsd:element name="LastRunHost" type="xsd:string"></xsd:element>
+                    <xsd:element name="LastRuntimeSecs" type="xsd:int"></xsd:element>
+                    <xsd:element name="CurrentLockingHost" type="xsd:string"></xsd:element>
+                    <xsd:element name="Version" type="xsd:int"></xsd:element>
+                    <xsd:element name="SeedData" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="BatchScheduleRunResult" type="tns:BatchSchedule">
+    </xsd:element>
+    <xsd:element name="Done" type="tns:Done">
+    </xsd:element>
+    <xsd:element name="BSError" type="tns:BSError">
+    </xsd:element>
+    <xsd:complexType name="BatchScheduleList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/BS" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="BatchSchedules" type="tns:BatchSchedule" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformInteger">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/BS" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Integer" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="BatchScheduleListRequest" type="tns:PlatformInteger"></xsd:element>
+    <xsd:element name="BatchScheduleList" type="tns:BatchScheduleList"></xsd:element>
+    <xsd:element name="ModifiedBatchSchedule" type="tns:BatchSchedule"></xsd:element>
+    <xsd:complexType name="UnixCommand">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Host" type="xsd:string"></xsd:element>
+                    <xsd:element name="User" type="xsd:string"></xsd:element>
+                    <xsd:element name="Password" type="xsd:string"></xsd:element>
+                    <xsd:element name="CommandText" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="UnixCommand" type="tns:UnixCommand"></xsd:element>
+    <xsd:element name="UnixCommandResult" type="xsd:string"></xsd:element>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+</xsd:schema>

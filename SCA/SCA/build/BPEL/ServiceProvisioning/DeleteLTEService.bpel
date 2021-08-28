@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="DeleteLTEService"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/IM" xmlns:ns1="http://xml.smilecoms.com/schema/AM">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/AM" location="../Partners/AM/AMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="AM" xmlns:tns="http://xml.smilecoms.com/AM" partnerLinkType="tns:AMServiceDefinition" partnerRole="AM"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="AMFreeIPOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:Done"/>
+        <variable name="AMFreeIPIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:FreeIPRequest"/>
+        <variable name="IPv6Address" type="xs:string"/>
+        <variable name="IPv4Address" type="xs:string"/>
+        <variable name="IMModifyIMSPrivateIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyIMSPrivateIdentityResponse"/>
+        <variable name="IMModifyIMSPrivateIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyIMSPrivateIdentityRequest"/>
+        <variable name="IMGetIMSSubscriptionOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSSubscriptionResponse"/>
+        <variable name="IMGetIMSSubscriptionIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSSubscriptionRequest"/>
+        <variable name="IMGetIMSPrivateIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPrivateIdentityResponse"/>
+        <variable name="IMGetIMSPrivateIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPrivateIdentityRequest"/>
+        <variable name="IMDeleteIMSSubscriptionOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:Done"/>
+        <variable name="IMDeleteIMSSubscriptionIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:DeleteIMSSubscriptionRequest"/>
+        <variable name="SubFlowDeleteLTEServiceOut" messageType="tns:Done"/>
+        <variable name="SubFlowDeleteLTEServiceIn" messageType="tns:DeleteLTEServiceRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="DeleteLTEService" portType="tns:SCASubFlowsSoap" variable="SubFlowDeleteLTEServiceIn"/>
+        
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('AM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="AM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignDefaults">
+            <copy>
+                <from>''</from>
+                <to variable="IPv6Address"/>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to variable="IPv4Address"/>
+            </copy>
+        </assign>
+        <assign name="AssignGetIMPI">
+            <copy>
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/TxId</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/Tenant</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>substring-after($SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/RemoteResourceId, '-')</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:OSSBSSReferenceId</to>
+            </copy>
+        </assign>
+        <invoke name="GetIMPI" partnerLink="IM" operation="GetIMSPrivateIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSPrivateIdentityIn" outputVariable="IMGetIMSPrivateIdentityOut"/>
+        <assign name="AssignModifiedIMPI">
+            <copy>
+                <from variable="IMGetIMSPrivateIdentityOut" part="IMSPrivateIdentity"/>
+                <to variable="IMModifyIMSPrivateIdentityIn" part="ModifiedIMSPrivateIdentity"/>
+            </copy>
+        </assign>
+
+        <!-- Get IPV4 address and IPv6 address into variables by scrolling through APNs and get IPv4 and IPv6 address from static IP APN name-->
+        <forEach name="ForEachGetIPV4IPV6" parallel="no" counterName="apnCounter">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList)</finalCounterValue>
+            <scope name="GetIPV4IPV6_Scope">
+                <sequence>
+                    <sequence>
+                        <assign name="AssignStaticIP">
+                            <copy ignoreMissingFromData="yes">
+                                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv4Address</from>
+                                <to variable="IPv4Address"/>
+                            </copy>
+                            <copy ignoreMissingFromData="yes">
+                                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv6Address</from>
+                                <to variable="IPv6Address"/>
+                            </copy>
+                        </assign>   
+                    </sequence>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <assign name="AssignZeroIMSUAndBlankToIMEIList">
+            <copy>
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/TxId</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/Tenant</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>0</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:IMSSubscriptionId</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:SIMLockedIMEIList</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:RegionalSubscriptionZoneCodes</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:Info</to>
+            </copy>
+        </assign>
+        <forEach name="ForEachAPN" parallel="no" counterName="apnCounter">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList)</finalCounterValue>
+            <scope name="APNLoop_Scope">
+                <sequence>
+                    <assign name="AssignBlankToAPNList">
+                        <copy>
+                            <from>''</from>
+                            <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:APNName</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+            
+        <invoke name="SetIMPIsIMSUToNullAndIMEIAPNListToBlank" partnerLink="IM" operation="ModifyIMSPrivateIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMModifyIMSPrivateIdentityIn" outputVariable="IMModifyIMSPrivateIdentityOut"/>
+        <assign name="AssignGetIMSU">
+            <copy>
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/TxId</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/Tenant</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:IMSSubscriptionId</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:IMSSubscriptionId</to>
+            </copy>
+            <copy>
+                <from>'IMSU_IMPI'</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:Verbosity</to>
+            </copy>
+        </assign>
+        <invoke name="GetIMSSubscription" partnerLink="IM" operation="GetIMSSubscription" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSSubscriptionIn" outputVariable="IMGetIMSSubscriptionOut"/>
+        <if name="IfNoIMPIForIMSSubscription">
+            <condition>count($IMGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities) = 0</condition>
+            <sequence name="Sequence1">
+                <assign name="AssignDeleteIMSSubscription">
+                    <copy>
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/TxId</from>
+                        <to>$IMDeleteIMSSubscriptionIn.DeleteIMSSubscriptionRequest/ns0:PlatformContext/ns0:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                        <to>$IMDeleteIMSSubscriptionIn.DeleteIMSSubscriptionRequest/ns0:PlatformContext/ns0:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/Tenant</from>
+                        <to>$IMDeleteIMSSubscriptionIn.DeleteIMSSubscriptionRequest/ns0:PlatformContext/ns0:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                        <to>$IMDeleteIMSSubscriptionIn.DeleteIMSSubscriptionRequest/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns0:IMSSubscriptionId</from>
+                        <to>$IMDeleteIMSSubscriptionIn.DeleteIMSSubscriptionRequest/ns0:IMSSubscriptionId</to>
+                    </copy>
+                </assign>
+                <invoke name="DeleteIMSSubscription" partnerLink="IM" operation="DeleteIMSSubscription" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMDeleteIMSSubscriptionIn" outputVariable="IMDeleteIMSSubscriptionOut">
+                    <sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>concat('Going to delete LTE IMSSubscription with id ', $IMDeleteIMSSubscriptionIn.DeleteIMSSubscriptionRequest/ns0:IMSSubscriptionId)</from>
+                        </sxt:log>
+                    </sxt:trace>
+                </invoke>
+            </sequence>
+        </if>
+        <if name="IfHadv4Address">
+            <condition>$IPv4Address != ''</condition>
+            <sequence name="Sequence2">
+                <assign name="AssignIPv4">
+                    <copy>
+                        <from variable="IPv4Address"/>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:IPToFree</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:Identity</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:IMPI</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/TxId</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:PlatformContext/ns1:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/Tenant</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:PlatformContext/ns1:Tenant</to>
+                    </copy>
+                </assign>
+                <invoke name="FreeIPv4Address" partnerLink="AM" operation="FreeIP" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMFreeIPIn" outputVariable="AMFreeIPOut"/>
+            </sequence>
+        </if>
+        
+        <if name="IfHadv6Address">
+            <condition>$IPv6Address != ''</condition>
+            <sequence name="Sequence21">
+                <assign name="AssignIPv6">
+                    <copy>
+                        <from variable="IPv6Address"/>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:IPToFree</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:Identity</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:IMPI</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/TxId</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:PlatformContext/ns1:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SubFlowDeleteLTEServiceIn.LTEServiceDeletionInfo/SubFlowContext/Tenant</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns1:PlatformContext/ns1:Tenant</to>
+                    </copy>
+                </assign>
+                <invoke name="FreeIPv6Address" partnerLink="AM" operation="FreeIP" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMFreeIPIn" outputVariable="AMFreeIPOut"/>
+            </sequence>
+        </if>
+        
+        <assign name="AssignResult">
+            <copy>
+                <from>'true'</from>
+                <to>$SubFlowDeleteLTEServiceOut.Done/Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="DeleteLTEService" portType="tns:SCASubFlowsSoap" variable="SubFlowDeleteLTEServiceOut"/>
+    </sequence>
+</process>

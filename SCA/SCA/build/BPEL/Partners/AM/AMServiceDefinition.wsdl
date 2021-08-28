@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="AMServiceDefinition" targetNamespace="http://xml.smilecoms.com/AM"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xml.smilecoms.com/AM" xmlns:ns="http://xml.smilecoms.com/schema/AM" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/AM">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/AM" schemaLocation="AMSchema.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="GetAvailableNumbersRequest">
+        <part name="AvailableNumberQuery" element="ns:AvailableNumberQuery"/>
+    </message>
+    <message name="GetAvailableNumbersResponse">
+        <part name="AvailableNumbersResult" element="ns:AvailableNumbersResult"/>
+    </message>
+    <message name="IssueNumberRequest">
+        <part name="NumberToIssue" element="ns:NumberToIssue"/>
+    </message>
+    <message name="ReserveNumberRequest">
+        <part name="NumberReservationData" element="ns:NumberReservationData"/>
+    </message>
+    <message name="FreeNumberRequest">
+        <part name="NumberToFree" element="ns:NumberToFree"/>
+    </message>
+    <message name="GetIssuedNumbersRequest">
+        <part name="IssuedNumbersQuery" element="ns:IssuedNumbersQuery"/>
+    </message>
+    <message name="GetIssuedNumbersResponse">
+        <part name="IssuedNumbersResult" element="ns:IssuedNumbersResult"/>
+    </message>
+    
+    <message name="GetAvailableIPsRequest">
+        <part name="AvailableIPsQuery" element="ns:AvailableIPsQuery"/>
+    </message>
+    <message name="GetAvailableIPsResponse">
+        <part name="AvailableIPs" element="ns:AvailableIPs"/>
+    </message>
+    <message name="IssueIPRequest">
+        <part name="IssueIPQuery" element="ns:IssueIPQuery"/>
+    </message>
+    <message name="FreeIPRequest">
+        <part name="FreeIPQuery" element="ns:FreeIPQuery"/>
+    </message>
+    
+    <message name="AddAvailableNumberRequest">
+        <part name="AvailableNumberRange" element="ns:AvailableNumberRange"/>
+    </message>
+    
+    <message name="GetIssuedIPsRequest">
+        <part name="IssuedIPsQuery" element="ns:IssuedIPsQuery"/>
+    </message>
+    <message name="GetIssuedIPsResponse">
+        <part name="IssuedIPsResult" element="ns:IssuedIPsResult"/>
+    </message>
+    
+    <message name="GetPortOrdersRequest">
+        <part name="PortOrdersQuery" element="ns:PortOrdersQuery"/>
+    </message>
+    <message name="GetPortOrdersResponse">
+        <part name="PortOrdersList" element="ns:PortOrdersList"/>
+    </message>
+    
+     <message name="HandlePortInEventRequest">
+        <part name="PortInEventRequest" element="ns:PortInEventRequest"/>
+    </message>
+    <message name="HandlePortInEventResponse">
+        <part name="PortInEventResponse" element="ns:PortInEventResponse"/>
+    </message>
+    
+    <message name="AMError">
+        <part name="AMError" element="ns:AMError"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    
+    <portType name="AMSoap">
+        <operation name="GetAvailableNumbers">
+            <input name="input1" message="tns:GetAvailableNumbersRequest"/>
+            <output name="output1" message="tns:GetAvailableNumbersResponse"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        <operation name="IssueNumber">
+            <input name="input2" message="tns:IssueNumberRequest"/>
+            <output name="output2" message="tns:Done"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        <operation name="FreeNumber">
+            <input name="input3" message="tns:FreeNumberRequest"/>
+            <output name="output3" message="tns:Done"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        <operation name="IsUp">
+            <input name="input4" message="tns:IsUpRequest"/>
+            <output name="output4" message="tns:Done"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        <operation name="GetIssuedNumbers">
+            <input name="input5" message="tns:GetIssuedNumbersRequest"/>
+            <output name="output5" message="tns:GetIssuedNumbersResponse"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        
+        <operation name="GetAvailableIPs">
+            <input name="input6" message="tns:GetAvailableIPsRequest"/>
+            <output name="output6" message="tns:GetAvailableIPsResponse"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        <operation name="IssueIP">
+            <input name="input7" message="tns:IssueIPRequest"/>
+            <output name="output7" message="tns:Done"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        <operation name="FreeIP">
+            <input name="input8" message="tns:FreeIPRequest"/>
+            <output name="output8" message="tns:Done"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        <operation name="GetIssuedIPs">
+            <input name="input9" message="tns:GetIssuedIPsRequest"/>
+            <output name="output9" message="tns:GetIssuedIPsResponse"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        
+        <operation name="ReserveNumber">
+            <input name="input10" message="tns:ReserveNumberRequest"/>
+            <output name="output10" message="tns:Done"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        
+        <operation name="HandlePortInEvent">
+            <input name="input11" message="tns:HandlePortInEventRequest"/>
+            <output name="output11" message="tns:HandlePortInEventResponse"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        
+        <operation name="AddAvailableNumberRange">
+            <input name="input12" message="tns:AddAvailableNumberRequest"/>
+            <output name="output12" message="tns:Done"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+        
+        <operation name="GetPortOrders">
+            <input name="input13" message="tns:GetPortOrdersRequest"/>
+            <output name="output13" message="tns:GetPortOrdersResponse"/>
+            <fault name="fault1" message="tns:AMError"/>
+        </operation>
+    </portType>
+    
+    <binding name="AMBinding" type="tns:AMSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="GetAvailableNumbers">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IssueNumber">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="FreeNumber">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsUp">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetIssuedNumbers">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetAvailableIPs">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IssueIP">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="FreeIP">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetIssuedIPs">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ReserveNumber">
+            <input name="input10">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output10">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="HandlePortInEvent">
+            <input name="input11">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output11">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="AddAvailableNumberRange">
+            <input name="input12">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output12">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetPortOrders">
+            <input name="input13">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output13">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="AM">
+        <port name="AMSoap" binding="tns:AMBinding">
+            <soap:address location="http://dummyhost:${HttpDefaultPort}/AM/AMSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="AMServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+        In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+        A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="AM" portType="tns:AMSoap"/>
+    </plnk:partnerLinkType>
+</definitions>
+

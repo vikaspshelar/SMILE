@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="Authenticate"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:ns1="http://xml.smilecoms.com/IM" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/IM"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2" xmlns:ns3="http://xml.smilecoms.com/schema/CM">
+    <documentation></documentation>
+    
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        
+        <partnerLink name="IM" partnerLinkType="ns1:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="IMAuthenticateOut" messageType="ns1:AuthenticateResponse"/>
+        <variable name="IMAuthenticateIn" messageType="ns1:AuthenticateRequest"/>
+        <variable name="SCAAuthenticateOut" messageType="tns:AuthenticateResponse"/>
+        <variable name="SCAAuthenticateIn" messageType="tns:AuthenticateRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="IMError" faultMessageType="ns1:IMError">
+            <sequence name="Sequence4">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$IMError.IMError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply1" partnerLink="SCA" operation="Authenticate" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive" createInstance="yes" partnerLink="SCA" operation="Authenticate" portType="tns:SCASoap" variable="SCAAuthenticateIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign_SCA_IM">
+            <copy>
+                <from>$SCAAuthenticateIn.AuthenticationQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMAuthenticateIn.AuthenticationQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAAuthenticateIn.AuthenticationQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMAuthenticateIn.AuthenticationQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAAuthenticateIn.AuthenticationQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMAuthenticateIn.AuthenticationQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAuthenticateIn.AuthenticationQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$IMAuthenticateIn.AuthenticationQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAuthenticateIn.AuthenticationQuery/ns0:SSOEncryptedPassword</from>
+                <to>$IMAuthenticateIn.AuthenticationQuery/ns2:SSOEncryptedPassword</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAuthenticateIn.AuthenticationQuery/ns0:SSOIdentity</from>
+                <to>$IMAuthenticateIn.AuthenticationQuery/ns2:SSOIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAuthenticateIn.AuthenticationQuery/ns0:IMSPublicIdentity</from>
+                <to>$IMAuthenticateIn.AuthenticationQuery/ns2:IMSPublicIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAuthenticateIn.AuthenticationQuery/ns0:ActivationCode</from>
+                <to>$IMAuthenticateIn.AuthenticationQuery/ns2:ActivationCode</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAuthenticateIn.AuthenticationQuery/ns0:EncryptedAppKey</from>
+                <to>$IMAuthenticateIn.AuthenticationQuery/ns2:EncryptedAppKey</to>
+            </copy>
+        </assign>
+        <invoke name="Call_IM" partnerLink="IM" operation="Authenticate" portType="ns1:IMSoap" inputVariable="IMAuthenticateIn" outputVariable="IMAuthenticateOut"/>
+        <if name="If_Blocked">
+            <condition>$IMAuthenticateOut.AuthenticationResult/ns2:CustomerStatus = 'BL'</condition>
+            <sequence name="Sequence2">
+                <assign name="Assign_False">
+                    <copy>
+                        <from>false()</from>
+                        <to>$SCAAuthenticateOut.AuthenticationResult/ns0:Done</to>
+                    </copy>
+                </assign>
+                <reply name="Reply_False" partnerLink="SCA" operation="Authenticate" portType="tns:SCASoap" variable="SCAAuthenticateOut"/>
+                <exit name="Exit1"/>
+            </sequence>
+        </if>
+        <assign name="Assign_IM_SCA">
+            <copy>
+                <from>$IMAuthenticateOut.AuthenticationResult/ns2:Done</from>
+                <to>$SCAAuthenticateOut.AuthenticationResult/ns0:Done</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$IMAuthenticateOut.AuthenticationResult/ns2:SecurityGroups</from>
+                <to>$SCAAuthenticateOut.AuthenticationResult/ns0:SecurityGroups</to>
+            </copy>
+        </assign>
+        <reply name="Reply" partnerLink="SCA" operation="Authenticate" portType="tns:SCASoap" variable="SCAAuthenticateOut"/>
+    </sequence>
+</process>
+
+

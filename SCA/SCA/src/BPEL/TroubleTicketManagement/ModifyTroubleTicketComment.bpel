@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ModifyTroubleTicketComment"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" xmlns:ns1="http://xml.smilecoms.com/schema/TT" xmlns:ns2="http://xml.smilecoms.com/SCASubFlows" xmlns:ns3="http://xml.smilecoms.com/TT" xmlns:ns4="http://xml.smilecoms.com/schema/IM" xmlns:ns5="http://xml.smilecoms.com/IM" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed1="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/TT" location="../Partners/TT/TTServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="TT" xmlns:tns="http://xml.smilecoms.com/TT" partnerLinkType="tns:TTServiceDefinition" partnerRole="TT"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <!--<variable name="Fault1FaultVar" messageType="tns:SCAError"/>-->
+        <variable name="TTModifyCommentOut" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:ModifyCommentResponse"/>
+        <variable name="TTModifyCommentIn" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:ModifyCommentRequest"/>
+        <variable name="SCAModifyTroubleTicketCommentOut" messageType="tns:ModifyTroubleTicketCommentResponse"/>
+        <variable name="SCAModifyTroubleTicketCommentIn" messageType="tns:ModifyTroubleTicketCommentRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="TTError" faultMessageType="ns3:TTError">
+            <sequence name="Sequence1">
+                <assign name="Assign_TTError_SCAError">
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply_TTFault" partnerLink="SCA" operation="ModifyTroubleTicketComment" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    
+    <sequence>
+        <receive name="Receive" createInstance="yes" partnerLink="SCA" operation="ModifyTroubleTicketComment" portType="tns:SCASoap" variable="SCAModifyTroubleTicketCommentIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('TT')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="TT"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign_SCA_TT">
+            <copy>
+                <from>$SCAModifyTroubleTicketCommentIn.ModifiedTTComment/ns0:SCAContext/ns0:TxId</from>
+                <to>$TTModifyCommentIn.ModifiedComment/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketCommentIn.ModifiedTTComment/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$TTModifyCommentIn.ModifiedComment/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyTroubleTicketCommentIn.ModifiedTTComment/ns0:SCAContext/ns0:Tenant</from>
+                <to>$TTModifyCommentIn.ModifiedComment/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketCommentIn.ModifiedTTComment/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$TTModifyCommentIn.ModifiedComment/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketCommentIn.ModifiedTTComment/ns0:ID</from>
+                <to>$TTModifyCommentIn.ModifiedComment/ns1:ID</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketCommentIn.ModifiedTTComment/ns0:Author</from>
+                <to>$TTModifyCommentIn.ModifiedComment/ns1:Author</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketCommentIn.ModifiedTTComment/ns0:Body</from>
+                <to>$TTModifyCommentIn.ModifiedComment/ns1:Body</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketCommentIn.ModifiedTTComment/ns0:Created</from>
+                <to>$TTModifyCommentIn.ModifiedComment/ns1:Created</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketCommentIn.ModifiedTTComment/ns0:Updated</from>
+                <to>$TTModifyCommentIn.ModifiedComment/ns1:Updated</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyTroubleTicketCommentIn.ModifiedTTComment/ns0:IssueKey</from>
+                <to>$TTModifyCommentIn.ModifiedComment/ns1:IssueKey</to>
+            </copy>
+        </assign>
+        <invoke name="Call_TT" partnerLink="TT" operation="ModifyComment" xmlns:tns="http://xml.smilecoms.com/TT" portType="tns:TTSoap" inputVariable="TTModifyCommentIn" outputVariable="TTModifyCommentOut"/>
+        <assign name="Assign_TT_SCA">
+            <copy>
+                <from>$TTModifyCommentOut.Comment/ns1:ID</from>
+                <to>$SCAModifyTroubleTicketCommentOut.TTComment/ns0:ID</to>
+            </copy>
+            <copy>
+                <from>$TTModifyCommentOut.Comment/ns1:Author</from>
+                <to>$SCAModifyTroubleTicketCommentOut.TTComment/ns0:Author</to>
+            </copy>
+            <copy>
+                <from>$TTModifyCommentOut.Comment/ns1:Body</from>
+                <to>$SCAModifyTroubleTicketCommentOut.TTComment/ns0:Body</to>
+            </copy>
+            <copy>
+                <from>$TTModifyCommentOut.Comment/ns1:Created</from>
+                <to>$SCAModifyTroubleTicketCommentOut.TTComment/ns0:Created</to>
+            </copy>
+            <copy>
+                <from>$TTModifyCommentOut.Comment/ns1:Updated</from>
+                <to>$SCAModifyTroubleTicketCommentOut.TTComment/ns0:Updated</to>
+            </copy>
+            <copy>
+                <from>$TTModifyCommentOut.Comment/ns1:IssueKey</from>
+                <to>$SCAModifyTroubleTicketCommentOut.TTComment/ns0:IssueKey</to>
+            </copy>
+        </assign>
+        <reply name="Reply" partnerLink="SCA" operation="ModifyTroubleTicketComment" portType="tns:SCASoap" variable="SCAModifyTroubleTicketCommentOut"/>
+    </sequence>
+</process>

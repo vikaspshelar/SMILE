@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/TT"
+            xmlns:tns="http://xml.smilecoms.com/schema/TT"
+            elementFormDefault="qualified">
+    <xsd:simpleType name="stUserID">
+        <xsd:restriction base="xsd:string">
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"/>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"/>
+            <xsd:element name="OriginatingIP" type="xsd:string"/>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject">
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="TTError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="User">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="UserID" type="tns:stUserID"></xsd:element>
+                    <xsd:element name="FullName" type="xsd:string"></xsd:element>
+                    <xsd:element name="Email" type="xsd:string"></xsd:element>
+                    <xsd:element name="Password" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="NewUser" type="tns:User"></xsd:element>
+    <xsd:element name="User" type="tns:User"></xsd:element>
+    <xsd:element name="TTError" type="tns:TTError"></xsd:element>
+    <xsd:complexType name="Project">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ID" type="xsd:string"></xsd:element>
+                    <xsd:element name="Name" type="xsd:string"></xsd:element>
+                    <xsd:element name="Description" type="xsd:string"></xsd:element>
+                    <xsd:element name="Key" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="Project" type="tns:Project"></xsd:element>
+    <xsd:complexType name="ProjectList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ProjectList" type="tns:Project" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="ProjectList" type="tns:ProjectList"></xsd:element>
+    <xsd:complexType name="ProjectQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="DummyField" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="ProjectQuery" type="tns:ProjectQuery"></xsd:element>
+    <xsd:complexType name="IssueType">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ID" type="xsd:string"></xsd:element>
+                    <xsd:element name="Name" type="xsd:string"></xsd:element>
+                    <xsd:element name="Description" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="IssueTypeList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IssueTypeList" type="tns:IssueType" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="IssueType" type="tns:IssueType"></xsd:element>
+    <xsd:element name="IssueTypeList" type="tns:IssueTypeList"></xsd:element>
+    <xsd:complexType name="IssueTypeQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="DummyField" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="IssueTypeQuery" type="tns:IssueTypeQuery"></xsd:element>
+    <xsd:complexType name="Priority">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ID" type="xsd:string"></xsd:element>
+                    <xsd:element name="Name" type="xsd:string"></xsd:element>
+                    <xsd:element name="Description" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PriorityList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PriorityList" type="tns:Priority" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PriorityQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="DummyField" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="PriorityQuery" type="tns:PriorityQuery"></xsd:element>
+    <xsd:element name="Priority" type="tns:Priority"></xsd:element>
+    <xsd:element name="PriorityList" type="tns:PriorityList"></xsd:element>
+    <xsd:complexType name="MetaData">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ProjectList" type="tns:Project" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="IssueTypeList" type="tns:IssueType" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="PriorityList" type="tns:Priority" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="ResolutionList" type="tns:Resolution" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="StatusList" type="tns:Status" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="MetaData" type="tns:MetaData"></xsd:element>
+    <xsd:complexType name="Issue">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Project" type="xsd:string"></xsd:element>
+                    <xsd:element name="IssueType" type="xsd:string"></xsd:element>
+                    <xsd:element name="Priority" type="xsd:string"></xsd:element>
+                    <xsd:element name="DueDate" type="xsd:dateTime"></xsd:element>
+                    <xsd:element name="Summary" type="xsd:string"></xsd:element>
+                    <xsd:element name="Reporter" type="xsd:string"></xsd:element>
+                    <xsd:element name="Assignee" type="xsd:string"></xsd:element>
+                    <xsd:element name="Created" type="xsd:dateTime"></xsd:element>
+                    <xsd:element name="Resolution" type="xsd:string"></xsd:element>
+                    <xsd:element name="Status" type="xsd:string"></xsd:element>
+                    <xsd:element name="Updated" type="xsd:dateTime"></xsd:element>
+                    <xsd:element name="ID" type="xsd:string"></xsd:element>
+                    <xsd:element name="Description" type="xsd:string"></xsd:element>
+                    <xsd:element name="Watchers" type="xsd:string" minOccurs="0" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="JiraFields" type="tns:JiraFields"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="Issue" type="tns:Issue"></xsd:element>
+    <!--<xsd:element name="NewIssue" type="tns:Issue"></xsd:element>-->
+    
+    <xsd:element name="NewIssue" type="tns:NewIssue"></xsd:element>
+    <xsd:complexType name="NewIssue">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="CustomerId" type="xsd:string"></xsd:element>
+                    <xsd:element name="JiraFields" type="tns:JiraFields"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="JiraFields">
+        <xsd:sequence>
+            <xsd:element name="JiraField" type="tns:JiraField" maxOccurs="unbounded"/>
+            <xsd:element name="TotalJiraFields" type="xsd:int"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="JiraField">
+        <xsd:sequence>
+            <xsd:element name="FieldName" type="xsd:string"></xsd:element>
+            <xsd:element name="FieldType" type="xsd:string"></xsd:element>
+            <xsd:element name="FieldValue" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="Done">
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="Done" type="tns:Done"></xsd:element>
+    <xsd:complexType name="UserID">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="UserID" type="tns:stUserID"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="IssueList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IssueList" type="tns:Issue" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="IssueList" type="tns:IssueList"></xsd:element>
+    <xsd:complexType name="IssueQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Reporter" type="tns:stUserID"></xsd:element>
+                    <xsd:element name="CreatedDateFrom" type="xsd:dateTime"></xsd:element>
+                    <xsd:element name="CreatedDateTo" type="xsd:dateTime"></xsd:element>
+                    <xsd:element name="IssueID" type="xsd:string"></xsd:element>
+                    <xsd:element name="CustomerId" type="xsd:string"></xsd:element>
+                    <xsd:element name="IncidentChannel" type="xsd:string"></xsd:element>
+                    <xsd:element name="SalesLeadAssignee" type="tns:stUserID"></xsd:element>
+                    <xsd:element name="SalesLeadPK" type="xsd:string"></xsd:element>
+                    <xsd:element name="CustomerName" type="xsd:string"></xsd:element>
+                    <xsd:element name="ResultLimit" type="xsd:int" default="20" minOccurs="0"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="CloseSalesLeadIssueQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IssueID" type="xsd:string"></xsd:element>
+                    <xsd:element name="CustomerId" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="JiraUserQuery">
+        <xsd:complexContent>
+            <xsd:extension  xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Username" type="xsd:string"/>
+                    <xsd:element name="LastName" type="xsd:string"/>
+                    <xsd:element name="FirstName" type="xsd:string"/>
+                    <xsd:element name="IdentityNumber" type="xsd:string"/>
+                    <xsd:element name="emailAddress" type="xsd:string"/>
+                    <xsd:element name="ResultLimit" type="xsd:int"/>
+                </xsd:sequence>       
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="JiraUserList">
+        <xsd:complexContent>
+            <xsd:extension  xmlns:tns="http://xml.smilecoms.com/schema/TT"  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="JiraUsers" type="tns:User" maxOccurs="unbounded"/>
+                    <xsd:element name="NumberOfUsers" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="IssueQuery" type="tns:IssueQuery"></xsd:element>
+    <xsd:element name="CloseSalesLeadIssueQuery" type="tns:CloseSalesLeadIssueQuery"></xsd:element>
+    <xsd:element name="JiraUserQuery" type="tns:JiraUserQuery"></xsd:element>
+    <xsd:element name="JiraUserList" type="tns:JiraUserList"></xsd:element>
+    <xsd:complexType name="Resolution">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ID" type="xsd:string"></xsd:element>
+                    <xsd:element name="Name" type="xsd:string"></xsd:element>
+                    <xsd:element name="Description" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="ResolutionList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ResolutionList" type="tns:Resolution" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="Resolution" type="tns:Resolution"></xsd:element>
+    <xsd:element name="ResolutionList" type="tns:ResolutionList"></xsd:element>
+    <xsd:complexType name="Status">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ID" type="xsd:string"></xsd:element>
+                    <xsd:element name="Name" type="xsd:string"></xsd:element>
+                    <xsd:element name="Description" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="StatusList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="StatusList" type="tns:Status" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="Status" type="tns:Status"></xsd:element>
+    <xsd:element name="StatusList" type="tns:StatusList"></xsd:element>
+    <xsd:complexType name="ResolutionQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="EmptyField" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="StatusQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="EmptyField" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="ResolutionQuery" type="tns:ResolutionQuery"></xsd:element>
+    <xsd:element name="StatusQuery" type="tns:StatusQuery"></xsd:element>
+    <xsd:complexType name="MetaDataQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="EmptyField" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="MetaDataQuery" type="tns:MetaDataQuery"></xsd:element>
+    <xsd:element name="ModifiedIssue" type="tns:Issue"></xsd:element>
+    <xsd:simpleType name="stCheck">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="UserIDToCheck" type="tns:UserID"></xsd:element>
+    <xsd:element name="Check" type="tns:Check"></xsd:element>
+    <xsd:complexType name="Comment">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ID" type="xsd:string"></xsd:element>
+                    <xsd:element name="Author" type="xsd:string"></xsd:element>
+                    <xsd:element name="Body" type="xsd:string"></xsd:element>
+                    <xsd:element name="Created" type="xsd:dateTime"></xsd:element>
+                    <xsd:element name="Updated" type="xsd:dateTime"></xsd:element>
+                    <xsd:element name="IssueKey" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="Comment" type="tns:Comment"></xsd:element>
+    <xsd:element name="NewComment" type="tns:Comment"></xsd:element>
+    <xsd:element name="ModifiedComment" type="tns:Comment"></xsd:element>
+    <xsd:complexType name="CommentList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="CommentList" type="tns:Comment" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="CommentQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IssueKey" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="CommentQuery" type="tns:CommentQuery"></xsd:element>
+    <xsd:element name="CommentList" type="tns:CommentList"></xsd:element>
+    <xsd:complexType name="Check">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformContext">
+                <xsd:sequence>
+                    <xsd:element name="Check" type="tns:stCheck"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+    <xsd:complexType name="IssueWatcher">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IssueID" type="xsd:string"></xsd:element>
+                    <xsd:element name="Watchers" type="xsd:string" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="IssueWatcher" type="tns:IssueWatcher"></xsd:element>
+    <xsd:complexType name="IssueWatcherQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/TT" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IssueID" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="IssueWatcherQuery" type="tns:IssueWatcherQuery"></xsd:element>
+</xsd:schema>
+

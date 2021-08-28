@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetTroubleTicketIssues"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/TT" xmlns:ns2="http://xml.smilecoms.com/SCASubFlows" xmlns:ns3="http://xml.smilecoms.com/TT" xmlns:ns4="http://xml.smilecoms.com/schema/IM" xmlns:ns5="http://xml.smilecoms.com/IM" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed1="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/TT" location="../Partners/TT/TTServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="TT" xmlns:tns="http://xml.smilecoms.com/TT" partnerLinkType="tns:TTServiceDefinition" partnerRole="TT"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="watcherCount" type="xsd:int"/>
+        <variable name="fieldsCount" type="xsd:int"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="SCAGetTroubleTicketIssuesOut" messageType="tns:GetTroubleTicketIssuesResponse">
+            <sxed1:editor>
+                <sxed1:predicate path="$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]" source="to">
+                    <sxed1:predicate path="$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:MindMapFields/ns0:JiraField[$ifieldsCount]" source="to"/>
+                </sxed1:predicate>
+            </sxed1:editor>
+        </variable>
+        <variable name="issueCount" type="xsd:int"/>
+        <variable name="TTGetIssuesOut" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:GetIssuesResponse">
+            <sxed1:editor>
+                <sxed1:predicate path="$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]" source="from">
+                    <sxed1:predicate path="$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:JiraFields/ns1:JiraField[$ifieldsCount]" source="from"/>
+                </sxed1:predicate>
+            </sxed1:editor>
+        </variable>
+        <variable name="TTGetIssuesIn" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:GetIssuesRequest"/>
+        <variable name="SCAGetTroubleTicketIssuesIn" messageType="tns:GetTroubleTicketIssuesRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="TTError" faultMessageType="ns3:TTError">
+            <sequence name="Sequence1">
+                <assign name="Assign_TTError_SCAError">
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply_TTFault" partnerLink="SCA" operation="GetTroubleTicketIssues" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    
+    
+    <sequence>
+        <receive name="Receive" createInstance="yes" partnerLink="SCA" operation="GetTroubleTicketIssues" portType="tns:SCASoap" variable="SCAGetTroubleTicketIssuesIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('TT')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="TT"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign_SCA_TT">
+            <copy>
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:Reporter</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:Reporter</to>
+            </copy>
+            <copy>
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:CreatedDateFrom</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:CreatedDateFrom</to>
+            </copy>
+            <copy>
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:CreatedDateTo</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:CreatedDateTo</to>
+            </copy>
+            <copy>
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:IssueID</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:IssueID</to>
+            </copy>
+            <copy>
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:ResultLimit</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:ResultLimit</to>
+            </copy>
+            <copy>
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:CustomerId</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:CustomerId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:IncidentChannel</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:IncidentChannel</to>
+            </copy>
+            <copy>
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:SalesLeadPK</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:SalesLeadPK</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:SalesLeadAssignee</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:SalesLeadAssignee</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:CustomerName</from>
+                <to>$TTGetIssuesIn.IssueQuery/ns1:CustomerName</to>
+            </copy>
+        </assign>
+        <invoke name="Call_TT" partnerLink="TT" operation="GetIssues" xmlns:tns="http://xml.smilecoms.com/TT" portType="tns:TTSoap" inputVariable="TTGetIssuesIn" outputVariable="TTGetIssuesOut"/>
+        <assign name="Assign_Counters">
+            <copy>
+                <from>count($TTGetIssuesOut.IssueList/ns1:IssueList)</from>
+                <to variable="issueCount"/>
+            </copy>
+            <copy>
+                <from>count($TTGetIssuesOut.IssueList/ns1:IssueList)</from>
+                <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueCount</to>
+            </copy>
+        </assign>
+        <forEach name="ForEach_Issue" parallel="no" counterName="iIssue">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$issueCount</finalCounterValue>
+            <scope name="Scope1">
+                <sequence name="Sequence2">
+                    <assign name="Copy_Issue">
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Project</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Project</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:IssueType</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:IssueType</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Priority</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Priority</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:DueDate</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:DueDate</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Summary</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Summary</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Created</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Created</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Resolution</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Resolution</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Status</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Status</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Updated</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Updated</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:ID</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:ID</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Description</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Description</to>
+                        </copy>
+                        <copy>
+                            <from>count($TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Watchers)</from>
+                            <to variable="watcherCount"/>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Reporter</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Reporter</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Assignee</from>
+                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Assignee</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:JiraFields/ns1:TotalJiraFields
+                            </from>
+                            <to variable="fieldsCount"/>
+                        </copy>
+                    </assign>
+                    
+                    
+                    <forEach name="ForEach_Fields" parallel="no" counterName="ifieldsCount">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>$fieldsCount</finalCounterValue>
+                        <scope name="Scope1F">
+                            <sequence name="Sequence3">
+                                <if name="IfCustomerId">
+                                    <condition>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:JiraFields/ns1:JiraField[$ifieldsCount]/ns1:FieldName = 'Smile Customer ID'</condition>
+                                    <assign name="CheckPermissions1">
+                                        <copy>
+                                            <from>BPELUtils:checkPermissions($SCAGetTroubleTicketIssuesIn.TTIssueQuery/ns0:SCAContext, 'Customer', $TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:JiraFields/ns1:JiraField[$ifieldsCount]/ns1:FieldValue)</from>
+                                            <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:SCAContext/ns0:Obviscated</to>
+                                        </copy>
+                                    </assign>
+                                </if>
+                                <assign name="Assign_TT_SCA_Fields">
+                                    <copy>
+                                        <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:JiraFields/ns1:JiraField[$ifieldsCount]/ns1:FieldName
+                                        </from>
+                                        <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:MindMapFields/ns0:JiraField[$ifieldsCount]/ns0:FieldName
+                                        </to>
+                                    </copy>
+                                    <copy>
+                                        <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:JiraFields/ns1:JiraField[$ifieldsCount]/ns1:FieldType
+                                        </from>
+                                        <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:MindMapFields/ns0:JiraField[$ifieldsCount]/ns0:FieldType
+                                        </to>
+                                    </copy>
+                                    <copy>
+                                        <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:JiraFields/ns1:JiraField[$ifieldsCount]/ns1:FieldValue
+                                        </from>
+                                        <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:MindMapFields/ns0:JiraField[$ifieldsCount]/ns0:FieldValue
+                                        </to>
+                                    </copy>
+                                </assign>
+                            </sequence>
+                        </scope>
+                    </forEach>
+                    
+                    <forEach name="ForEach_OutboundWatcher" parallel="no" counterName="iWatcherCount">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>$watcherCount</finalCounterValue>
+                        <scope name="Scope2">
+                            <assign name="Assign_TT_SCA_Watcher">
+                                <copy>
+                                    <from>$TTGetIssuesOut.IssueList/ns1:IssueList[$iIssue]/ns1:Watchers[$iWatcherCount]</from>
+                                    <to>$SCAGetTroubleTicketIssuesOut.TTIssueList/ns0:TTIssueList[$iIssue]/ns0:Watchers[$iWatcherCount]</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                </sequence>
+            </scope>
+        </forEach>
+        <reply name="Reply" partnerLink="SCA" operation="GetTroubleTicketIssues" portType="tns:SCASoap" variable="SCAGetTroubleTicketIssuesOut"/>
+    </sequence>
+</process>
+
+
+
+
+
+
+

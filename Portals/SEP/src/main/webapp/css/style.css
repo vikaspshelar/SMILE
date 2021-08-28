@@ -1,0 +1,590 @@
+/*
+-----------------------------------------------------------------------------
+Overall Page Size and layout
+-----------------------------------------------------------------------------
+*/
+#page-container {
+    width: 940px;
+    background: #fff;
+    text-align: left;
+    margin:  auto;
+    background: #fff url("../images/container_border.gif") top center repeat-y;
+    background-color: #fff;    
+}
+
+img { 
+    border: none;     
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    vertical-align:middle;
+}
+/*
+-----------------------------------------------------------------------------
+Page Messages
+-----------------------------------------------------------------------------
+*/
+div.messages {        
+    font-size: 12px;
+    margin-left: 3px;
+    color: black;
+    line-height: 16px;
+    padding-top: 15px;
+    padding-left: 0px;
+    font-weight: bold;
+}
+/*
+-----------------------------------------------------------------------------
+Validation Errors
+-----------------------------------------------------------------------------
+*/
+div.error {        
+    font-size: 12px;
+    color: red;	
+    line-height: 16px;
+    padding-top: 15px; 
+    padding-left: 1px;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+div.emphasise {        
+    font-size: 16px;
+    color: red;	
+    font-weight: bold;
+}
+
+/* Show fields in yellow */
+input.error { 
+    background-color: #FAA49B;         
+}
+/* Show Required fields in green */
+input.required {     
+    background-color: #eefeee;
+}
+
+textarea.required {     
+    background-color: #eefeee;
+}
+
+select.required {     
+    background-color: #eefeee;
+}
+
+input.validationNotOk {     
+    background-color: #FEA39A;
+}
+
+select.validationNotOk {     
+    background-color: #FEA39A;
+}
+
+textarea.validationNotOk {     
+    background-color: #FEA39A;
+}
+
+input.validationOk {     
+    background-color: #A4FD9B;
+}
+
+select.validationOk {     
+    background-color: #A4FD9B;
+}
+
+textarea.validationOk {     
+    background-color: #A4FD9B;
+}
+
+/*
+-----------------------------------------------------------------------------
+Content styles are for the main content area
+-----------------------------------------------------------------------------
+*/
+/* Basic layout stuff */
+#content {
+    margin-right: 10px;
+    line-height: 18px;
+    padding-left: 6px;        
+    width: 750px;    
+    margin-left: 165px;
+    position: relative;
+    word-wrap:break-word;
+}
+
+#validationpicture {
+    padding-left: 30px; 
+    margin-left: 30px;
+}
+
+form {
+    margin-top: 0; 
+    margin-bottom: 0;
+    padding-top: 0; 
+    padding-bottom: 0;
+}
+
+form.buttonOnly {
+    text-align: center;
+}
+
+input {    
+    margin-top: 3px;
+}
+
+/* Heading level 1 */
+#content h1 { 
+    margin-left: 4px;
+    margin-bottom: 15px;
+    padding-bottom: 0px;
+    font-size: 17px;
+    color: #50922C;
+    background-color: #fff;
+}
+/* Heading level 2 */
+#content h2 {
+    margin-left: 3px;
+    padding: 0;
+    padding-bottom: 0px;
+    font-size: 15px;
+    color: #50922C;
+    background-color: #fff;
+}
+/* Heading level 3 */
+#content h3 {
+    margin-left: 3px;
+    padding-bottom: 0px;
+    font-size: 13px;
+    color: #50922C;
+    background-color: #fff;
+}
+/* Standard body text and page background */
+body {
+    font-family: Arial, Helvetica, Verdana, Sans-serif;
+    font-size: 12px;
+    color: #000000;
+    background: #ebebeb;
+    text-align: center;
+
+}
+/* Anchor text in the body */
+#content a {
+    color: #B60400;
+    text-decoration: none;
+}
+
+/* Content anchor on mouseover */
+#content a:hover {
+    color: #000;
+}
+
+/* Content anchor for popups */
+#content a.popup {
+    color: #A87107;
+}
+
+/* Tables Green*/
+table.green {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #639B2E;
+    border-collapse: collapse;
+    background-color: white;
+    margin: 3px 3px 3px 3px;
+    table-layout: auto;
+
+}
+table.green th {
+    border-width: 1px;
+    padding: 2px;
+    border-style: solid;
+    border-color: #639B2E;
+    color: #fff;
+    background-color: #AEC269;
+}
+table.green tr {
+    border-width: 1px;
+    padding: 2px;
+    border-style: solid;
+    border-color: #639B2E;
+    background-color: #fff;
+
+}
+table.green td {
+    border-width: 1px;
+    padding: 2px;
+    border-style: solid;
+    border-color: #639B2E;    
+}
+table.green tr.even {
+    background-color: #E4ECC3;
+}
+table.green tr.odd {
+    background-color: #fff;
+}
+table.green tr.greyout {
+    background-color: #B6BDC2;
+}
+
+table.green tr.red {
+    background-color: #FFD28A;
+}
+
+/* Tables Clear*/
+table.clear {	
+    border-collapse: collapse;	
+    margin: 3px 3px 3px 3px;        
+}
+table.clear th {
+    padding: 2px;
+    color: #fff;
+}
+table.clear tr {
+    padding: 2px;
+}
+table.clear td {	
+    padding: 2px;
+}
+table.clear tr.red {
+    background-color: #FFD28A;
+}
+
+/*
+-----------------------------------------------------------------------------
+Entities
+-----------------------------------------------------------------------------
+*/
+#entity {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #8EB250;
+    padding: 0px;
+    margin: 3px;
+    background-color: #fff;
+    left: 165px;
+}
+
+table.entity_header {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #fff #fff #8EB250 #fff;
+    padding: 0px; 
+    width: 99.9%;
+}
+
+table.entity_header tr {
+    font-size: 15px;
+    color: #50922C;
+    font-weight: bold;
+    padding: 0px;
+}
+table.entity_header td {
+    padding: 2px;
+}
+/*
+-----------------------------------------------------------------------------
+Top of the page
+-----------------------------------------------------------------------------
+*/
+#top {
+    background: #fff url("../images/header.jpg") top center no-repeat;
+    /*height: 60px;*/
+    padding-top: 18px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+    color: #245917;
+    font-size: 10px;
+    background-color: #fff;
+}
+
+#ticker {
+    background: #fff url("../images/header_expanded.jpg") top center repeat;
+    /*padding-left: 20px;
+    padding-right: 20px;*/
+    text-align: center;
+    padding: 0px;
+    color: #245917;
+    font-size: 10px;
+    background-color: #fff;    
+}
+
+/* Top Heading */
+#top h1 {
+    margin: 0;
+    padding-bottom: 0px;
+    font-size: 18px;
+    color: #245917;
+    text-decoration: none;
+}
+/*
+-----------------------------------------------------------------------------
+Help just before the footer
+-----------------------------------------------------------------------------
+*/
+#help {
+    clear: both;
+    background: #fff url("../images/help.jpg") center no-repeat;
+    height: 169px;
+    padding: 0px 0px 0px 70px;
+    background-color: #fff;
+}
+/* Header */
+#help h1 {    
+    padding: 20px 0px 0px 210px;
+    margin: 0px 0px 0px 0px;   
+    color: #50922C;
+    font-family: Arial, Helvetica, Verdana, Sans-serif;
+    font-size: 12px;    
+}
+/* Paragraph text */
+#help p {
+    width: 380px;
+    padding: 10px 0px 0px 210px;
+    margin: 0px 0px 0px 0px;   
+}
+/* Anchor text */	
+#help a {
+    color: #B60400;
+    font-size: 9pt;
+    padding: 0 0px 0px 0px;
+    text-decoration: none;
+}
+/* help anchor on mouseover */
+#help a:hover {
+    color: #000;
+}
+
+/*
+-----------------------------------------------------------------------------
+Footer Area
+-----------------------------------------------------------------------------
+*/
+#footer {
+    background: #fff url("../images/footer.jpg") top no-repeat;
+    font-family: Tahoma, Arial, Helvetica, Sans-serif;
+    font-size: 11px;
+    height: 43px;
+    color: #50922C;
+    padding: 8px 0px;
+    text-align: center;
+    background-color: #fff;
+}
+/* Footer anchor */
+#footer a {
+    color: #B60400;
+    text-decoration: none;
+}
+/* Footer anchor on mouseover */
+#footer a:hover {
+    color: #000;
+}
+
+/*
+-----------------------------------------------------------------------------
+Progress Bar
+-----------------------------------------------------------------------------
+*/
+#progress_bar {
+    width:102px;
+    height:7px;
+    border:1px solid #ccc;
+    padding:0;
+    margin:0;
+    position:relative;
+    background-image:url("../images/progress_bar.gif");
+    background-repeat:repeat-x;
+
+}
+
+#progress_bar div {
+    background-color:#fff;
+
+}
+/*
+-----------------------------------------------------------------------------
+Other
+-----------------------------------------------------------------------------
+*/
+.hidden {
+    display: none;
+}
+
+/*
+-----------------------------------------------------------------------------
+DHTML leftmenu
+-----------------------------------------------------------------------------
+*/
+
+#leftmenu {    
+    width: 165px;
+    margin-left: 10px;
+}
+div.sdmenu {
+    width: 150px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    padding-bottom: 10px;
+    background: url(../images/menu_bottom.gif) no-repeat  right bottom;
+    color: #fff;
+}
+div.sdmenu div {
+    background: url(../images/menu_title.jpg) repeat-x;
+    overflow: hidden;
+}
+div.sdmenu div:first-child {
+    background: url(../images/menu_toptitle.jpg) no-repeat;
+}
+div.sdmenu div.collapsed {
+    height: 25px;
+}
+div.sdmenu div span {
+    display: block;
+    padding: 5px 25px;
+    font-weight: bold;
+    color: white;
+    background: url(../images/menu_expanded.gif) no-repeat 10px center;
+    cursor: default;
+    border-bottom: 1px solid #ddd;
+}
+div.sdmenu div.collapsed span {
+    background-image: url(../images/menu_collapsed.gif);
+}
+div.sdmenu div a {
+    padding: 5px 10px;
+    background: #eee;
+    display: block;
+    border-bottom: 1px solid #ddd;
+    color: #52962A;
+}
+div.sdmenu div a.current {
+    background : #ccc;
+}
+div.sdmenu div a:hover {
+    background : #E6EEC7 url(../images/menu_linkarrow.jpg) no-repeat right center;
+    color: #52962A;
+    text-decoration: none;
+}
+
+.thumb {
+    width: 100px;
+    height: 100px;
+    border: 1px solid gray;
+    padding: 5px;
+    color: gray;
+}
+
+.bigthumb {
+    width: 200px;
+    height: 200px;
+    padding: 5px;
+    color: gray;
+}
+
+#file_error {
+    width: 100px;
+    height: 100px;
+    border: 1px solid gray;
+    padding: 5px;
+    color: red;
+    text-align: center;
+}
+
+.file {
+    vertical-align: top;
+    margin-top:auto;
+}
+
+#calendarDiv {
+    font-size: 14px;
+}  
+
+
+/*
+-----------------------------------------------------------------------------
+Angucomplete
+-----------------------------------------------------------------------------
+*/
+
+.angucomplete-holder {
+    position: relative;
+    width: 99%;
+}
+
+.angucomplete-dropdown {
+    border-color: #ececec;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+    width: 100%;
+    padding: 6px;
+    cursor: pointer;
+    z-index: 9999;
+    position: absolute;
+    /*top: 32px;
+    left: 0px;
+    */
+    margin-top: -6px;
+    background-color: #ffffff;
+}
+
+.angucomplete-searching {
+    color: #acacac;
+}
+
+.angucomplete-description {
+}
+
+.angucomplete-row {
+    padding: 5px;
+    color: #000000;
+    margin-bottom: 4px;
+    clear: both;
+}
+
+.angucomplete-selected-row {
+    background-color: #EEEEEE;
+}
+
+.angucomplete-image-holder {
+    padding-top: 2px;
+    float: left;
+    margin-right: 10px;
+    margin-left: 5px;
+}
+
+.angucomplete-image {
+    height: 34px;
+    width: 34px;
+    border-radius: 50%;
+    border-color: #ececec;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.angucomplete-image-default {
+    /* Add your own default image here
+     background-image: url('/assets/default.png');
+    */
+    background-position: center;
+    background-size: contain;
+    height: 34px;
+    width: 34px;
+}
+
+.form-control {
+    width: 100%;
+}
+
+.highlight {
+    color: #639B2E;
+}
+
+input::-webkit-calendar-picker-indicator {
+    opacity: 100;
+}

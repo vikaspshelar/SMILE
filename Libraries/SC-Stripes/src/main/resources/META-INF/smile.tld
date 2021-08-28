@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib version="2.0"
+        xmlns="http://java.sun.com/xml/ns/j2ee" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd">
+    <tlib-version>2.0</tlib-version>
+    <short-name>smile</short-name>
+    <uri>http://portals.smilecoms.com/smile.tld</uri>
+    <function>
+        <description>Format a XML Gregorian Date</description>
+        <name>formatDateShort</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String formatDateShort(javax.xml.datatype.XMLGregorianCalendar)</function-signature>
+    </function>
+    <function>
+        <description>Indicate if the Know Your Customer requirements have not been met for a product instance</description>
+        <name>isProductInstanceMissingKYC</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>boolean isProductInstanceMissingKYC(com.smilecoms.commons.sca.ProductInstance)</function-signature>
+    </function>
+    <function>
+        <description>KYC Status</description>
+        <name>getKYCStatus</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getKYCStatus(com.smilecoms.commons.sca.ProductInstance)</function-signature>
+    </function>
+    <function>
+        <description>Format a Gregorian Date in MM YYYY</description>
+        <name>formatDateShortMonthYear</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String formatDateShortMonthYear(javax.xml.datatype.XMLGregorianCalendar)</function-signature>
+    </function>
+    <function>
+        <description>Get the number of hours the local servers timezone differs from UTC</description>
+        <name>getTimeZoneOffsetHours</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>int getTimeZoneOffsetHours()</function-signature>
+    </function>
+    <function>
+        <description>Convert an XML Gregorian Date to a UNIX Timestamp</description>
+        <name>convertXMLGregorianCalendarToTimestamp</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.Long convertXMLGregorianCalendarToTimestamp(javax.xml.datatype.XMLGregorianCalendar)</function-signature>
+    </function>
+    <function>
+        <description>Format a big number nicely</description>
+        <name>formatBigNumber</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String formatBigNumber(double)</function-signature>
+    </function>
+    <function>
+        <description>Format a big decimal nicely</description>
+        <name>formatBigDecimal</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String formatBigDecimal(double)</function-signature>
+    </function>
+    <function>
+        <description>Get the GUID for a photo</description>
+        <name>getPhotoGuid</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getPhotoGuid(java.util.List, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get the name for a UC Spec</description>
+        <name>getUnitCreditNameByItemNumber</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getUnitCreditNameByItemNumber(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get the name for an item number</description>
+        <name>getItemNameByItemNumber</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getItemNameByItemNumber(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Bitwise And</description>
+        <name>isBitOn</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>boolean isBitOn(long l, int bitIndex)</function-signature>
+    </function>
+    <function>
+        <description>Get a Property</description>
+        <name>getProperty</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getProperty(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get a Property with a default</description>
+        <name>getPropertyWithDefault</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getPropertyWithDefault(java.lang.String, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get a validation rule</description>
+        <name>getValidationRule</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getValidationRule(java.lang.String, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get a String from remote cache</description>
+        <name>getStringFromRemoteCache</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getStringFromRemoteCache(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get a Property as a list</description>
+        <name>getPropertyAsList</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.util.List getPropertyAsList(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Tell is a set contains a value</description>
+        <name>setContains</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>boolean setContains(java.util.Set, java.lang.Object)</function-signature>
+    </function>
+    <function>
+        <description>Get a Property as a set</description>
+        <name>getPropertyAsSet</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>Set getPropertyAsSet(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get a Property as a set but only those in the list that the user has permissions for</description>
+        <name>getRoleBasedSubsetOfPropertyAsSet</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.util.Set getRoleBasedSubsetOfPropertyAsSet(java.lang.String, javax.servlet.http.HttpServletRequest)</function-signature>
+    </function>
+    <function>
+        <description>Get the last X characters of a string</description>
+        <name>getLastPart</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getLastPart(java.lang.String, int)</function-signature>
+    </function>
+    <function>
+        <description>Get first Property in the list that the user has permissions for</description>
+        <name>getRoleBasedProperty</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getRoleBasedProperty(java.lang.String, javax.servlet.http.HttpServletRequest)</function-signature>
+    </function>
+     <function>
+        <description>Check if the logged in user has permissions to access a resource</description>
+        <name>hasPermissions</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>boolean hasPermissions(java.lang.String, net.sourceforge.stripes.action.ActionBeanContext)</function-signature>
+    </function>
+    <function>
+        <description>Get a property from SQL</description>
+        <name>getPropertyFromSQL</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.util.List getPropertyFromSQL(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get Delimited Property as a list</description>
+        <name>getDelimitedPropertyAsList</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.util.List getDelimitedPropertyAsList(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Break Up a long string into shorter strings with spaces</description>
+        <name>breakUp</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String breakUp(java.lang.String, int)</function-signature>
+    </function>
+    <function>
+        <description>Shorten a long string to X characters followed by ... if its longer than x</description>
+        <name>abbreviate</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String abbreviate(java.lang.String, int)</function-signature>
+    </function>
+    <function>
+        <description>Get Delimited Property as a list</description>
+        <name>getDelimitedPropertyValueMapping</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getDelimitedPropertyValueMapping(java.lang.String, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get Property Value from a Property Key/Value list</description>
+        <name>getPropertyValueFromList</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getPropertyValueFromList(java.lang.String, java.lang.String)</function-signature>
+    </function>
+    
+    <function>
+        <description>Concatenate 2 strings</description>
+        <name>concat</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String concat(java.lang.String,java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Concatenate 2 strings</description>
+        <name>concat3</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String concat3(java.lang.String,java.lang.String, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Returns number of minutes since a certain date</description>
+        <name>minutesAgo</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>long minutesAgo(javax.xml.datatype.XMLGregorianCalendar)</function-signature>
+    </function>
+    <function>
+        <description>Returns number of minutes since a certain date</description>
+        <name>getDaysAfterEpoch</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>long getDaysAfterEpoch(javax.xml.datatype.XMLGregorianCalendar)</function-signature>
+    </function>
+    <function>
+        <description>Encode a url with the jsessionId if necessary</description>
+        <name>encodeURL</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String encodeURL(java.lang.String,javax.servlet.http.HttpServletResponse)</function-signature>
+    </function>
+    <function>
+        <description>Format a XML Gregorian Date</description>
+        <name>formatDateLong</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String formatDateLong(javax.xml.datatype.XMLGregorianCalendar)</function-signature>
+    </function>
+    <function>
+        <description>Get a java date from a XML Gregorian Date</description>
+        <name>getJavaDate</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.util.Date getJavaDate(javax.xml.datatype.XMLGregorianCalendar)</function-signature>
+    </function>
+    <function>
+        <description>Gets the phone number portion of a full smile id</description>
+        <name>getPhoneNumberFromSipURI</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getPhoneNumberFromSipURI(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get the displayName for the locale ie. en_ZA = English (South Africa)</description>
+        <name>getLocaleDisplayName</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getLocaleDisplayName(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Retrieves Identifier for Queue Name</description>
+        <name>retrieveQueueID</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String retrieveQueueID(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Retrieves Name from Queue String</description>
+        <name>retrieveQueueName</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String retrieveQueueName(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get localised string</description>
+        <name>getLocalisedString</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String getLocalisedString(java.lang.String, java.lang.String)</function-signature>
+    </function>    
+    <function>
+        <description>Get List Size</description>
+        <name>getListSize</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>int getListSize(java.util.Collection)</function-signature>
+    </function>
+    <function>
+        <description>Get List Size with a filter</description>
+        <name>getListSizeWithFilter</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>int getListSize(java.util.List, java.lang.String, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get List total with a filter based on another filter type</description>
+        <name>getListTotalAsDoubleWithFilterForFilterType</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>double getListTotalAsDoubleWithFilter(java.util.List, java.lang.String, java.lang.String, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get List total with a filter based on another filter type</description>
+        <name>getListTotalAsIntWithFilterForFilterType</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>double getListTotalAsIntWithFilter(java.util.List, java.lang.String, java.lang.String, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get List with a filter</description>
+        <name>filterList</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>List filterList(java.util.List, java.lang.String, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get item from a list by integer value</description>
+        <name>getEntryInList</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>Object getEntryInList(java.util.List, java.lang.String, int)</function-signature>
+    </function>
+    <function>
+        <description>Order a list by the string returned by calling a getter. Order can be asc or desc</description>
+        <name>orderList</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>List orderList(java.util.List, java.lang.String, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Add 2 numbers</description>
+        <name>add</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>int add(int, int)</function-signature>
+    </function>
+    <function>
+        <description>Capitalise first letter of ever word and make the other letters small</description>
+        <name>capitalize</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String capitalize(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Convert to string</description>
+        <name>toString</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String toString(long)</function-signature>
+    </function>
+    <function>
+        <description>Format URI to only display beginning part</description>
+        <name>formatURI</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String formatURI(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Format seconds to display in format 00h00m00s</description>
+        <name>formatTime</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String formatTime(int)</function-signature>
+    </function>
+    <function>
+        <description>Convert cents to major currency unit as per property env.locale.currency.shortformat</description>
+        <name>convertCentsToCurrencyShort</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String convertCentsToCurrencyShort(double)</function-signature>
+    </function>
+    <function>
+        <description>Convert cents to major currency unit as per property env.locale.currency.longformat</description>
+        <name>convertCentsToCurrencyLong</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String convertCentsToCurrencyLong(double)</function-signature>
+    </function>
+    <function>
+        <description>Convert cents to major unit without currency symbol</description>
+        <name>convertCentsToLong</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>double convertCentsToLong(double)</function-signature>
+    </function>
+    <function>
+        <description>Convert cents to major unit without currency symbol rounding up</description>
+        <name>convertCentsToLongRoundUp</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>double convertCentsToLongRoundUp(double)</function-signature>
+    </function>
+    <function>
+        <description>Convert cents to major unit without currency symbol rounding half up</description>
+        <name>convertCentsToLongRoundHalfEven</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>double convertCentsToLongRoundHalfEven(double)</function-signature>
+    </function>
+    <function>
+        <description>Convert cents to major currency unit as per property env.locale.currency.longformat with rounding half up</description>
+        <name>convertCentsToCurrencyLongRoundHalfEven</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String convertCentsToCurrencyLongRoundHalfEven(double)</function-signature>
+    </function>
+    <function>
+        <description>Convert cents to major currency unit as per property env.locale.currency.longformat with rounding half up</description>
+        <name>convertCentsToSpecifiedCurrencyLongRoundHalfEven</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String convertCentsToSpecifiedCurrencyLongRoundHalfEven(java.lang.String, double)</function-signature>
+    </function>
+    <function>
+        <description>Get string length</description>
+        <name>getStringLength</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>int getStringLength(java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Get Page X to Y of Z</description>
+        <name>getPageXtoYofZ</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String getPageXtoYofZ(int, int, int)</function-signature>
+    </function>
+    <function>
+        <description>Format string like 26 02 18.2 S 28 02 27.2 E to something like 26.123213,28.232121</description>
+        <name>convertDMStoDeg</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String convertDMStoDeg(java.lang.String)</function-signature>
+    </function>
+    
+    
+    <function>
+        <description>Format volume units like 1 MB or 60 Min</description>
+        <name>displayVolumeAsString</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String displayVolumeAsString(double, java.lang.String)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getRatePlan</name>
+        <function-class>com.smilecoms.commons.sca.beans.NonUserSpecificCachedDataHelper</function-class>
+        <function-signature>com.smilecoms.commons.sca.RatePlan getRatePlan(int)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getProductSpecification</name>
+        <function-class>com.smilecoms.commons.sca.beans.NonUserSpecificCachedDataHelper</function-class>
+        <function-signature>com.smilecoms.commons.sca.ProductSpecification getProductSpecification(int)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getServiceSpecification</name>
+        <function-class>com.smilecoms.commons.sca.beans.NonUserSpecificCachedDataHelper</function-class>
+        <function-signature>com.smilecoms.commons.sca.ServiceSpecification getServiceSpecification(int)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getUnitCreditSpecification</name>
+        <function-class>com.smilecoms.commons.sca.beans.NonUserSpecificCachedDataHelper</function-class>
+        <function-signature>com.smilecoms.commons.sca.UnitCreditSpecification getUnitCreditSpecification(int)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getUnitCreditSpecificationByItemNumber</name>
+        <function-class>com.smilecoms.commons.sca.beans.NonUserSpecificCachedDataHelper</function-class>
+        <function-signature>com.smilecoms.commons.sca.UnitCreditSpecification getUnitCreditSpecificationByItemNumber(java.lang.String)</function-signature>
+    </function>
+       
+    <function>
+        <description></description>
+        <name>getPrimaryAccountHolderName</name>
+        <function-class>com.smilecoms.commons.sca.beans.UserSpecificCachedDataHelper</function-class>
+        <function-signature>String getPrimaryAccountHolderName(long)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getAccount</name>
+        <function-class>com.smilecoms.commons.sca.beans.UserSpecificCachedDataHelper</function-class>
+        <function-signature>com.smilecoms.commons.sca.Account getAccount(long)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getServiceInstanceUserName</name>
+        <function-class>com.smilecoms.commons.sca.beans.UserSpecificCachedDataHelper</function-class>
+        <function-signature>String getServiceInstanceUserName(int)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getProductInstancePhoneNumber</name>
+        <function-class>com.smilecoms.commons.sca.beans.UserSpecificCachedDataHelper</function-class>
+        <function-signature>String getProductInstancePhoneNumber(int)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getCustomerName</name>
+        <function-class>com.smilecoms.commons.sca.beans.UserSpecificCachedDataHelper</function-class>
+        <function-signature>String getCustomerName(int)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getOrganisationName</name>
+        <function-class>com.smilecoms.commons.sca.beans.UserSpecificCachedDataHelper</function-class>
+        <function-signature>String getOrganisationName(int)</function-signature>
+    </function>
+    
+    <function>
+        <description></description>
+        <name>getServiceInstanceICCID</name>
+        <function-class>com.smilecoms.commons.sca.beans.UserSpecificCachedDataHelper</function-class>
+        <function-signature>String getServiceInstanceICCID(int)</function-signature>
+    </function>
+    <function>
+        <description></description>
+        <name>getProductInstanceICCID</name>
+        <function-class>com.smilecoms.commons.sca.beans.UserSpecificCachedDataHelper</function-class>
+        <function-signature>String getProductInstanceICCID(int)</function-signature>
+    </function>
+    <function>
+        <description></description>
+        <name>getServiceInstancePhoneNumber</name>
+        <function-class>com.smilecoms.commons.sca.beans.UserSpecificCachedDataHelper</function-class>
+        <function-signature>String getServiceInstancePhoneNumber(int)</function-signature>
+    </function>
+    <function>
+        <description></description>
+        <name>getServiceSpecificationAvailableUserDefinedDPIRules</name>
+        <function-class>com.smilecoms.commons.sca.beans.NonUserSpecificCachedDataHelper</function-class>
+        <function-signature>java.util.List getServiceSpecificationAvailableUserDefinedDPIRules(int)</function-signature>
+    </function>
+    <function>
+        <description>Format volume units like 1MB or 60Min,  which uses comma grouping seperator</description>
+        <name>displayVolumeAsStringWithCommaGroupingSeparator</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String displayVolumeAsStringWithCommaGroupingSeparator(double, java.lang.String)</function-signature>
+    </function>
+     <function>
+        <description>Format volume units like 1GB or 60Min,  which uses comma grouping seperator</description>
+        <name>displayVolumeAsStringInGB</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String displayVolumeAsStringInGB(double, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Order a list of bundles by popularity per SCP section</description>
+        <name>orderUnitCreditListByNamePopularity</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>List orderUnitCreditListByNamePopularity(java.util.List, java.lang.String)</function-signature>
+    </function>
+    <function>
+        <description>Convert cents to major currency unit as per property env.locale.currency.longformat which is defaulted to comma grouping seperator</description>
+        <name>convertCentsToCurrencyLongWithCommaGroupingSeparator</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String convertCentsToCurrencyLongWithCommaGroupingSeparator(double)</function-signature>
+    </function>
+    <function>
+        <description>Convert cents to major currency unit as per property env.locale.currency.shortformat, which is defaulted to comma grouping seperator</description>
+        <name>convertCentsToCurrencyShortWithCommaGroupingSeparator</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String convertCentsToCurrencyShortWithCommaGroupingSeparator(double)</function-signature>
+    </function>
+    <function>
+        <description>Convert object into a Json string</description>
+        <name>getObjectAsJsonString</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>String getObjectAsJsonString(java.lang.Object)</function-signature>
+    </function>
+    
+    <function>
+        <description>Calculate data bundle balance for account</description>
+        <name>calculateBundleBalance</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>double getBundleBalance(long)</function-signature>
+    </function>
+    
+    <function>
+        <description>Checks if this account has been provisioned with an unlimited bundle, returns true if so</description>
+        <name>containsUnlimitedBundle</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>boolean containsUnlimitedBundle(long)</function-signature>
+    </function>
+    
+    
+    <function>
+        <description>Gets the value from the carriage delimited AVP list</description>
+        <name>getValueFromCRDelimitedAVPString</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getValueFromCRDelimitedAVPString(java.lang.String, java.lang.String)</function-signature>
+    </function>
+    
+    <function>
+        <description>Get number of days between two dates</description>
+        <name>getDaysBetweenDates</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>int getDaysBetweenDates(java.util.Date, java.util.Date)</function-signature>
+    </function>
+    
+    <function>
+        <description>Get a sub property</description>
+        <name>getSubProperty</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.lang.String getSubProperty(java.lang.String, java.lang.String)</function-signature>
+    </function>
+    
+    <function>
+        <description>Get List from Comma Delimited String</description>
+        <name>getListFromCommaDelimitedString</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>java.util.List getListFromCommaDelimitedString(java.lang.String)</function-signature>
+    </function>
+    
+    <function>
+        <description>Get time left based on used units as calculated from baseline</description>
+        <name>getTimeLeftBasedOnUnitsUsedFromBaseline</name>
+        <function-class>com.smilecoms.commons.tags.SmileTags</function-class>
+        <function-signature>int getTimeLeftBasedOnUnitsUsedFromBaseline(long, double, java.lang.String, double, java.lang.String, java.lang.String)</function-signature>
+    </function>
+    
+    <tag>
+        <name>avp-input-row</name>
+        <attribute>
+            <name>avp</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>com.smilecoms.commons.sca.AVP</type>
+        </attribute>
+        <attribute>
+            <name>avpIndex</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>int</type>
+        </attribute>
+        <attribute>
+            <name>namePrefix</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>request</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>javax.servlet.http.HttpServletRequest</type>
+        </attribute>
+        <tag-class>com.smilecoms.commons.tags.AvpInputRow</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+    <tag>
+        <name>avp-display-row</name>
+        <attribute>
+            <name>avp</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>com.smilecoms.commons.sca.AVP</type>
+        </attribute>
+        <tag-class>com.smilecoms.commons.tags.AvpDisplayRow</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+    
+    <tag>
+        <name>displayWhenReady</name>
+        <attribute>
+            <name>href</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>event</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>containerId</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>autoLoad</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>displayMessage</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <tag-class>com.smilecoms.commons.tags.DisplayWhenReady</tag-class>
+        <body-content>JSP</body-content>
+    </tag>
+</taglib>

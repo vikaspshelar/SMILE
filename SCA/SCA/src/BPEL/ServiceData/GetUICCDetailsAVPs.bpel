@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetUICCDetailsAVPs"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/IM" xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    
+    <variables>
+        <variable name="IMGetUICCDetailsOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetUICCDetailsResponse"/>
+        <variable name="IMGetUICCDetailsIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetUICCDetailsRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SubFlowError"/>
+        <variable name="SubFlowGetUICCDetailsAVPsOut" messageType="tns:ServiceAVPsResponse"/>
+        <variable name="SubFlowGetUICCDetailsAVPsIn" messageType="tns:GetUICCDetailsAVPsRequest"/>
+    </variables>
+    
+    <faultHandlers>
+        <catch xmlns:IM="http://xml.smilecoms.com/IM" faultMessageType="IM:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCASubFlows" operation="GetUICCDetailsAVPs" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    
+    <sequence>
+        
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="GetUICCDetailsAVPs" portType="tns:SCASubFlowsSoap" variable="SubFlowGetUICCDetailsAVPsIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+        <assign name="AssignIM">
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetUICCDetailsAVPsIn.UICCDetailsLookupInfo/SubFlowContext/TxId</from>
+                <to>$IMGetUICCDetailsIn.UICCDetailsQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetUICCDetailsAVPsIn.UICCDetailsLookupInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMGetUICCDetailsIn.UICCDetailsQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetUICCDetailsAVPsIn.UICCDetailsLookupInfo/SubFlowContext/OriginatingIP</from>
+                <to>$IMGetUICCDetailsIn.UICCDetailsQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetUICCDetailsAVPsIn.UICCDetailsLookupInfo/SubFlowContext/Tenant</from>
+                <to>$IMGetUICCDetailsIn.UICCDetailsQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>substring-after($SubFlowGetUICCDetailsAVPsIn.UICCDetailsLookupInfo/RemoteResourceId, '-')</from>
+                <to>$IMGetUICCDetailsIn.UICCDetailsQuery/ns0:OSSBSSReferenceId</to>
+            </copy>
+        </assign>
+        
+        <invoke name="GetUICC" partnerLink="IM" operation="GetUICCDetails" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetUICCDetailsIn" outputVariable="IMGetUICCDetailsOut"/>
+        
+        <if name="IfThisIsLastAPN">
+            <condition>$IMGetUICCDetailsOut.UICCDetails/ns0:PIN1 != ''</condition>
+            <sequence>
+                <assign name="AssignAVPs">
+                    <copy>
+                        <from>'PIN1'</from>
+                        <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[1]/ns1:Attribute</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$IMGetUICCDetailsOut.UICCDetails/ns0:PIN1</from>
+                        <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[1]/ns1:Value</to>
+                    </copy>
+                    <copy>
+                        <from>'PUK1'</from>
+                        <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[2]/ns1:Attribute</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$IMGetUICCDetailsOut.UICCDetails/ns0:PUK1</from>
+                        <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[2]/ns1:Value</to>
+                    </copy>
+                    <copy>
+                        <from>'PIN2'</from>
+                        <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[3]/ns1:Attribute</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$IMGetUICCDetailsOut.UICCDetails/ns0:PIN2</from>
+                        <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[3]/ns1:Value</to>
+                    </copy>
+                    <copy>
+                        <from>'PUK2'</from>
+                        <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[4]/ns1:Attribute</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$IMGetUICCDetailsOut.UICCDetails/ns0:PUK2</from>
+                        <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[4]/ns1:Value</to>
+                    </copy>
+                    <copy>
+                        <from>'ADM1'</from>
+                        <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[5]/ns1:Attribute</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$IMGetUICCDetailsOut.UICCDetails/ns0:ADM1</from>
+                        <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[5]/ns1:Value</to>
+                    </copy>
+                </assign>
+            </sequence>
+            <else>
+                <sequence name="SequenceEmptyAVPs">
+                    <assign name="AssignEmptyAVPs">
+                        <copy>
+                            <from>'PIN1'</from>
+                            <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[1]/ns1:Attribute</to>
+                        </copy>
+                        <copy>
+                            <from>''</from>
+                            <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[1]/ns1:Value</to>
+                        </copy>
+                        <copy>
+                            <from>'PUK1'</from>
+                            <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[2]/ns1:Attribute</to>
+                        </copy>
+                        <copy>
+                            <from>''</from>
+                            <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[2]/ns1:Value</to>
+                        </copy>
+                        <copy>
+                            <from>'PIN2'</from>
+                            <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[3]/ns1:Attribute</to>
+                        </copy>
+                        <copy>
+                            <from>''</from>
+                            <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[3]/ns1:Value</to>
+                        </copy>
+                        <copy>
+                            <from>'PUK2'</from>
+                            <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[4]/ns1:Attribute</to>
+                        </copy>
+                        <copy>
+                            <from>''</from>
+                            <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[4]/ns1:Value</to>
+                        </copy>
+                        <copy>
+                            <from>'ADM1'</from>
+                            <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[5]/ns1:Attribute</to>
+                        </copy>
+                        <copy>
+                            <from>''</from>
+                            <to>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[5]/ns1:Value</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </else>
+        </if>
+        
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="GetUICCDetailsAVPs" portType="tns:SCASubFlowsSoap" variable="SubFlowGetUICCDetailsAVPsOut"/>
+    </sequence>
+</process>

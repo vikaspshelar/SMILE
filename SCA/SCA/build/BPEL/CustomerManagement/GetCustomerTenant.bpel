@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetCustomerTenant"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/IM"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:ns2="http://xml.smilecoms.com/IM" xmlns:ns3="http://xml.smilecoms.com/schema/CM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="IMGetCustomerTenantOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetCustomerTenantResponse"/>
+        <variable name="IMGetCustomerTenantIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetCustomerTenantRequest"/>
+        <variable name="SCAGetCustomerTenantOut" messageType="tns:GetCustomerTenantResponse"/>
+        <variable name="SCAGetCustomerTenantIn" messageType="tns:GetCustomerTenantRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultMessageType="ns2:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetCustomerTenant" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetCustomerTenant" portType="tns:SCASoap" variable="SCAGetCustomerTenantIn"/>
+
+
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+
+        <assign name="AssignIM">
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomerTenantIn.TenantQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMGetCustomerTenantIn.TenantQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomerTenantIn.TenantQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMGetCustomerTenantIn.TenantQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomerTenantIn.TenantQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMGetCustomerTenantIn.TenantQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomerTenantIn.TenantQuery/ns0:CustomerId</from>
+                <to>$IMGetCustomerTenantIn.TenantQuery/ns1:CustomerId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomerTenantIn.TenantQuery/ns0:SSOIdentity</from>
+                <to>$IMGetCustomerTenantIn.TenantQuery/ns1:SSOIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomerTenantIn.TenantQuery/ns0:EmailAddress</from>
+                <to>$IMGetCustomerTenantIn.TenantQuery/ns1:EmailAddress</to>
+            </copy>
+        </assign>
+        <invoke name="CallIM" partnerLink="IM" operation="GetCustomerTenant" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetCustomerTenantIn" outputVariable="IMGetCustomerTenantOut"/>
+        <assign name="Assign2">
+            <copy ignoreMissingFromData="yes">
+                <from>$IMGetCustomerTenantOut.TenantData/ns1:tenant</from>
+                <to>$SCAGetCustomerTenantOut.TenantData/ns0:tenant</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="GetCustomerTenant" portType="tns:SCASoap" variable="SCAGetCustomerTenantOut"/>
+    </sequence>
+</process>
+
+
+
+
+
+
+
+

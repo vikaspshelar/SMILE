@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CreateTroubleTicketIssue"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/TT" xmlns:ns2="http://xml.smilecoms.com/SCASubFlows" xmlns:ns3="http://xml.smilecoms.com/TT" xmlns:ns4="http://xml.smilecoms.com/schema/IM" xmlns:ns5="http://xml.smilecoms.com/IM" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed1="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/TT" location="../Partners/TT/TTServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="TT" xmlns:tns="http://xml.smilecoms.com/TT" partnerLinkType="tns:TTServiceDefinition" partnerRole="TT"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="watcherCount" type="xsd:int"/>
+        <variable name="fieldsCount" type="xsd:int"/>
+        <variable name="fieldsCountRT" type="xsd:int"/>
+        <variable name="Fault1FaultVar1" messageType="tns:SCAError"/>
+        <variable name="isTTUser" type="xsd:boolean"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>       
+        <variable name="TTCreateIssueOut" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:CreateIssueResponse">
+        </variable>
+        <variable name="TTCreateIssueIn" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:CreateIssueRequest">
+        </variable>
+        <variable name="SCACreateTroubleTicketIssueOut" messageType="tns:CreateTroubleTicketIssueResponse">
+        </variable>
+        <variable name="SCACreateTroubleTicketIssueIn" messageType="tns:CreateTroubleTicketIssueRequest">
+        </variable>
+        <variable name="TTIsUserOut" messageType="ns3:IsUserResponse"/>
+        <variable name="TTIsUserIn" messageType="ns3:IsUserRequest"/>
+        <variable name="TTCreateUserOut" messageType="ns3:CreateUserResponse"/>
+        <variable name="TTCreateUserIn" messageType="ns3:CreateUserRequest"/>
+        <variable name="IMGetCustomersOut" messageType="ns5:GetCustomersResponse"/>
+        <variable name="IMGetCustomersIn" messageType="ns5:GetCustomersRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="TTError" faultMessageType="ns3:TTError">
+            <sequence name="Sequence1">
+                <assign name="Assign_TTError_SCAError">
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply_TTFault" partnerLink="SCA" operation="CreateTroubleTicketIssue" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch faultVariable="IMError" faultMessageType="ns5:IMError">
+            <sequence name="Sequence4">
+                <assign name="Assign_IMError_SCAError">
+                    <copy>
+                        <from>$IMError.IMError/ns4:ErrorDesc</from>
+                        <to>$Fault1FaultVar1.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns4:ErrorType</from>
+                        <to>$Fault1FaultVar1.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns4:ErrorCode</from>
+                        <to>$Fault1FaultVar1.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply_IMFault" partnerLink="SCA" operation="CreateTroubleTicketIssue" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar1"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive" createInstance="yes" partnerLink="SCA" operation="CreateTroubleTicketIssue" portType="tns:SCASoap" variable="SCACreateTroubleTicketIssueIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('TT')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="TT"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <scope name="TT_User">
+            <sequence name="Sequence2">
+                <assign name="Assign_SCA_TT">
+                    <copy>
+                        <from>false()</from>
+                        <to variable="isTTUser"/>
+                    </copy>
+                    <copy>
+                        <from>'admin'</from>
+                        <to>$TTIsUserIn.UserIDToCheck/ns1:UserID</to>
+                    </copy>
+                </assign>
+                <assign name="CheckPermissions1">
+                    <copy>
+                        <from>BPELUtils:checkPermissions($SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:SCAContext, 'Customer', $SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:CustomerId)</from>
+                        <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:SCAContext/ns0:Obviscated</to>
+                    </copy>
+                </assign>
+                <invoke name="Call_TT_IsUser" partnerLink="TT" operation="IsUser" portType="ns3:TTSoap" inputVariable="TTIsUserIn" outputVariable="TTIsUserOut"/>
+                <assign name="Set_Flag">
+                    <copy>
+                        <from>$TTIsUserOut.Check/ns1:Check = 'true'</from>
+                        <to variable="isTTUser"/>
+                    </copy>
+                </assign>
+                <if name="If_TTUser_False">
+                    <condition>not($isTTUser)</condition>
+                    <sequence name="Sequence3">
+                        <assign name="Assign_SCA_IM">
+                            <copy>
+                                <from>1</from>
+                                <to>$IMGetCustomersIn.CustomerQuery/ns4:CustomerId</to>
+                            </copy>
+                        </assign>
+                        <invoke name="Call_IM" partnerLink="IM" operation="GetCustomers" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetCustomersIn" outputVariable="IMGetCustomersOut"/>
+                        <assign name="Assign_IM_TT">
+                            <copy>
+                                <from>$IMGetCustomersOut.CustomerList/ns4:Customers[1]/ns4:EmailAddress</from>
+                                <to>$TTCreateUserIn.NewUser/ns1:Email</to>
+                            </copy>
+                            <copy>
+                                <from>concat($IMGetCustomersOut.CustomerList/ns4:Customers[1]/ns4:FirstName, ' ', $IMGetCustomersOut.CustomerList/ns4:Customers[1]/ns4:LastName)</from>
+                                <to>$TTCreateUserIn.NewUser/ns1:FullName</to>
+                            </copy>
+                            <copy>
+                                <from>'dummypasswd'</from>
+                                <to>$TTCreateUserIn.NewUser/ns1:Password</to>
+                            </copy>
+                            <copy>
+                                <from>$IMGetCustomersOut.CustomerList/ns4:Customers[1]/ns4:CustomerId
+                                    <sxed1:editor>
+                                        <sxed1:predicate path="$IMGetCustomersOut.CustomerList/ns4:Customers[1]" source="from"/>
+                                    </sxed1:editor>
+                                </from>
+                                <to>$TTCreateUserIn.NewUser/ns1:UserID</to>
+                            </copy>
+                        </assign>
+                        <if name="If_No_Email">
+                            <condition>string-length($IMGetCustomersOut.CustomerList/ns4:Customers[1]/ns4:EmailAddress) = 0</condition>
+                            <assign name="Assign_Default_Email">
+                                <copy>
+                                    <from>$IMGetCustomersOut.CustomerList/ns4:Customers[1]/ns4:SSOIdentity</from>
+                                    <to>$TTCreateUserIn.NewUser/ns1:Email</to>
+                                </copy>
+                            </assign>
+                        </if>
+                        <invoke name="Call_TT_CreateUser" partnerLink="TT" operation="CreateUser" portType="ns3:TTSoap" inputVariable="TTCreateUserIn" outputVariable="TTCreateUserOut"/>
+                    </sequence>
+                </if>
+            </sequence>
+        </scope>
+        <assign name="Assign_SCA_TT">
+            <copy>
+                <from>count($SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:MindMapFields/ns0:JiraField)</from>
+                <to variable="fieldsCount"/>
+            </copy>
+            
+            <copy>
+                <from>$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:CustomerId</from>
+                <to>$TTCreateIssueIn.NewIssue/ns1:CustomerId</to>
+            </copy>
+            <copy>
+                <from>$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$TTCreateIssueIn.NewIssue/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:SCAContext/ns0:Tenant</from>
+                <to>$TTCreateIssueIn.NewIssue/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$TTCreateIssueIn.NewIssue/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:SCAContext/ns0:TxId</from>
+                <to>$TTCreateIssueIn.NewIssue/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+        </assign>
+        
+        <forEach name="ForEach_Fields" parallel="no" counterName="ifieldsCount">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$fieldsCount</finalCounterValue>
+            <scope name="Scope1F">
+                <assign name="Assign_SCA_TT_Fields">
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCount]/ns0:FieldName
+                            <sxed1:editor>
+                                <sxed1:predicate path="$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCount]" source="from"/>
+                            </sxed1:editor>
+                        </from>
+                        <to>$TTCreateIssueIn.NewIssue/ns1:JiraFields/ns1:JiraField[$ifieldsCount]/ns1:FieldName
+                            <sxed1:editor>
+                                <sxed1:predicate path="$TTCreateIssueIn.NewIssue/ns1:JiraFields/ns1:JiraField[$ifieldsCount]" source="to"/>
+                            </sxed1:editor>
+                        </to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCount]/ns0:FieldType
+                            <sxed1:editor>
+                                <sxed1:predicate path="$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCount]" source="from"/>
+                            </sxed1:editor>
+                        </from>
+                        <to>$TTCreateIssueIn.NewIssue/ns1:JiraFields/ns1:JiraField[$ifieldsCount]/ns1:FieldType
+                            <sxed1:editor>
+                                <sxed1:predicate path="$TTCreateIssueIn.NewIssue/ns1:JiraFields/ns1:JiraField[$ifieldsCount]" source="to"/>
+                            </sxed1:editor>
+                        </to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCount]/ns0:FieldValue
+                            <sxed1:editor>
+                                <sxed1:predicate path="$SCACreateTroubleTicketIssueIn.NewTTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCount]" source="from"/>
+                            </sxed1:editor>
+                        </from>
+                        <to>$TTCreateIssueIn.NewIssue/ns1:JiraFields/ns1:JiraField[$ifieldsCount]/ns1:FieldValue
+                            <sxed1:editor>
+                                <sxed1:predicate path="$TTCreateIssueIn.NewIssue/ns1:JiraFields/ns1:JiraField[$ifieldsCount]" source="to"/>
+                            </sxed1:editor>
+                        </to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        
+        
+        <invoke name="Call_TT_CreateIssue" partnerLink="TT" operation="CreateIssue" xmlns:tns="http://xml.smilecoms.com/TT" portType="tns:TTSoap" inputVariable="TTCreateIssueIn" outputVariable="TTCreateIssueOut"/>
+        <assign name="Assign_TT_SCA">
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:Project</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Project</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:IssueType</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:IssueType</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:Priority</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Priority</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:DueDate</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:DueDate</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:Summary</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Summary</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:Created</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Created</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:Resolution</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Resolution</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:Status</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Status</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:Updated</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Updated</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:ID</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:ID</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:Description</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Description</to>
+            </copy>
+            <copy>
+                <from>count($TTCreateIssueOut.Issue/ns1:Watchers)</from>
+                <to variable="watcherCount"/>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:Reporter</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Reporter</to>
+            </copy>
+            <copy>
+                <from>$TTCreateIssueOut.Issue/ns1:Assignee</from>
+                <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Assignee</to>
+            </copy>
+            <copy>
+                <from>count($TTCreateIssueOut.Issue/ns1:JiraFields/ns1:JiraField)</from>
+                <to variable="fieldsCountRT"/>
+            </copy>
+        </assign>
+        <forEach name="ForEach_OutboundFields" parallel="no" counterName="ifieldsCountRT">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$fieldsCountRT</finalCounterValue>
+            <scope name="ScopeOutboundFields">
+                <assign name="Assign_TT_SCA_FieldsRT">
+                    <copy>
+                        <from>$TTCreateIssueOut.Issue/ns1:JiraFields/ns1:JiraField[$ifieldsCountRT]/ns1:FieldName
+                            <sxed1:editor>
+                                <sxed1:predicate path="$TTCreateIssueOut.Issue/ns1:JiraFields/ns1:JiraField[$ifieldsCountRT]" source="from"/>
+                            </sxed1:editor>
+                        </from>
+                        <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCountRT]/ns0:FieldName
+                            <sxed1:editor>
+                                <sxed1:predicate path="$SCACreateTroubleTicketIssueOut.TTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCountRT]" source="to"/>
+                            </sxed1:editor>
+                        </to>
+                    </copy>
+                    <copy>
+                        <from>$TTCreateIssueOut.Issue/ns1:JiraFields/ns1:JiraField[$ifieldsCountRT]/ns1:FieldType
+                            <sxed1:editor>
+                                <sxed1:predicate path="$TTCreateIssueOut.Issue/ns1:JiraFields/ns1:JiraField[$ifieldsCountRT]" source="from"/>
+                            </sxed1:editor>
+                        </from>
+                        <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCountRT]/ns0:FieldType
+                            <sxed1:editor>
+                                <sxed1:predicate path="$SCACreateTroubleTicketIssueOut.TTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCountRT]" source="to"/>
+                            </sxed1:editor>
+                        </to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$TTCreateIssueOut.Issue/ns1:JiraFields/ns1:JiraField[$ifieldsCountRT]/ns1:FieldValue
+                            <sxed1:editor>
+                                <sxed1:predicate path="$TTCreateIssueOut.Issue/ns1:JiraFields/ns1:JiraField[$ifieldsCountRT]" source="from"/>
+                            </sxed1:editor>
+                        </from>
+                        <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCountRT]/ns0:FieldValue
+                            <sxed1:editor>
+                                <sxed1:predicate path="$SCACreateTroubleTicketIssueOut.TTIssue/ns0:MindMapFields/ns0:JiraField[$ifieldsCountRT]" source="to"/>
+                            </sxed1:editor>
+                        </to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        
+        <forEach name="ForEach_OutboundWatcher" parallel="no" counterName="iWatcherCount">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$watcherCount</finalCounterValue>
+            <scope name="Scope2">
+                <assign name="Assign_TT_SCA_Watcher">
+                    <copy>
+                        <from>$TTCreateIssueOut.Issue/ns1:Watchers[$iWatcherCount]</from>
+                        <to>$SCACreateTroubleTicketIssueOut.TTIssue/ns0:Watchers[$iWatcherCount]</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <reply name="Reply" partnerLink="SCA" operation="CreateTroubleTicketIssue" portType="tns:SCASoap" variable="SCACreateTroubleTicketIssueOut"/>
+    </sequence>
+</process>
+
+
+
+
+

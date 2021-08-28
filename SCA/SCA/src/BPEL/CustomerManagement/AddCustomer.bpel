@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="AddCustomer"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA"
+    xmlns:ns1="http://xml.smilecoms.com/schema/IM"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:IM="http://xml.smilecoms.com/IM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="IMAddCustomerOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:AddCustomerResponse"/>
+        <variable name="IMAddCustomerIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:AddCustomerRequest"/>
+        <variable name="SCAAddCustomerOut" messageType="tns:AddCustomerResponse"/>
+        <variable name="SCAAddCustomerIn" messageType="tns:AddCustomerRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="IM:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="AddCustomer" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="AddCustomer" portType="tns:SCASoap" variable="SCAAddCustomerIn"/>
+
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:SCAContext/ns0:Tenant</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:Title</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:Title</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:FirstName</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:FirstName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:MiddleName</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:MiddleName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:LastName</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:LastName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:CustomerStatus</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:CustomerStatus</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:IdentityNumber</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:IdentityNumber</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:IdentityNumberType</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:IdentityNumberType</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:NationalIdentityNumber</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:NationalIdentityNumber</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:IsNinVerified</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:IsNinVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:DateOfBirth</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:DateOfBirth</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:Gender</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:Gender</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:Language</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:Language</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:EmailAddress</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:EmailAddress</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:AlternativeContact1</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:AlternativeContact1</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:AlternativeContact2</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:AlternativeContact2</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:Classification</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:Classification</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:SSOIdentity</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:SSOIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:SSODigest</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:SSODigest</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:SSOAuthFlags</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:SSOAuthFlags</to>
+            </copy>
+            <copy>
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:SecurityGroups</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:SecurityGroups</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:CustomerSellers</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:CustomerSellers</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:OptInLevel</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:OptInLevel</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:Nationality</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:Nationality</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:ReferralCode</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:ReferralCode</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:PassportExpiryDate</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:PassportExpiryDate</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:VisaExpiryDate</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:VisaExpiryDate</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:MothersMaidenName</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:MothersMaidenName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:WarehouseId</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:WarehouseId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:CardNumber</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:CardNumber</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddCustomerIn.NewCustomer/ns0:KYCStatus</from>
+                <to>$IMAddCustomerIn.NewCustomer/ns1:KYCStatus</to>
+            </copy>
+        </assign>
+        <forEach name="ForEachPhoto" parallel="no" counterName="photo">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCAAddCustomerIn.NewCustomer/ns0:CustomerPhotographs)</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="AssignPhoto">
+                    <copy>
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:CustomerPhotographs[$photo]/ns0:PhotoGuid</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:CustomerPhotographs[$photo]/ns1:PhotoGuid</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:CustomerPhotographs[$photo]/ns0:PhotoType</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:CustomerPhotographs[$photo]/ns1:PhotoType</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:CustomerPhotographs[$photo]/ns0:Data</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:CustomerPhotographs[$photo]/ns1:Data</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        
+        <forEach name="ForEachAddress" parallel="no" counterName="address">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCAAddCustomerIn.NewCustomer/ns0:Addresses)</finalCounterValue>
+            <scope name="ScopeAdde">
+                <assign name="AssignAddr">
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:Addresses[$address]/ns0:Line1</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:Addresses[$address]/ns1:Line1</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:Addresses[$address]/ns0:Line2</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:Addresses[$address]/ns1:Line2</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:Addresses[$address]/ns0:Zone</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:Addresses[$address]/ns1:Zone</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:Addresses[$address]/ns0:Town</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:Addresses[$address]/ns1:Town</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:Addresses[$address]/ns0:State</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:Addresses[$address]/ns1:State</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:Addresses[$address]/ns0:Country</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:Addresses[$address]/ns1:Country</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:Addresses[$address]/ns0:Code</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:Addresses[$address]/ns1:Code</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:Addresses[$address]/ns0:Type</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:Addresses[$address]/ns1:Type</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:Addresses[$address]/ns0:PostalMatchesPhysical</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:Addresses[$address]/ns1:PostalMatchesPhysical</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        
+        <forEach name="ForEachCustomerRole" parallel="no" counterName="role">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCAAddCustomerIn.NewCustomer/ns0:CustomerRoles)</finalCounterValue>
+            <scope name="Scope2">
+                <assign name="AssignRole">
+                    <copy>
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:CustomerRoles[$role]/ns0:RoleName</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:CustomerRoles[$role]/ns1:RoleName</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAAddCustomerIn.NewCustomer/ns0:CustomerRoles[$role]/ns0:OrganisationId</from>
+                        <to>$IMAddCustomerIn.NewCustomer/ns1:CustomerRoles[$role]/ns1:OrganisationId</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        
+        <invoke name="CallIM" partnerLink="IM" operation="AddCustomer" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMAddCustomerIn" outputVariable="IMAddCustomerOut"/>
+        <assign name="Assign3">
+            <copy>
+                <from>$IMAddCustomerOut.CustomerId/ns1:Integer</from>
+                <to>$SCAAddCustomerOut.CustomerId/ns0:Integer</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="AddCustomer" portType="tns:SCASoap" variable="SCAAddCustomerOut"/>
+    </sequence>
+</process>
+
+
+
+

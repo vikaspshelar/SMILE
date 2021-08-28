@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CopyCMSvcSpecToSCASvcSpec"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/CM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCASubFlowsInvoke" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="CopyCMSvcSpecToSCASvcSpecOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ServiceSpecificationResponse"/>
+        <variable name="svcSpecAVPCount" type="xs:int"/>
+        <variable name="CopyCMSvcSpecToSCASvcSpecIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceSpecificationResponse"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="CopyCMSvcSpecToSCASvcSpec" portType="tns:SCASubFlowsSoap" variable="CopyCMSvcSpecToSCASvcSpecIn"/>
+        
+        <assign name="Assign_Spec">
+            <copy>
+                <from>count($CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:AVPs)</from>
+                <to variable="svcSpecAVPCount"/>
+            </copy>
+            <copy>
+                <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:ServiceSpecificationId</from>
+                <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:ServiceSpecificationId</to>
+            </copy>
+            <copy>
+                <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:Name</from>
+                <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:Name</to>
+            </copy>
+            <copy>
+                <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:Description</from>
+                <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:Description</to>
+            </copy>
+            <copy>
+                <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:ServiceCode</from>
+                <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:ServiceCode</to>
+            </copy>
+        </assign>
+        <forEach name="ForEach_SvcSpecAVP" parallel="no" counterName="idxSvcSpecAVP">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$svcSpecAVPCount</finalCounterValue>
+            <scope name="Scope4">
+                <assign name="Assign3">
+                    <copy ignoreMissingFromData="yes">
+                        <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:Attribute</from>
+                        <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:Attribute</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:Value</from>
+                        <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:Value</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:UserDefined</from>
+                        <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:UserDefined</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:ValidationRule</from>
+                        <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:ValidationRule</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:InputType</from>
+                        <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:InputType</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:TechnicalDescription</from>
+                        <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:TechnicalDescription</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$CopyCMSvcSpecToSCASvcSpecIn.ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:ProvisionRoles</from>
+                        <to>$CopyCMSvcSpecToSCASvcSpecOut.ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:ProvisionRoles</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="CopyCMSvcSpecToSCASvcSpec" portType="tns:SCASubFlowsSoap" variable="CopyCMSvcSpecToSCASvcSpecOut"/>
+    </sequence>
+</process>

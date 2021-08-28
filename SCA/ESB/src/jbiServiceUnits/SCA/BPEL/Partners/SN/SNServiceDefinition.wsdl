@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="SNServiceDefinition" targetNamespace="http://xml.smilecoms.com/SN"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://xml.smilecoms.com/schema/SN" xmlns:tns="http://xml.smilecoms.com/SN">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/SN" xmlns:ns1="http://xml.smilecoms.com/schema/SN" xmlns:tns="http://xml.smilecoms.com/SN">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/SN" schemaLocation="SNSchema.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="GetStickyNoteTypeListRequest">
+        <part name="EntityName" element="ns1:EntityName"/>
+    </message>
+    <message name="GetStickyNoteTypeListResponse">
+        <part name="StickyNoteTypeList" element="ns1:StickyNoteTypeList"/>
+    </message>
+    <message name="SNError">
+        <part name="SNError" element="ns1:SNError"/>
+    </message>
+    <message name="AddStickyNoteRequest">
+        <part name="NewStickyNote" element="ns1:NewStickyNote"/>
+    </message>
+    <message name="StickyNoteResponse">
+        <part name="StickyNote" element="ns1:StickyNote"/>
+    </message>
+    <message name="ModifyStickyNoteRequest">
+        <part name="ModifiedStickyNote" element="ns1:StickyNote"/>
+    </message>
+    <message name="GetEntitiesStickyNotesRequest">
+        <part name="EntityIdentifier" element="ns1:EntityIdentifier"/>
+    </message>
+    <message name="GetEntitiesStickyNotesResponse">
+        <part name="StickyNoteList" element="ns1:StickyNoteList"/>
+    </message>
+    <message name="GetStickyNoteTypeRequest">
+        <part name="StickyNoteTypeName" element="ns1:StickyNoteTypeName"></part>
+    </message>
+    <message name="StickyNoteTypeResponse">
+        <part name="StickyNoteType" element="ns1:StickyNoteType"/>
+    </message>
+    <message name="GetStickyNoteRequest">
+        <part name="StickyNoteId" element="ns1:StickyNoteId"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns1:IsUpRequest"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns1:Done"/>
+    </message>
+    <message name="DeleteStickyNoteRequest">
+        <part name="StickyNoteIdToDelete" element="ns1:StickyNoteIdToDelete"/>
+    </message>
+    <portType name="SNSoap">
+        <operation name="GetStickyNoteTypeList">
+            <input name="input1" message="tns:GetStickyNoteTypeListRequest"/>
+            <output name="output1" message="tns:GetStickyNoteTypeListResponse"/>
+            <fault name="fault1" message="tns:SNError"/>
+        </operation>
+        <operation name="AddStickyNote">
+            <input name="input2" message="tns:AddStickyNoteRequest"/>
+            <output name="output2" message="tns:StickyNoteResponse"/>
+            <fault name="fault1" message="tns:SNError"/>
+        </operation>
+        <operation name="ModifyStickyNote">
+            <input name="input3" message="tns:ModifyStickyNoteRequest"/>
+            <output name="output3" message="tns:StickyNoteResponse"/>
+            <fault name="fault1" message="tns:SNError"/>
+        </operation>
+        <operation name="GetEntitiesStickyNotes">
+            <input name="input4" message="tns:GetEntitiesStickyNotesRequest"/>
+            <output name="output4" message="tns:GetEntitiesStickyNotesResponse"/>
+            <fault name="fault1" message="tns:SNError"/>
+        </operation>
+        <operation name="GetStickyNoteType">
+            <input name="input5" message="tns:GetStickyNoteTypeRequest"/>
+            <output name="output5" message="tns:StickyNoteTypeResponse"/>
+            <fault name="fault1" message="tns:SNError"/>
+        </operation>
+        <operation name="GetStickyNote">
+            <input name="input6" message="tns:GetStickyNoteRequest"/>
+            <output name="output6" message="tns:StickyNoteResponse"/>
+            <fault name="fault1" message="tns:SNError"/>
+        </operation>
+        <operation name="IsUp">
+            <input name="input7" message="tns:IsUpRequest"/>
+            <output name="output7" message="tns:Done"/>
+            <fault name="fault1" message="tns:SNError"/>
+        </operation>
+        <operation name="DeleteStickyNote">
+            <input name="input8" message="tns:DeleteStickyNoteRequest"/>
+            <output name="output8" message="tns:Done"/>
+            <fault name="fault1" message="tns:SNError"/>
+        </operation>
+    </portType>
+    <binding name="SNBinding" type="tns:SNSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="GetStickyNoteTypeList">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddStickyNote">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyStickyNote">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetEntitiesStickyNotes">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetStickyNoteType">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetStickyNote">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsUp">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteStickyNote">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="SN">
+        <port name="SNSoap" binding="tns:SNBinding">
+            <soap:address location="http://dummyhost:${HttpDefaultPort}/SN/SNSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="SNServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="SN" portType="tns:SNSoap"/>
+    </plnk:partnerLinkType>
+</definitions>
+
+

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CreateTroubleTicketUser"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns1="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/IM"
+    xmlns:ns4="http://xml.smilecoms.com/TT" 
+    xmlns:ns3="http://xml.smilecoms.com/schema/TT">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/schema/SCA" location="../../wsdl/SCASchema.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
+    
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/TT" location="../Partners/TT/TTServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="TT" xmlns:tns="http://xml.smilecoms.com/TT" partnerLinkType="tns:TTServiceDefinition" partnerRole="TT"/> 
+    </partnerLinks>
+    <variables>
+        <variable name="TTCreateUserOut" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:CreateUserResponse"/>
+        <variable name="TTCreateUserIn" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:CreateUserRequest"/>
+        <variable name="IMGetCustomersOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetCustomersResponse"/>
+        <variable name="IMGetCustomersIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetCustomersRequest"/>
+        <variable name="CreateTroubleTicketUserOut" messageType="tns:CreateTroubleTicketUserResponse"/>
+        <variable name="CreateTroubleTicketUserIn" messageType="tns:CreateTroubleTicketUserRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        
+    </variables>
+    
+        <faultHandlers>
+        <catch faultVariable="TTError" faultMessageType="ns4:TTError">
+            <sequence name="Sequence1">
+                <assign name="Assign_TTError_SCAError">
+                    <copy>
+                        <from>$TTError.TTError/ns3:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns3:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns3:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply_TTFault" partnerLink="SCA" operation="CreateTroubleTicketUser" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    
+    
+    <sequence>
+        <receive name="Receive" createInstance="yes" partnerLink="SCA" operation="CreateTroubleTicketUser" portType="tns:SCASoap" variable="CreateTroubleTicketUserIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('TT')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="TT"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign_SCA_IM">
+            <copy>
+                <from>$CreateTroubleTicketUserIn.UserIDForNewTTUser/ns0:String</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns2:SSOIdentity</to>
+            </copy>
+        </assign>
+        <invoke name="Call_IM" partnerLink="IM" operation="GetCustomers" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetCustomersIn" outputVariable="IMGetCustomersOut"/>
+        <assign name="Assign_IM_TT">
+            <copy>
+                <from>$IMGetCustomersOut.CustomerList[1]/ns2:PlatformContext/ns2:TxId</from>
+                <to>$TTCreateUserIn.NewUser/ns3:PlatformContext/ns3:TxId</to>
+            </copy>
+            <copy>
+                <from>$IMGetCustomersOut.CustomerList[1]/ns2:PlatformContext/ns2:OriginatingIP</from>
+                <to>$TTCreateUserIn.NewUser/ns3:PlatformContext/ns3:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$IMGetCustomersOut.CustomerList[1]/ns2:PlatformContext/ns2:Tenant</from>
+                <to>$TTCreateUserIn.NewUser/ns3:PlatformContext/ns3:Tenant</to>
+            </copy>
+            <copy>
+                <from>$IMGetCustomersOut.CustomerList[1]/ns2:Customers/ns2:EmailAddress</from>
+                <to>$TTCreateUserIn.NewUser/ns3:Email</to>
+            </copy>
+            <copy>
+                <from>$IMGetCustomersOut.CustomerList[1]/ns2:Customers/ns2:SSOIdentity</from>
+                <to>$TTCreateUserIn.NewUser/ns3:UserID</to>
+            </copy>
+            <copy>
+                <from>$IMGetCustomersOut.CustomerList[1]/ns2:Customers/ns2:SSODigest</from>
+                <to>$TTCreateUserIn.NewUser/ns3:Password</to>
+            </copy>
+            <copy>
+                <from>concat(concat($IMGetCustomersOut.CustomerList[1]/ns2:Customers/ns2:FirstName, ' '), $IMGetCustomersOut.CustomerList[1]/ns2:Customers/ns2:LastName)</from>
+                <to>$TTCreateUserIn.NewUser/ns3:FullName</to>
+            </copy>
+            <copy>
+                <from>$IMGetCustomersOut.CustomerList/ns2:PlatformContext/ns2:OriginatingIdentity</from>
+                <to>$TTCreateUserIn.NewUser/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+            </copy>
+        </assign>
+        <if name="If_No_Email">
+            <condition>string-length($TTCreateUserIn.NewUser/ns3:Email) = 0</condition>
+            <assign name="Assign_Default_Email">
+                <copy>
+                    <from>$TTCreateUserIn.NewUser/ns3:UserID</from>
+                    <to>$TTCreateUserIn.NewUser/ns3:Email</to>
+                </copy>
+            </assign>
+        </if>
+        <invoke name="Call_TT" partnerLink="TT" operation="CreateUser" xmlns:tns="http://xml.smilecoms.com/TT" portType="tns:TTSoap" inputVariable="TTCreateUserIn" outputVariable="TTCreateUserOut"/>
+        <assign name="Assign_TT_SCA">
+            <copy>
+                <from>$TTCreateUserOut.User/ns3:UserID</from>
+                <to>$CreateTroubleTicketUserOut.TTUser/ns0:UserID</to>
+            </copy>
+            <copy>
+                <from>$TTCreateUserOut.User/ns3:FullName</from>
+                <to>$CreateTroubleTicketUserOut.TTUser/ns0:FullName</to>
+            </copy>
+            <copy>
+                <from>$TTCreateUserOut.User/ns3:Email</from>
+                <to>$CreateTroubleTicketUserOut.TTUser/ns0:Email</to>
+            </copy>
+            <copy>
+                <from>$TTCreateUserOut.User/ns3:Password</from>
+                <to>$CreateTroubleTicketUserOut.TTUser/ns0:Password</to>
+            </copy>
+        </assign>
+        <reply name="Reply" partnerLink="SCA" operation="CreateTroubleTicketUser" portType="tns:SCASoap" variable="CreateTroubleTicketUserOut"/>
+    </sequence>
+</process>

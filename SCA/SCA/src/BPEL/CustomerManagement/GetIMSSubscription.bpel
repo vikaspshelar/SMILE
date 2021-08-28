@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetIMSSubscription"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/IM"
+    xmlns:ns2="http://xml.smilecoms.com/IM"
+    xmlns:LT="java://com.smilecoms.lt.LT">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCACalling" partnerLinkType="tns:SCA" partnerRole="SCAImplementation"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="SCACallingGetServiceInstancesOut" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="SCACallingGetServiceInstancesIn" messageType="tns:GetServiceInstancesRequest"/>
+        <variable name="implicitsets" type="xs:int"/>
+        <variable name="IMSPrivateidentities" type="xs:int"/>
+        <variable name="IMSPublicidentities" type="xs:int"/>
+        <variable name="IMGetIMSSubscriptionOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSSubscriptionResponse"/>
+        <variable name="IMGetIMSSubscriptionIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSSubscriptionRequest"/>
+        <variable name="SCAGetIMSSubscriptionOut" messageType="tns:IMSSubscriptionResponse"/>
+        <variable name="SCAGetIMSSubscriptionIn" messageType="tns:GetIMSSubscriptionRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="EndPoint" type="xsd:string"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="IMError" faultMessageType="ns2:IMError">
+            <sequence name="SequenceErr1">
+                <assign name="AssignErr1">
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErr1" partnerLink="SCA" operation="GetIMSSubscription" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch faultMessageType="tns:SCAError" faultVariable="SCAError">
+            <sequence name="Sequence8">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$SCAError.SCAError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAError.SCAError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAError.SCAError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetIMSSubscription" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetIMSSubscription" portType="tns:SCASoap" variable="SCAGetIMSSubscriptionIn"/>
+
+        <scope name="Dynamic_EPR"  >
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>   
+            </sequence>
+        </scope>
+        <if name="IfLookupByIP">
+            <condition>count($SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:IPAddress) != 0 and string-length($SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:IPAddress) != 0</condition>
+            <sequence name="Sequence7">
+                <assign name="AssignCallSCA">
+                    <copy>
+                        <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:IPAddress</from>
+                        <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:IPAddress</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:SCAContext/ns0:TxId</from>
+                        <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                        <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>'MAIN_SVCAVP'</from>
+                        <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:Verbosity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:SCAContext/ns0:Roles</from>
+                        <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:Roles</to>
+                    </copy>
+                    <copy>
+                        <from>'getServiceInstances'</from>
+                        <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:Method</to>
+                    </copy>
+                </assign>
+                <invoke name="GetSIFromSCA" partnerLink="SCACalling" operation="GetServiceInstances" portType="tns:SCASoap" inputVariable="SCACallingGetServiceInstancesIn" outputVariable="SCACallingGetServiceInstancesOut"/>
+                <assign name="AssignICCID">
+                    <copy>
+                        <from>BPELUtils:getAVPValueAsStringEmptyIfMissing($SCACallingGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances, 'IntegratedCircuitCardIdentifier')</from>
+                        <to>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:IntegratedCircuitCardIdentifier</to>
+                    </copy>
+                </assign>
+            </sequence>
+        </if>
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:IMSSubscriptionId</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:IMSSubscriptionId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:IMSPrivateIdentity</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:IMSPrivateIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:IMSPublicIdentity</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:IMSPublicIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:ImplicitSetId</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:ImplicitSetId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:Verbosity</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:Verbosity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:IntegratedCircuitCardIdentifier</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:IntegratedCircuitCardIdentifier</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetIMSSubscriptionIn.IMSSubscriptionQuery/ns0:OSSBSSReferenceId</from>
+                <to>$IMGetIMSSubscriptionIn.IMSSubscriptionQuery/ns1:OSSBSSReferenceId</to>
+            </copy>
+        </assign>
+        <invoke name="Call_IM" partnerLink="IM" operation="GetIMSSubscription" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSSubscriptionIn" outputVariable="IMGetIMSSubscriptionOut"/>
+        <assign name="AssignIMSSubscriptionData">
+            <copy>
+                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSSubscriptionId</from>
+                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSSubscriptionId</to>
+            </copy>
+            <copy>
+                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:SCSCFName</from>
+                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:SCSCFName</to>
+            </copy>
+            <copy>
+                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:DiameterName</from>
+                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:DiameterName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:PreferredSCSCFs</from>
+                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:PreferredSCSCFs</to>
+            </copy>
+            <copy>
+                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:Version</from>
+                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:Version</to>
+            </copy>
+            <copy>
+                <from>count($IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities)</from>
+                <to variable="IMSPrivateidentities"/>
+            </copy>
+        </assign>
+        <forEach name="ForEachIMPI" parallel="no" counterName="impiloop">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$IMSPrivateidentities</finalCounterValue>
+            <scope name="Scope1">
+                <sequence name="Sequence5">
+                    <assign name="AssignIMSPrivateIdentityData">
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:IMSPrivateIdentityId</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:IMSPrivateIdentityId</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:Identity</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:Identity</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:IMSSubscriptionId</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:IMSSubscriptionId</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:IntegratedCircuitCardIdentifier</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:IntegratedCircuitCardIdentifier</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:AuthScheme</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:AuthScheme</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:DefaultAuthScheme</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:DefaultAuthScheme</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:EncryptedSecretKey</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:EncryptedSecretKey</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:EncryptedPublicKey</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:EncryptedPublicKey</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:AuthenticationManagementField</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:AuthenticationManagementField</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:SIMLockedIMEIList</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:SIMLockedIMEIList</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:Info</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:Info</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:RegionalSubscriptionZoneCodes</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:RegionalSubscriptionZoneCodes</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:Sequence</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:Sequence</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:EncryptedOperatorVariant</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:EncryptedOperatorVariant</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:Status</from>
+                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:Status</to>
+                        </copy>
+                        <copy>
+                            <from>count($IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets)</from>
+                            <to variable="implicitsets"/>
+                        </copy>
+                    </assign>
+                    <forEach name="ForEachApn" parallel="no" counterName="apnLoop">
+                        <startCounterValue>1</startCounterValue>
+                            <finalCounterValue>count($IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:APNList)</finalCounterValue>
+                            <scope name="EachApn_Scope">
+                                <sequence>
+                                    <assign name="AssignApnData">
+                                        <copy>
+                                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:APNList[$apnLoop]/ns1:APNName</from>
+                                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:APNList[$apnLoop]/ns0:APNName</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:APNList[$apnLoop]/ns1:Type</from>
+                                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:APNList[$apnLoop]/ns0:Type</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:APNList[$apnLoop]/ns1:IPv4Address</from>
+                                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:APNList[$apnLoop]/ns0:IPv4Address</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:APNList[$apnLoop]/ns1:IPv6Address</from>
+                                            <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:APNList[$apnLoop]/ns0:IPv6Address</to>
+                                        </copy>
+                                    </assign>
+                                </sequence>
+                            </scope>
+                        </forEach>
+                    
+                    <forEach name="ForEachImplicitSet" parallel="no" counterName="implicitsetloop">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>$implicitsets</finalCounterValue>
+                        <scope name="Scope2">
+                            <sequence name="Sequence6">
+                                <assign name="AssignImplicitSetData">
+                                    <copy>
+                                        <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:ImplicitSetId</from>
+                                        <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:ImplicitSetId</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:UserData</from>
+                                        <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:UserData</to>
+                                    </copy>
+                                    <copy>
+                                        <from>count($IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities)</from>
+                                        <to variable="IMSPublicidentities"/>
+                                    </copy>
+                                </assign>
+                                <forEach name="ForEachIMPU" parallel="no" counterName="impuloop">
+                                    <startCounterValue>1</startCounterValue>
+                                    <finalCounterValue>$IMSPublicidentities</finalCounterValue>
+                                    <scope name="Scope3">
+                                        <assign name="AssignIMSPublicIdentitityData">
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSNestedIdentityAssociationId</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSNestedIdentityAssociationId</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPrivateIdentityId</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPrivateIdentityId</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:UserState</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:UserState</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:IMSPublicIdentityId</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:IMSPublicIdentityId</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:Identity</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:Identity</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:Barring</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:Barring</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:UserState</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:UserState</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:CanRegister</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:CanRegister</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:ImplicitSetId</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:ImplicitSetId</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:DisplayName</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:DisplayName</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:AllowedNetworks</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:AllowedNetworks</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:IMSChargingInformation/ns1:IMSChargingInformationId</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:IMSChargingInformation/ns0:IMSChargingInformationId</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:IMSChargingInformation/ns1:Name</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:IMSChargingInformation/ns0:Name</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:IMSChargingInformation/ns1:PrimaryECF</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:IMSChargingInformation/ns0:PrimaryECF</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:IMSChargingInformation/ns1:SecondaryECF</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:IMSChargingInformation/ns0:SecondaryECF</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:IMSChargingInformation/ns1:PrimaryCCF</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:IMSChargingInformation/ns0:PrimaryCCF</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:IMSChargingInformation/ns1:SecondaryCCF</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:IMSChargingInformation/ns0:SecondaryCCF</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:IMSServiceProfile/ns1:IMSServiceProfileId</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:IMSServiceProfile/ns0:IMSServiceProfileId</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:IMSServiceProfile/ns1:Name</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:IMSServiceProfile/ns0:Name</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:IMSServiceProfile/ns1:UnregisteredServicesCount</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:IMSServiceProfile/ns0:UnregisteredServicesCount</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:PSIActivation</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:PSIActivation</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:WildcardPSI</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:WildcardPSI</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$IMGetIMSSubscriptionOut.IMSSubscription/ns1:IMSPrivateIdentities[$impiloop]/ns1:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns1:AssociatedIMSPublicIdentities[$impuloop]/ns1:IMSPublicIdentity/ns1:Type</from>
+                                                <to>$SCAGetIMSSubscriptionOut.IMSSubscription/ns0:IMSPrivateIdentities[$impiloop]/ns0:ImplicitIMSPublicIdentitySets[$implicitsetloop]/ns0:AssociatedIMSPublicIdentities[$impuloop]/ns0:IMSPublicIdentity/ns0:Type</to>
+                                            </copy>
+                                        </assign>
+                                    </scope>
+                                </forEach>
+                            </sequence>
+                        </scope>
+                    </forEach>
+                </sequence>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCA" operation="GetIMSSubscription" portType="tns:SCASoap" variable="SCAGetIMSSubscriptionOut"/>
+    </sequence>
+</process>
+
+
+
+

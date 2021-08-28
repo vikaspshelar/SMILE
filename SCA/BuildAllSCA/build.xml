@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="BuildAllSCA" default="default" basedir=".">
+    <target name="jar" depends="build_esb"/>
+    <!--target name="docs" depends="gen-xml,gen-html"/-->
+    
+    <target name="update_platform_wsdls">
+        <!-- Copy over latest WSDL and schema From Platforms-->
+        <echo message="###############################################################################################################################"/>
+        <echo message="GETTING LATEST WSDL AND SCHEMA FROM PLATFORMS AND COPYING INTO SCA"/>
+        <echo message="###############################################################################################################################"/>
+        <!--<delete>
+            <fileset dir="../SCA/src/BPEL/Partners/" includes="**/*.wsdl" excludes="**/FileProcessingServiceDefinition.wsdl, **/MessageProcessingServiceDefinition.wsdl" />
+            <fileset dir="../SCA/src/BPEL/Partners/" includes="**/*.xsd"/>
+            <fileset dir="../SCA/src/BPEL/Partners/" includes="**/*.xsl"/>
+        </delete> -->
+        <copy todir="../SCA/src/BPEL/Partners/AM">
+            <fileset dir="../../Platforms/AM/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/BM">
+            <fileset dir="../../Platforms/BM/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/CM">
+            <fileset dir="../../Platforms/CM/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/CTI">
+            <fileset dir="../../Platforms/CTI/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/ET">
+            <fileset dir="../../Platforms/ET/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/HWF">
+            <fileset dir="../../Platforms/HWF/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/IM">
+            <fileset dir="../../Platforms/IM/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/MM">
+            <fileset dir="../../Platforms/MM/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/PM">
+            <fileset dir="../../Platforms/PM/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/POS">
+            <fileset dir="../../Platforms/POS/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/PVS">
+            <fileset dir="../../Platforms/PVS/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/SN">
+            <fileset dir="../../Platforms/SN/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/TT">
+            <fileset dir="../../Platforms/TT/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/PC">
+            <fileset dir="../../Platforms/PC/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/IMSSC">
+            <fileset dir="../../Platforms/IMSSC/src/main/resources" excludes="*.xsl"/>
+        </copy>
+        <copy todir="../SCA/src/BPEL/Partners/TNF">
+            <fileset dir="../../Platforms/TNF/src/main/resources" excludes="*.xsl"/>
+        </copy>
+    </target>
+
+    <target name="build_esb" depends="update_platform_wsdls, set_cli_prop1, set_cli_prop2, set_cli_prop3, set_non_cli_prop">
+        <!-- Clean and Build ESB -->
+        <echo message="###############################################################################################################################"/>
+        <echo message="CLEAN AND BUILD ESB"/>
+        <echo message="###############################################################################################################################"/>
+        <subant target="jbi-clean-build" failonerror="true">
+            <property name="esb.netbeans.home" value="${esb.netbeans.home}"/>
+            <fileset dir=".." includes="ESB/build.xml"/>
+        </subant>
+    </target>
+    
+    
+    <target name="check-1">
+        <available file="${netbeans.home}/../../netbeans-openesb" type="dir" property="d1.present"/>
+    </target>
+    <target name="check-2">
+        <available file="${netbeans.home}/../../openesb-standalone-openesbstudio-bundle/netbeans-openesb" type="dir" property="d2.present"/>
+    </target>
+    <target name="check-3">
+        <available file="${netbeans.home}/../../openesb-standalone-openesbstudio-bundle/netbeans" type="dir" property="d3.present"/>
+    </target>
+
+    <target name="set_cli_prop1" depends="check-1" if="d1.present">
+        <property name="esb.netbeans.home" value="${netbeans.home}/../../netbeans-openesb"/>
+    </target>
+    <target name="set_cli_prop2" depends="check-2" if="d2.present">
+        <property name="esb.netbeans.home" value="${netbeans.home}/../../openesb-standalone-openesbstudio-bundle/netbeans-openesb"/>
+    </target>
+    <target name="set_cli_prop3" depends="check-3" if="d3.present">
+        <property name="esb.netbeans.home" value="${netbeans.home}/../../openesb-standalone-openesbstudio-bundle/netbeans"/>
+    </target>
+    
+    <target name="set_non_cli_prop" if="esb.netbeans.home">
+        <property name="esb.netbeans.home" value="${esb.netbeans.home}"/>
+    </target>
+
+
+
+    <!--target name="gen-html">
+        <xslt force="true" basedir=""  in="../SCA/src/wsdl/SCAServiceDefinition.wsdl" out="../../../docs/en/WSDL/SCA.html"  style="../SCA/src/wsdl/WSDLViewer.xsl"/>
+        <xslt style="../SCA/src/BPEL/BPELViewer.xsl" 
+               force="true" 
+               in="../../../docs/en/BPEL/processes.xml"
+               out="../../../docs/en/BPEL/processes.html"
+         />
+    </target-->
+     
+    <!--target name="gen-xml">
+        <delete dir="../../../docs/en/BPEL/tmp/" includes="*.*"/>
+        <xslt style="../SCA/src/BPEL/XMLGeneratorStep1.xsl" 
+               force="true" 
+               basedir="../SCA/src/BPEL" 
+               destdir="../../../docs/en/BPEL/tmp"
+               includes="**/*.bpel"
+               extension=".xml"
+         />
+        <concat destfile="../../../docs/en/BPEL/processes.xml">
+            <filelist dir="../../../docs/en/BPEL" files="pre.xml"/>
+            <fileset dir="../../../docs/en/BPEL/tmp" includes="**/*.xml"/>
+            <filelist dir="../../../docs/en/BPEL" files="post.xml"/>
+        </concat>
+        <delete dir="../../../docs/en/BPEL/tmp/" includes="*.*"/>
+        <xslt style="../SCA/src/BPEL/XMLGeneratorStep2.xsl" 
+               force="true" 
+               in="../../../docs/en/BPEL/processes.xml"
+               out="../../../docs/en/BPEL/operations.xml"
+         />
+        <xslt style="../SCA/src/BPEL/TableGenerator.xsl" 
+               force="true" 
+               in="../../../docs/en/BPEL/operations.xml"
+               out="../../../docs/en/BPEL/table.html"
+         />
+        <xslt style="../SCA/src/BPEL/AggregatedTableGenerator.xsl" 
+               force="true" 
+               in="../../../docs/en/BPEL/operations.xml"
+               out="../../../docs/en/BPEL/aggregated_table.html"
+         />
+    </target-->
+
+
+</project>

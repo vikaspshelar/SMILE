@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/CTI"
+            xmlns:tns="http://xml.smilecoms.com/schema/CTI"
+            elementFormDefault="qualified">
+    <xsd:simpleType name="stSmileID">
+        <xsd:restriction base="xsd:string">
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true" id="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="CTIError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="Done" xmlns:tns="http://xml.smilecoms.com/schema/CTI">
+       <xsd:sequence>
+           <xsd:element name="Done" type="tns:stDone"></xsd:element>
+       </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject" xmlns:tns="http://xml.smilecoms.com/schema/CTI" >
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+   <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AgentData" xmlns:tns="http://xml.smilecoms.com/schema/CTI">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="CCAgentExtension" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="QueueLoginData">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/CTI" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="CCAgentExtension" type="xsd:string"></xsd:element>
+                    <xsd:element name="MemberQueues" type="xsd:string" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="CCAgentName" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="IncomingCallData">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/CTI" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Number" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="QueueLoginData" type="tns:QueueLoginData"></xsd:element>
+    <xsd:element name="Done" type="tns:Done"></xsd:element>
+    <xsd:element name="CTIError" type="tns:CTIError"></xsd:element>
+    <xsd:element name="QueueLogoutData" type="tns:AgentData"></xsd:element>
+    <xsd:element name="IncomingCallData" type="tns:IncomingCallData"></xsd:element>
+    <xsd:element name="NewCallQueryData" type="tns:AgentData"></xsd:element>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+</xsd:schema>

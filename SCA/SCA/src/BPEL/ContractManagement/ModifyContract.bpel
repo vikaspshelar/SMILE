@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process
+    name="ModifyContract"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/POS">
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="SCAModifyContractOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:Done"/>
+        <variable name="POSModifyContractOut" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:Done"/>
+        <variable name="POSModifyContractIn" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:ModifyContractRequest">
+            <sxed:editor>
+                <sxed:predicate path="$POSModifyContractIn.ModifiedContract/ns1:ContractDocuments[$document]" source="to"/>
+            </sxed:editor>
+        </variable>
+        <variable name="SCAModifyContractIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ModifyContractRequest">
+            <sxed:editor>
+                <sxed:predicate path="$SCAModifyContractIn.ModifiedContract/ns0:ContractDocuments[$document]" source="from"/>
+            </sxed:editor>
+        </variable>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="POSError" xmlns:tns="http://xml.smilecoms.com/POS" faultMessageType="tns:POSError">
+            <sequence name="Sequence1">
+                <assign name="Assign3">
+                    <copy>
+                        <from>$POSError.POSError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" xmlns:tns="http://xml.smilecoms.com/SCA"  operation="ModifyContract" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ModifyContract" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAModifyContractIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:SCAContext/ns0:TxId</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:SCAContext/ns0:Tenant</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:ContractId</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:ContractId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:ContractStartDateTime</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:ContractStartDateTime</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:ContractEndDateTime</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:ContractEndDateTime</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:CreatedDateTime</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:CreatedDateTime</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:LastModifiedDateTime</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:LastModifiedDateTime</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:Status</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:Status</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:CustomerProfileId</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:CustomerProfileId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:OrganisationId</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:OrganisationId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:InvoiceCycleDay</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:InvoiceCycleDay</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:ContractName</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:ContractName</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:CreditAccountNumber</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:CreditAccountNumber</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:CreatedByCustomerId</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:CreatedByCustomerId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:FulfilmentItemsAllowed</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:FulfilmentItemsAllowed</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:StaffMembersAllowed</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:StaffMembersAllowed</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:PaymentMethod</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:PaymentMethod</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyContractIn.ModifiedContract/ns0:AccountId</from>
+                <to>$POSModifyContractIn.ModifiedContract/ns1:AccountId</to>
+            </copy>
+        </assign>
+        <forEach name="ForEachDocument" parallel="no" counterName="document">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCAModifyContractIn.ModifiedContract/ns0:ContractDocuments)</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="AssignDocument">
+                    <copy>
+                        <from>$SCAModifyContractIn.ModifiedContract/ns0:ContractDocuments[$document]/ns0:PhotoGuid
+                            <sxed:editor>
+                                <sxed:predicate path="$SCAModifyContractIn.ModifiedContract/ns0:ContractDocuments[$document]" source="from"/>
+                            </sxed:editor>
+                        </from>
+                        <to>$POSModifyContractIn.ModifiedContract/ns1:ContractDocuments[$document]/ns1:PhotoGuid
+                            <sxed:editor>
+                                <sxed:predicate path="$POSModifyContractIn.ModifiedContract/ns1:ContractDocuments[$document]" source="to"/>
+                            </sxed:editor>
+                        </to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyContractIn.ModifiedContract/ns0:ContractDocuments[$document]/ns0:PhotoType
+                        </from>
+                        <to>$POSModifyContractIn.ModifiedContract/ns1:ContractDocuments[$document]/ns1:PhotoType
+                        </to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyContractIn.ModifiedContract/ns0:ContractDocuments[$document]/ns0:Data
+                        </from>
+                        <to>$POSModifyContractIn.ModifiedContract/ns1:ContractDocuments[$document]/ns1:Data
+                        </to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <invoke name="Invoke1" partnerLink="POS" operation="ModifyContract" xmlns:tns="http://xml.smilecoms.com/POS" portType="tns:POSSoap" inputVariable="POSModifyContractIn" outputVariable="POSModifyContractOut"/>
+        <assign name="Assign2">
+            <copy>
+                <from>$POSModifyContractOut.Done/ns1:Done</from>
+                <to>$SCAModifyContractOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="ModifyContract" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAModifyContractOut"/>
+    </sequence>
+</process>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetTroubleTicketMetaData"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/TT" xmlns:ns2="http://xml.smilecoms.com/SCASubFlows" xmlns:ns3="http://xml.smilecoms.com/TT" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed1="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/TT" location="../Partners/TT/TTServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        <partnerLink name="TT" xmlns:tns="http://xml.smilecoms.com/TT" partnerLinkType="tns:TTServiceDefinition" partnerRole="TT"/>
+        
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        
+        
+        <variable name="projectCount" type="xsd:int"/>
+        <variable name="issueTypeCount" type="xsd:int"/>
+        <variable name="priorityCount" type="xsd:int"/>
+        <variable name="resolutionCount" type="xsd:int"/>
+        <variable name="statusCount" type="xsd:int"/>
+        <variable name="TTGetMetaDataOut" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:GetMetaDataResponse"/>
+        <variable name="TTGetMetaDataIn" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:GetMetaDataRequest"/>
+        <variable name="SCAGetTroubleTicketMetaDataOut" messageType="tns:GetTroubleTicketMetaDataResponse"/>
+        <variable name="SCAGetTroubleTicketMetaDataIn" messageType="tns:GetTroubleTicketMetaDataRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="TTError" faultMessageType="ns3:TTError">
+            <sequence name="Sequence1">
+                <assign name="Assign_TTError_SCAError">
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply_TTFault" partnerLink="SCA" operation="GetTroubleTicketMetaData" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive" createInstance="yes" partnerLink="SCA" operation="GetTroubleTicketMetaData" portType="tns:SCASoap" variable="SCAGetTroubleTicketMetaDataIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('TT')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="TT"/>
+                    </copy>
+                </assign>                
+            </sequence>
+        </scope>
+        <assign name="Assign_SCA_TT">
+            <copy>
+                <from>$SCAGetTroubleTicketMetaDataIn.TTMetaDataQuery/ns0:DummyField</from>
+                <to>$TTGetMetaDataIn.MetaDataQuery/ns1:EmptyField</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetTroubleTicketMetaDataIn.TTMetaDataQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$TTGetMetaDataIn.MetaDataQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetTroubleTicketMetaDataIn.TTMetaDataQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$TTGetMetaDataIn.MetaDataQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetTroubleTicketMetaDataIn.TTMetaDataQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$TTGetMetaDataIn.MetaDataQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetTroubleTicketMetaDataIn.TTMetaDataQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$TTGetMetaDataIn.MetaDataQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+        </assign>
+        <invoke name="Call_TT" partnerLink="TT" operation="GetMetaData" xmlns:tns="http://xml.smilecoms.com/TT" portType="tns:TTSoap" inputVariable="TTGetMetaDataIn" outputVariable="TTGetMetaDataOut"/>
+        <assign name="Assign_Counters">
+            <copy>
+                <from>count($TTGetMetaDataOut.MetaData/ns1:ProjectList)</from>
+                <to variable="projectCount"/>
+            </copy>
+            <copy>
+                <from>count($TTGetMetaDataOut.MetaData/ns1:IssueTypeList)</from>
+                <to variable="issueTypeCount"/>
+            </copy>
+            <copy>
+                <from>count($TTGetMetaDataOut.MetaData/ns1:PriorityList)</from>
+                <to variable="priorityCount"/>
+            </copy>
+            <copy>
+                <from>count($TTGetMetaDataOut.MetaData/ns1:ResolutionList)</from>
+                <to variable="resolutionCount"/>
+            </copy>
+            <copy>
+                <from>count($TTGetMetaDataOut.MetaData/ns1:StatusList)</from>
+                <to variable="statusCount"/>
+            </copy>
+        </assign>
+        <forEach name="ForEach_Project" parallel="no" counterName="iProject">
+            <startCounterValue>1</startCounterValue>
+                <finalCounterValue>$projectCount</finalCounterValue>
+                <scope name="Scope1">
+                    <variables>
+                        <variable name="description" type="xsd:string"/>
+                    </variables>
+                        <sequence name="Sequence2">
+                        <if name="IfNoDescription">
+                            <condition>count($TTGetMetaDataOut.MetaData/ns1:ProjectList[$iProject]/ns1:Description) = 0</condition>
+                            <assign name="AssignProjectNameToDesc">
+                                <copy>
+                                    <from>$TTGetMetaDataOut.MetaData/ns1:ProjectList[$iProject]/ns1:Name</from>
+                                    <to variable="description"/>
+                                </copy>
+                            </assign>
+                            <else>
+                                <assign name="Assign1">
+                                    <copy>
+                                        <from>$TTGetMetaDataOut.MetaData/ns1:ProjectList[$iProject]/ns1:Description</from>
+                                        <to variable="description"/>
+                                    </copy>
+                                </assign>
+                            </else>
+                        </if>
+                        <assign name="Copy_Project">
+                            <copy>
+                                <from>$TTGetMetaDataOut.MetaData/ns1:ProjectList[$iProject]/ns1:ID</from>
+                                <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTProjectList[$iProject]/ns0:ID</to>
+                            </copy>
+                            <copy>
+                                <from>$TTGetMetaDataOut.MetaData/ns1:ProjectList[$iProject]/ns1:Name</from>
+                                <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTProjectList[$iProject]/ns0:Name</to>
+                            </copy>
+                            <copy>
+                                <from>$TTGetMetaDataOut.MetaData/ns1:ProjectList[$iProject]/ns1:Key</from>
+                                <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTProjectList[$iProject]/ns0:Key</to>
+                            </copy>
+                            <copy>
+                                <from variable="description"/>
+                                <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTProjectList[$iProject]/ns0:Description</to>
+                            </copy>
+                        </assign>
+                    </sequence>
+                </scope>
+        </forEach>
+        <forEach name="ForEach_IssueType" parallel="no" counterName="iIssueType">
+            <startCounterValue>1</startCounterValue>
+                <finalCounterValue>$issueTypeCount</finalCounterValue>
+                <scope name="Scope2">
+                    <assign name="Copy_IssueTypes">
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:IssueTypeList[$iIssueType]/ns1:ID</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTIssueTypeList[$iIssueType]/ns0:ID</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:IssueTypeList[$iIssueType]/ns1:Name</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTIssueTypeList[$iIssueType]/ns0:Name</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:IssueTypeList[$iIssueType]/ns1:Description</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTIssueTypeList[$iIssueType]/ns0:Description</to>
+                        </copy>
+                    </assign>
+                </scope>
+        </forEach>
+        <forEach name="ForEach_Priority" parallel="no" counterName="iPriority">
+            <startCounterValue>1</startCounterValue>
+                <finalCounterValue>$priorityCount</finalCounterValue>
+                <scope name="Scope3">
+                    <assign name="Copy_Priority">
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:PriorityList[$iPriority]/ns1:ID</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTPriorityList[$iPriority]/ns0:ID</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:PriorityList[$iPriority]/ns1:Name</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTPriorityList[$iPriority]/ns0:Name</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:PriorityList[$iPriority]/ns1:Description</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTPriorityList[$iPriority]/ns0:Description</to>
+                        </copy>
+                    </assign>
+                </scope>
+        </forEach>
+        <forEach name="ForEach_Resolution" parallel="no" counterName="iResolution">
+            <startCounterValue>1</startCounterValue>
+                <finalCounterValue>$resolutionCount</finalCounterValue>
+                <scope name="Scope4">
+                    <assign name="Copy_Resolution">
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:ResolutionList[$iResolution]/ns1:ID</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTResolutionList[$iResolution]/ns0:ID</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:ResolutionList[$iResolution]/ns1:Name</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTResolutionList[$iResolution]/ns0:Name</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:ResolutionList[$iResolution]/ns1:Description</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTResolutionList[$iResolution]/ns0:Description</to>
+                        </copy>
+                    </assign>
+                </scope>
+        </forEach>
+        <forEach name="ForEach_Status" parallel="no" counterName="iStatus">
+            <startCounterValue>1</startCounterValue>
+                <finalCounterValue>$statusCount</finalCounterValue>
+                <scope name="Scope5">
+                    <assign name="Copy_Status">
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:StatusList[$iStatus]/ns1:ID</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTStatusList[$iStatus]/ns0:ID</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:StatusList[$iStatus]/ns1:Name</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTStatusList[$iStatus]/ns0:Name</to>
+                        </copy>
+                        <copy>
+                            <from>$TTGetMetaDataOut.MetaData/ns1:StatusList[$iStatus]/ns1:Description</from>
+                            <to>$SCAGetTroubleTicketMetaDataOut.TTMetaData/ns0:TTStatusList[$iStatus]/ns0:Description</to>
+                        </copy>
+                    </assign>
+                </scope>
+        </forEach>
+        <reply name="Reply" partnerLink="SCA" operation="GetTroubleTicketMetaData" portType="tns:SCASoap" variable="SCAGetTroubleTicketMetaDataOut"/>
+    </sequence>
+</process>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetEntitiesStickyNotes"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:ns1="http://xml.smilecoms.com/SN" xmlns:ns0="http://xml.smilecoms.com/schema/SN" xmlns:ns2="http://xml.smilecoms.com/schema/SCA" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SN" location="../Partners/SN/SNServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="SN" partnerLinkType="ns1:SNServiceDefinition" partnerRole="SN"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="SNGetEntitiesStickyNotesOut" messageType="ns1:GetEntitiesStickyNotesResponse"/>
+        <variable name="SNGetEntitiesStickyNotesIn" messageType="ns1:GetEntitiesStickyNotesRequest"/>
+        <variable name="SCAGetEntitiesStickyNotesOut" messageType="tns:GetEntitiesStickyNotesResponse"/>
+        <variable name="SCAGetEntitiesStickyNotesIn" messageType="tns:GetEntitiesStickyNotesRequest"/>
+        <variable name="noteCount" type="xsd:int"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultVariable="snFault" faultMessageType="ns1:SNError">
+            <sequence name="Sequence1">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$snFault.SNError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns2:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$snFault.SNError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns2:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$snFault.SNError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns2:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetEntitiesStickyNotes" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetEntitiesStickyNotes" portType="tns:SCASoap" variable="SCAGetEntitiesStickyNotesIn"/>
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('SN')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="SN"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAGetEntitiesStickyNotesIn.StickyNoteEntityIdentifier/ns2:EntityId</from>
+                <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns0:EntityId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetEntitiesStickyNotesIn.StickyNoteEntityIdentifier/ns2:EntityType</from>
+                <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns0:EntityType</to>
+            </copy>
+            <copy>
+                <from>$SCAGetEntitiesStickyNotesIn.StickyNoteEntityIdentifier/ns2:SCAContext/ns2:TxId</from>
+                <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetEntitiesStickyNotesIn.StickyNoteEntityIdentifier/ns2:SCAContext/ns2:OriginatingIP</from>
+                <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetEntitiesStickyNotesIn.StickyNoteEntityIdentifier/ns2:SCAContext/ns2:Tenant</from>
+                <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAGetEntitiesStickyNotesIn.StickyNoteEntityIdentifier/ns2:SCAContext/ns2:OriginatingIdentity</from>
+                <to>$SNGetEntitiesStickyNotesIn.EntityIdentifier/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+        </assign>
+        <invoke name="Call_SN" partnerLink="SN" operation="GetEntitiesStickyNotes" portType="ns1:SNSoap" inputVariable="SNGetEntitiesStickyNotesIn" outputVariable="SNGetEntitiesStickyNotesOut"/>
+        <assign name="Assign_Note_Count">
+            <copy>
+                <from>count($SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes)</from>
+                <to variable="noteCount"/>
+            </copy>
+            <copy>
+                <from>count($SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes)</from>
+                <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:NumberOfNotes</to>
+            </copy>
+        </assign>
+        <forEach name="ForEach1" parallel="no" counterName="n">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$noteCount</finalCounterValue>
+            <scope name="Scope1">
+                <sequence name="Sequence1">
+                    <assign name="Assign2">
+                        <copy>
+                            <from>count($SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$n]/ns0:Fields)</from>
+                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:StickyNotes[$n]/ns2:NumberOfFields</to>
+                        </copy>
+                        <copy>
+                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$n]/ns0:TypeName</from>
+                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:StickyNotes[$n]/ns2:TypeName</to>
+                        </copy>
+                        <copy>
+                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$n]/ns0:NoteId</from>
+                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:StickyNotes[$n]/ns2:NoteId</to>
+                        </copy>
+                        <copy>
+                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$n]/ns0:CreatedDateTime</from>
+                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:StickyNotes[$n]/ns2:CreatedDateTime</to>
+                        </copy>
+                        <copy>
+                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$n]/ns0:LastModified</from>
+                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:StickyNotes[$n]/ns2:LastModified</to>
+                        </copy>
+                        <copy>
+                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$n]/ns0:EntityType</from>
+                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:StickyNotes[$n]/ns2:EntityType</to>
+                        </copy>
+                        <copy>
+                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$n]/ns0:EntityId</from>
+                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:StickyNotes[$n]/ns2:EntityId</to>
+                        </copy>
+                        <copy>
+                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$n]/ns0:CreatedBy</from>
+                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:StickyNotes[$n]/ns2:CreatedBy</to>
+                        </copy>
+                        <copy>
+                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$n]/ns0:LastModifiedBy</from>
+                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:StickyNotes[$n]/ns2:LastModifiedBy</to>
+                        </copy>
+                        <copy>
+                            <from>$SNGetEntitiesStickyNotesOut.StickyNoteList/ns0:StickyNotes[$n]/ns0:Version</from>
+                            <to>$SCAGetEntitiesStickyNotesOut.StickyNoteList/ns2:StickyNotes[$n]/ns2:Version</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCA" operation="GetEntitiesStickyNotes" portType="tns:SCASoap" variable="SCAGetEntitiesStickyNotesOut"/>
+    </sequence>
+</process>
+
+

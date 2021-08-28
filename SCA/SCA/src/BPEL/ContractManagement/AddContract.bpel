@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process
+    name="AddContract"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/POS" xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/schema/POS" location="../Partners/POS/POSSchema.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="SCAAddContractOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:AddContractResponse"/>
+        <variable name="POSAddContractOut" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:AddContractResponse"/>
+        <variable name="POSAddContractIn" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:AddContractRequest"/>
+        <variable name="SCAAddContractIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:AddContractRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="POSError" xmlns:tns="http://xml.smilecoms.com/POS" faultMessageType="tns:POSError">
+            <sequence name="Sequence1">
+                <assign name="Assign4">
+                    <copy>
+                        <from>$POSError.POSError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" operation="AddContract" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+         </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="AddContract" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAAddContractIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:SCAContext/ns1:TxId</from>
+                <to>$POSAddContractIn.NewContract/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$POSAddContractIn.NewContract/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$POSAddContractIn.NewContract/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddContractIn.NewContract/ns1:SCAContext/ns1:Tenant</from>
+                <to>$POSAddContractIn.NewContract/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddContractIn.NewContract/ns1:ContractId</from>
+                <to>$POSAddContractIn.NewContract/ns0:ContractId</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:ContractStartDateTime</from>
+                <to>$POSAddContractIn.NewContract/ns0:ContractStartDateTime</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:ContractEndDateTime</from>
+                <to>$POSAddContractIn.NewContract/ns0:ContractEndDateTime</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddContractIn.NewContract/ns1:CreatedDateTime</from>
+                <to>$POSAddContractIn.NewContract/ns0:CreatedDateTime</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddContractIn.NewContract/ns1:LastModifiedDateTime</from>
+                <to>$POSAddContractIn.NewContract/ns0:LastModifiedDateTime</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddContractIn.NewContract/ns1:Status</from>
+                <to>$POSAddContractIn.NewContract/ns0:Status</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddContractIn.NewContract/ns1:CustomerProfileId</from>
+                <to>$POSAddContractIn.NewContract/ns0:CustomerProfileId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddContractIn.NewContract/ns1:OrganisationId</from>
+                <to>$POSAddContractIn.NewContract/ns0:OrganisationId</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:InvoiceCycleDay</from>
+                <to>$POSAddContractIn.NewContract/ns0:InvoiceCycleDay</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:ContractName</from>
+                <to>$POSAddContractIn.NewContract/ns0:ContractName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddContractIn.NewContract/ns1:CreditAccountNumber</from>
+                <to>$POSAddContractIn.NewContract/ns0:CreditAccountNumber</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:FulfilmentItemsAllowed</from>
+                <to>$POSAddContractIn.NewContract/ns0:FulfilmentItemsAllowed</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:StaffMembersAllowed</from>
+                <to>$POSAddContractIn.NewContract/ns0:StaffMembersAllowed</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:CreatedByCustomerId</from>
+                <to>$POSAddContractIn.NewContract/ns0:CreatedByCustomerId</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:PaymentMethod</from>
+                <to>$POSAddContractIn.NewContract/ns0:PaymentMethod</to>
+            </copy>
+            <copy>
+                <from>$SCAAddContractIn.NewContract/ns1:AccountId</from>
+                <to>$POSAddContractIn.NewContract/ns0:AccountId</to>
+            </copy>
+        </assign>
+        <forEach name="ForEachDocument" parallel="no" counterName="doc">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCAAddContractIn.NewContract/ns1:ContractDocuments)</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="Assign3">
+                    <copy>
+                        <from>$SCAAddContractIn.NewContract/ns1:ContractDocuments[$doc]/ns1:PhotoGuid
+                            <sxed:editor>
+                                <sxed:predicate path="$SCAAddContractIn.NewContract/ns1:ContractDocuments[$doc]" source="from"/>
+                            </sxed:editor>
+                        </from>
+                        <to>$POSAddContractIn.NewContract/ns0:ContractDocuments[$doc]/ns0:PhotoGuid
+                            <sxed:editor>
+                                <sxed:predicate path="$POSAddContractIn.NewContract/ns0:ContractDocuments[$doc]" source="to"/>
+                            </sxed:editor>
+                        </to>
+                    </copy>
+                    <copy>
+                        <from>$SCAAddContractIn.NewContract/ns1:ContractDocuments[$doc]/ns1:PhotoType
+                            <sxed:editor>
+                                <sxed:predicate path="$SCAAddContractIn.NewContract/ns1:ContractDocuments[$doc]" source="from"/>
+                            </sxed:editor>
+                        </from>
+                        <to>$POSAddContractIn.NewContract/ns0:ContractDocuments[$doc]/ns0:PhotoType
+                            <sxed:editor>
+                                <sxed:predicate path="$POSAddContractIn.NewContract/ns0:ContractDocuments[$doc]" source="to"/>
+                            </sxed:editor>
+                        </to>
+                    </copy>
+                    <copy>
+                        <from>$SCAAddContractIn.NewContract/ns1:ContractDocuments[$doc]/ns1:Data
+                            <sxed:editor>
+                                <sxed:predicate path="$SCAAddContractIn.NewContract/ns1:ContractDocuments[$doc]" source="from"/>
+                            </sxed:editor>
+                        </from>
+                        <to>$POSAddContractIn.NewContract/ns0:ContractDocuments[$doc]/ns0:Data
+                            <sxed:editor>
+                                <sxed:predicate path="$POSAddContractIn.NewContract/ns0:ContractDocuments[$doc]" source="to"/>
+                            </sxed:editor>
+                        </to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <invoke name="Invoke1" partnerLink="POS" operation="AddContract" xmlns:tns="http://xml.smilecoms.com/POS" portType="tns:POSSoap" inputVariable="POSAddContractIn" outputVariable="POSAddContractOut"/>
+        <assign name="Assign2">
+            <copy>
+                <from>$POSAddContractOut.ContractId/ns0:Integer</from>
+                <to>$SCAAddContractOut.ContractId/ns1:Integer</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="AddContract" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAAddContractOut"/>
+    </sequence>
+</process>

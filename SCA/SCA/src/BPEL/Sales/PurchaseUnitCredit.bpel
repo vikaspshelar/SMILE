@@ -1,0 +1,927 @@
+<?xml version="1.0"?>
+<process
+    name="PurchaseUnitCredit"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/CM" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/BM" 
+    xmlns:ns3="http://xml.smilecoms.com/schema/IM" xmlns:ns4="http://xml.smilecoms.com/schema/POS">
+    
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="BM" xmlns:tns="http://xml.smilecoms.com/BM" partnerLinkType="tns:BMServiceDefinition" partnerRole="BM"/>
+        <partnerLink name="SCACalling" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" partnerRole="SCAImplementation"/>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+    </partnerLinks>
+    <variables>
+        <variable name="BMProvisionUnitCreditOut" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:ProvisionUnitCreditResponse"/>
+        <variable name="BMProvisionUnitCreditIn" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:ProvisionUnitCreditRequest"/>
+        <variable name="CallingCustomerId" type="xsd:int"/>
+        <variable name="CampaignUCNotAllowed" type="xsd:boolean"/>
+        <variable name="IMGetCustomersOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetCustomersResponse"/>
+        <variable name="IMGetCustomersIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetCustomersRequest"/>
+        <variable name="CMGetProductInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductInstancesResponse"/>
+        <variable name="CMGetProductInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetProductInstancesRequest"/>
+        <variable name="CMGetServiceInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="CMGetServiceInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetServiceInstancesRequest"/>
+        <variable name="POSProcessSaleOut" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:ProcessSaleResponse"/>
+        <variable name="POSProcessSaleIn" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:ProcessSaleRequest"/>
+        <variable name="DummyString" type="xsd:string"/>
+        <variable name="Fault1FaultVar" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:SCAError"/>
+        <variable name="CMGetUnitCreditSpecificationsOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:UnitCreditSpecificationsResponse"/>
+        <variable name="CMGetUnitCreditSpecificationsIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetUnitCreditSpecificationsRequest"/>
+        <variable name="SCAPurchaseUnitCreditOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:PurchaseUnitCreditResponse"/>
+        <variable name="SCAPurchaseUnitCreditIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:PurchaseUnitCreditRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:tns="http://xml.smilecoms.com/BM" faultMessageType="tns:BMError" faultVariable="BMError">
+            <sequence name="Sequence2">
+                <assign name="AssignErr">
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <if name="IfAsyncReplyErr1">
+                    <condition>count($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Async) = 1 and $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Async</condition>
+                    <sequence name="Sequence242">
+                        <assign name="AssignOpsMsg1">
+                            <copy>
+                                <from>BPELUtils:sendTrapToOpsManagement(concat('Error in Async PurchaseUnitCredit BPEL. Code:', $Fault1FaultVar.SCAError/ns0:ErrorCode, ' Description:', $Fault1FaultVar.SCAError/ns0:ErrorDesc))</from>
+                                <to>$DummyString</to>
+                            </copy>
+                        </assign>
+                    </sequence>
+                </if>
+                <reply name="Reply2" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch faultVariable="POSError" xmlns:tns="http://xml.smilecoms.com/POS" faultMessageType="tns:POSError">
+            <sequence name="Sequence22">
+                <assign name="AssignPOSErr">
+                    <copy>
+                        <from>$POSError.POSError/ns4:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns4:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns4:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <if name="IfAsyncReplyErr2">
+                    <condition>count($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Async) = 1 and $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Async</condition>
+                    <sequence name="Sequence243">
+                        <assign name="AssignOpsMsg2">
+                            <copy>
+                                <from>BPELUtils:sendTrapToOpsManagement(concat('Error in Async PurchaseUnitCredit BPEL. Code:', $Fault1FaultVar.SCAError/ns0:ErrorCode, ' Description:', $Fault1FaultVar.SCAError/ns0:ErrorDesc))</from>
+                                <to>$DummyString</to>
+                            </copy>
+                        </assign>
+                    </sequence>
+                </if>
+                <reply name="Reply23" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch faultVariable="SCACallingError" xmlns:tns="http://xml.smilecoms.com/SCA" faultMessageType="tns:SCAError">
+            <sequence name="Sequence124">
+                <assign name="AssignTransferError">
+                    <copy>
+                        <from>$SCACallingError.SCAError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$SCACallingError.SCAError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$SCACallingError.SCAError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <if name="IfAsyncReplyErr3">
+                    <condition>count($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Async) = 1 and $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Async</condition>
+                    <sequence name="Sequence244">
+                        <assign name="AssignOpsMsg3">
+                            <copy>
+                                <from>BPELUtils:sendTrapToOpsManagement(concat('Error in Async PurchaseUnitCredit BPEL. Code:', $Fault1FaultVar.SCAError/ns0:ErrorCode, ' Description:', $Fault1FaultVar.SCAError/ns0:ErrorDesc))</from>
+                                <to>$DummyString</to>
+                            </copy>
+                        </assign>
+                    </sequence>
+                </if>
+                <reply name="Reply22" partnerLink="SCA" operation="PurchaseUnitCredit" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAPurchaseUnitCreditIn"/>
+        <if name="IfAsync">
+            <condition>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Async</condition>
+            <sequence name="Sequence24">
+                <assign name="AssignReply">
+                    <copy>
+                        <from>'true'</from>
+                        <to>$SCAPurchaseUnitCreditOut.Done/ns0:Done</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyAsync" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAPurchaseUnitCreditOut"/>
+            </sequence>
+        </if>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs3">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs4">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs5">
+                    <copy>
+                        <from>LT:getEndPoint('BM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        
+        <if name="IfNoQuantity">
+            <condition>count($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:NumberToPurchase) = 0</condition>
+            <assign name="AssignOneToPurchase">
+                <copy>
+                    <from>0</from>
+                    <to>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:NumberToPurchase</to>
+                </copy>
+            </assign>
+        </if>
+        
+        <if name="IfNoGap">
+            <condition>count($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:DaysGapBetweenStart) = 0</condition>
+            <assign name="AssignZeroGap">
+                <copy>
+                    <from>0</from>
+                    <to>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:DaysGapBetweenStart</to>
+                </copy>
+            </assign>
+        </if>
+        
+        <if name="IfNoInfo">
+            <condition>count($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:Info) = 0</condition>
+            <assign name="AssignBlankInfo">
+                <copy>
+                    <from>''</from>
+                    <to>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:Info</to>
+                </copy>
+            </assign>
+        </if>
+        
+        <if name="IfNoChannel">
+            <condition>count($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:Channel) = 0</condition>
+            <assign name="AssignAdhocChannel">
+                <copy>
+                    <from>BPELUtils:getProperty('env.unitcredit.provisioning.x3.channel')</from>
+                    <to>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:Channel</to>
+                </copy>
+            </assign>
+        </if>
+        
+        
+        <assign name="AssignCM">
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:UnitCreditSpecificationId</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:UnitCreditSpecificationId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:UnitCreditName</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:UnitCreditName</to>
+            </copy>
+            <copy>
+                <from>'MAIN'</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:Verbosity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:ItemNumber</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:ItemNumber</to>
+            </copy>
+        </assign>
+        <invoke name="GetUCSpec" partnerLink="CM" operation="GetUnitCreditSpecifications" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetUnitCreditSpecificationsIn" outputVariable="CMGetUnitCreditSpecificationsOut"/>
+        <if name="IfInvalidDate">
+            <condition>sxxf:dateTime-less-than(sxxf:current-dateTime(), $CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[1]/ns1:AvailableFrom) or sxxf:dateTime-less-than($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[1]/ns1:AvailableTo, sxxf:current-dateTime())</condition>
+            <sequence name="Sequence1">
+                <assign name="AssignError">
+                    <copy>
+                        <from>'Unit Credit Is not valid for current date'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'business'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0018'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyError" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                <exit name="Exit1"/>
+            </sequence>
+        </if>
+        
+        <if name="IfInvalidQuantity">
+            <condition>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:NumberToPurchase = 0</condition>
+            <sequence name="Sequence11">
+                <assign name="AssignErrorQuantity">
+                    <copy>
+                        <from>'Invalid quantity to purchase'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'business'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0019'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyError2" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                <exit name="Exit2"/>
+            </sequence>
+        </if>
+        <if name="IfNoPayingAccount">
+            <condition>count($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PaidByAccountId) = 0 or $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PaidByAccountId = 0</condition>
+            <assign name="AssignRecipientAccount">
+                <copy>
+                    <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:AccountId</from>
+                    <to>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PaidByAccountId</to>
+                </copy>
+            </assign>
+        </if>
+        <if name="IfDifferentPayingAccount">
+            <condition>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PaidByAccountId != $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:AccountId</condition>
+            <sequence name="Sequence249">
+                <assign name="AssignGetSI">
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>'MAIN'</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:Verbosity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PaidByAccountId</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:AccountId</to>
+                    </copy>
+                </assign>
+                <invoke name="GetPayingServiceInstance" partnerLink="CM" operation="GetServiceInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetServiceInstancesIn" outputVariable="CMGetServiceInstancesOut"/>
+                <if name="IfSpecialAccount">
+                    <condition>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:NumberOfServiceInstances = 1 and ($CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances/ns1:ServiceSpecificationId = 1000 or $CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances/ns1:ServiceSpecificationId = 1002 or $CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances/ns1:ServiceSpecificationId = 1004)</condition>
+                    <sequence name="SequenceBadPayingAcc" xmlns:tns="http://xml.smilecoms.com/SCA">
+                        <assign name="AssignErrorInvalidPayingAcc">
+                            <copy>
+                                <from>'Invalid Paying Account Number'</from>
+                                <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                            </copy>
+                            <copy>
+                                <from>'business'</from>
+                                <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                            </copy>
+                            <copy>
+                                <from>'SCA-0038'</from>
+                                <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                            </copy>
+                        </assign>
+                        <reply name="ReplyErrorInvalidPayingAccount" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                        <exit name="Exit450"/>
+                    </sequence>
+                </if>
+            </sequence>
+        </if>
+        
+        <assign name="CheckPermissions1">
+            <copy>
+                <from>BPELUtils:checkPermissions($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext, 'Account', $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:AccountId)</from>
+                <to>$SCAPurchaseUnitCreditOut.Done/ns0:SCAContext/ns0:Obviscated</to>
+            </copy>
+        </assign>
+        <if name="IfUCSpecIdPassed">
+            <condition>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:UnitCreditSpecificationId &gt; 0</condition>
+            <assign name="CheckPermissions2">
+                <!-- Check rules to purchase this spec -->
+                <copy>
+                    <from>BPELUtils:checkPermissions($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext, 'UnitCreditSpecification', $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:UnitCreditSpecificationId)</from>
+                    <to>$SCAPurchaseUnitCreditOut.Done/ns0:SCAContext/ns0:Obviscated</to>
+                </copy>
+            </assign>
+        </if>
+        <assign name="CheckPermissions3">
+            <copy>
+                <from>BPELUtils:checkPermissions($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext, 'Account', $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PaidByAccountId)</from>
+                <to>$SCAPurchaseUnitCreditOut.Done/ns0:SCAContext/ns0:Obviscated</to>
+            </copy>
+        </assign>
+                
+        <assign name="AssignGetServiceInstance">
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:AccountId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:AccountId</to>
+            </copy>
+            <copy>
+                <from>'MAIN'</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:Verbosity</to>
+            </copy>
+        </assign>
+        <invoke name="GetServiceInstanceForAccount" partnerLink="CM" operation="GetServiceInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetServiceInstancesIn" outputVariable="CMGetServiceInstancesOut"/>
+        <if name="IfNoSI">
+            <condition>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:NumberOfServiceInstances = 0</condition>
+            <sequence name="Sequence191" xmlns:tns="http://xml.smilecoms.com/SCA">
+                <assign name="AssignErrorInvalidAcc">
+                    <copy>
+                        <from>'Invalid Account Number'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'business'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0030'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErrorInvalidAccount" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                <exit name="Exit44"/>
+            </sequence>
+        </if>
+        <assign name="AssignGetPI">
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[1]/ns1:ProductInstanceId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns1:ProductInstanceId</to>
+            </copy>
+            <copy>
+                <from>'MAIN_CAMPAIGNS_CAMPAIGNUC'</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns1:Verbosity</to>
+            </copy>
+        </assign>
+        <invoke name="GetProductInstance" partnerLink="CM" operation="GetProductInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOut"/>
+        <if name="IfCampaignUC">
+            <condition>contains($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:Configuration, 'CampaignsOnly=true')</condition>
+            <sequence name="Sequence247">
+                <assign name="DefaultNotAllowed">
+                    <copy>
+                        <from>true()</from>
+                        <to variable="CampaignUCNotAllowed"/>
+                    </copy>
+                </assign>
+                <forEach name="ForEachPICampaign" parallel="no" counterName="CAMP">
+                    <startCounterValue>1</startCounterValue>
+                    <finalCounterValue>count($CMGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances/ns1:Campaigns)</finalCounterValue>
+                    <scope name="Scope1">
+                        <forEach name="ForEachUCInCampaign" parallel="no" counterName="UC">
+                            <startCounterValue>1</startCounterValue>
+                            <finalCounterValue>count($CMGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances/ns1:Campaigns[$CAMP]/ns1:CampaignUnitCredits)</finalCounterValue>
+                            <scope name="ScopeCheckAllowed">
+                                <if name="IfAllowed">
+                                    <condition>$CMGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances/ns1:Campaigns[$CAMP]/ns1:CampaignUnitCredits[$UC] = $CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:UnitCreditSpecificationId</condition>
+                                    <assign name="AssignAllowed">
+                                        <copy>
+                                            <from>false()</from>
+                                            <to variable="CampaignUCNotAllowed"/>
+                                        </copy>
+                                    </assign>
+                                </if>
+                            </scope>
+                        </forEach>
+                    </scope>
+                </forEach>
+                <if name="IfNotAllowed">
+                    <condition>$CampaignUCNotAllowed</condition>
+                    <sequence name="Sequence248">
+                        <assign name="AssignErrCampaignUC">
+                            <copy>
+                                <from>'Campaign Unit Credit is not allowed on this product instance'</from>
+                                <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                            </copy>
+                            <copy>
+                                <from>'business'</from>
+                                <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                            </copy>
+                            <copy>
+                                <from>'SCA-0037'</from>
+                                <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                            </copy>
+                        </assign>
+                        <reply name="ReplyErrCampaignUC" partnerLink="SCA" operation="PurchaseUnitCredit" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                        <exit name="Exit45"/>
+                    </sequence>
+                </if>
+            </sequence>
+        </if>
+        <assign name="AssignGetCallingCustomer">
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns3:PlatformContext/ns3:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns3:PlatformContext/ns3:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns3:PlatformContext/ns3:Tenant</to>
+            </copy>
+            <copy>
+                <from>'MAIN'</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns3:Verbosity</to>
+            </copy>
+            <copy>
+                <from>1</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns3:ResultLimit</to>
+            </copy>
+            <copy>
+                <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns3:SSOIdentity</to>
+            </copy>
+        </assign>
+        <invoke name="GetCallingCustomerData" partnerLink="IM" operation="GetCustomers" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetCustomersIn" outputVariable="IMGetCustomersOut"/>
+                        
+        <if name="IfUnknowCallingCustomer">
+            <condition>$IMGetCustomersOut.CustomerList/ns3:NumberOfCustomers = 0</condition>
+            <sequence name="Sequence111">
+                <assign name="AssignErrorUnknownCallingCustomer">
+                    <copy>
+                        <from>'Unknown Calling Customer'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'business'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0022'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyError3" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                <exit name="Exit3"/>
+            </sequence>
+        </if>
+        <assign name="AssignCustId">
+            <copy>
+                <from>$IMGetCustomersOut.CustomerList/ns3:Customers/ns3:CustomerId</from>
+                <to variable="CallingCustomerId"/>
+            </copy>
+        </assign>
+        
+        <if name="IfSellAsStandAloneNotAllowed">
+            <condition>contains($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:Configuration, 'BundleCannotBeSoldAsStandAlone=true')</condition>
+            <sequence name="SequenceSellAsStandAloneNotAllowed">
+                <assign name="AssignErrorStandAloneSaleNotAllowed">
+                    <copy>
+                        <from>'This bundle cannot be sold as stand-alone'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'business'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0039'</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyError4" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                <exit name="Exit4"/>
+            </sequence>
+        </if>        
+                                
+        <if name="IfNonVattable">
+            <condition>contains($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:Configuration, 'Reporting=Data_NoVAT')</condition>
+            <assign name="AssignNonVattable">
+                <copy>
+                    <from>true()</from>
+                    <to>$POSProcessSaleIn.NewSale/ns4:TaxExempt</to>
+                </copy>
+            </assign>
+            <else>
+                <assign name="AssignVattable">
+                    <copy>
+                        <from>false()</from>
+                        <to>$POSProcessSaleIn.NewSale/ns4:TaxExempt</to>
+                    </copy>
+                </assign>
+            </else>
+        </if>
+        <if name="IfForStaff">
+            <condition>contains($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:Configuration, 'Staff=true')</condition>
+            <assign name="AssignCreditAccountForStaff">
+                <copy>
+                    <from>'Credit Account'</from>
+                    <to>$POSProcessSaleIn.NewSale/ns4:PaymentMethod</to>
+                </copy>
+                <copy>
+                    <from>BPELUtils:getSubProperty('env.x3.config', 'StaffLoanCustomerCode')</from>
+                    <to>$POSProcessSaleIn.NewSale/ns4:CreditAccountNumber</to>
+                </copy>
+            </assign>
+            <elseif>
+                <condition>contains($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:Configuration, 'Trial=true')</condition>
+                <assign name="AssignCashForTrial">
+                    <copy>
+                        <from>'Cash'</from>
+                        <to>$POSProcessSaleIn.NewSale/ns4:PaymentMethod</to>
+                    </copy>
+                    <copy>
+                        <from>''</from>
+                        <to>$POSProcessSaleIn.NewSale/ns4:CreditAccountNumber</to>
+                    </copy>
+                </assign>
+            </elseif>
+            <elseif>
+                <condition>contains($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:Configuration, 'ConsolidatedGiftItemNumber=')</condition>
+                <assign name="AssignConsolidatedSaleForGift">
+                    <copy>
+                        <from>'ConsolidatedGift'</from>
+                        <to>$POSProcessSaleIn.NewSale/ns4:PaymentMethod</to>
+                    </copy>
+                </assign>
+            </elseif>
+            <elseif>
+                <condition>contains($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:Configuration, 'Gift=true')</condition>
+                <assign name="AssignCashSaleForGift">
+                    <copy>
+                        <from>'Cash'</from>
+                        <to>$POSProcessSaleIn.NewSale/ns4:PaymentMethod</to>
+                    </copy>
+                    <copy>
+                        <from>''</from>
+                        <to>$POSProcessSaleIn.NewSale/ns4:CreditAccountNumber</to>
+                    </copy>
+                </assign>
+            </elseif>
+            <elseif>
+                <condition>count($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PaymentMethod) = 1 and string-length($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PaymentMethod) &gt; 0</condition>
+                <assign name="AssignAsRequested">
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PaymentMethod</from>
+                        <to>$POSProcessSaleIn.NewSale/ns4:PaymentMethod</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:CreditAccountNumber</from>
+                        <to>$POSProcessSaleIn.NewSale/ns4:CreditAccountNumber</to>
+                    </copy>
+                </assign>
+            </elseif>
+            <else>
+                <assign name="AssignAirtimeSale">
+                    <copy>
+                        <from>'Airtime'</from>
+                        <to>$POSProcessSaleIn.NewSale/ns4:PaymentMethod</to>
+                    </copy>
+                    <copy>
+                        <from>''</from>
+                        <to>$POSProcessSaleIn.NewSale/ns4:CreditAccountNumber</to>
+                    </copy>
+                </assign>
+            </else>
+        </if>
+        <if name="IfConsolidatedGift">
+            <condition>$POSProcessSaleIn.NewSale/ns4:PaymentMethod = 'ConsolidatedGift'</condition>
+            <sequence name="Sequence246">
+                <assign name="AssignBM">
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:PlatformContext/ns2:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:PlatformContext/ns2:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:PlatformContext/ns2:Tenant</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Comment</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:PlatformContext/ns2:Comment</to>
+                    </copy>
+                    <copy>
+                        <from>false()</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:CreditUnearnedRevenue</to>
+                    </copy>
+                    <copy>
+                        <from>false()</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:SkipUniqueTest</to>
+                    </copy>
+                    <copy>
+                        <from>false()</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:VerifyOnly</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:AccountId</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines/ns2:AccountId</to>
+                    </copy>
+                    <copy>
+                        <from>$CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:UnitCreditSpecificationId</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines/ns2:UnitCreditSpecificationId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:ProductInstanceId</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines/ns2:ProductInstanceId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:NumberToPurchase</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines/ns2:NumberToProvision</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:DaysGapBetweenStart</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines/ns2:DaysGapBetweenStart</to>
+                    </copy>
+                    <copy>
+                        <from>0</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines/ns2:POSCentsPaidEach</to>
+                    </copy>
+                    <copy>
+                        <from>-1</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:SaleLineId</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:Info</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines/ns2:Info</to>
+                    </copy>
+                    <copy>
+                        <from>$CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:PriceInCents</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines/ns2:POSCentsDiscountEach</to>
+                    </copy>
+                </assign>
+                <invoke name="CallBMWithoutSale" partnerLink="BM" operation="ProvisionUnitCredit" xmlns:tns="http://xml.smilecoms.com/BM" portType="tns:BMSoap" inputVariable="BMProvisionUnitCreditIn" outputVariable="BMProvisionUnitCreditOut"/>
+            </sequence>
+            <else>
+                <sequence name="Sequence245">
+                    <assign name="AssignSale">
+                        <sxt:trace>
+                            <sxt:log level="finest" location="onComplete">
+                                <from>concat('Set Quantity on sale to ', $POSProcessSaleIn.NewSale/ns4:SaleLines/ns4:Quantity)</from>
+                            </sxt:log>
+                        </sxt:trace>
+                        <copy>
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:PlatformContext/ns4:TxId</to>
+                        </copy>
+                        <copy>
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:PlatformContext/ns4:OriginatingIdentity</to>
+                        </copy>
+                        <copy>
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:PlatformContext/ns4:OriginatingIP</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:PlatformContext/ns4:Tenant</to>
+                        </copy>
+                        <copy>
+                            <from>$CallingCustomerId</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:SalesPersonCustomerId</to>
+                        </copy>
+                        <copy>
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PaidByAccountId</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:SalesPersonAccountId</to>
+                        </copy>
+                        <copy>
+                            <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[1]/ns1:CustomerId</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:RecipientCustomerId</to>
+                        </copy>
+                        <copy>
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:AccountId</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:RecipientAccountId</to>
+                        </copy>
+                        <copy>
+                            <from>0</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:AmountTenderedCents</to>
+                        </copy>
+                        <copy>
+                            <from>0</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:ChangeCents</to>
+                        </copy>
+                        <copy>
+                            <from>$CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications/ns1:ItemNumber</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:SaleLines[1]/ns4:InventoryItem/ns4:ItemNumber</to>
+                        </copy>
+                        <copy>
+                            <from>''</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:SaleLines[1]/ns4:InventoryItem/ns4:SerialNumber</to>
+                        </copy>
+                        <copy>
+                            <from>''</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:WarehouseId</to>
+                        </copy>
+                        <copy>
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:NumberToPurchase</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:SaleLines[1]/ns4:Quantity</to>
+                        </copy>
+                        <copy>
+                            <from>''</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:PaymentTransactionData</to>
+                        </copy>
+                        <copy>
+                            <from>''</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:PurchaseOrderData</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:UniqueId</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:UniqueId</to>
+                        </copy>
+                        <copy>
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:Channel</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:Channel</to>
+                        </copy>
+                        <copy>
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:ExtTxId</to>
+                        </copy>
+                        <copy>
+                            <from>0</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:WithholdingTaxRate</to>
+                        </copy>
+                        <copy>
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[1]/ns1:OrganisationId</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:RecipientOrganisationId</to>
+                        </copy>
+                        <copy>
+                            <from>true()</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:IgnoreDuplicateSale</to>
+                        </copy>
+                        <copy>
+                            <from>concat('DaysGapBetweenStart=', $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:DaysGapBetweenStart,'&#xD;&#xA;', $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:Info)</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:SaleLines[1]/ns4:ProvisioningData
+                                <sxed:editor>
+                                    <sxed:predicate path="$POSProcessSaleIn.NewSale/ns4:SaleLines[1]" source="to"/>
+                                </sxed:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:PromotionCode</from>
+                            <to>$POSProcessSaleIn.NewSale/ns4:PromotionCode</to>
+                        </copy>
+                    </assign>
+                    <if name="If1">
+                        <condition>count($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:ProductInstanceId) = 1 and $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:ProductInstanceId != 0</condition>
+                        <assign name="AssignPIID">
+                            <copy>
+                                <from>concat($POSProcessSaleIn.NewSale/ns4:SaleLines[1]/ns4:ProvisioningData, '&#xD;&#xA;ProductInstanceId=', $SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:ProductInstanceId)</from>
+                                <to>$POSProcessSaleIn.NewSale/ns4:SaleLines[1]/ns4:ProvisioningData</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    <invoke name="CreateSale" partnerLink="POS" operation="ProcessSale" xmlns:tns="http://xml.smilecoms.com/POS" portType="tns:POSSoap" inputVariable="POSProcessSaleIn" outputVariable="POSProcessSaleOut"/>
+                </sequence>
+            </else>
+        </if>
+        
+        
+        <if name="IfAsyncReply">
+            <condition>not($SCAPurchaseUnitCreditIn.PurchaseUnitCreditRequest/ns0:SCAContext/ns0:Async)</condition>
+            <sequence name="Sequence241">
+                <assign name="AssignResult">
+                    <copy>
+                        <from>'true'</from>
+                        <to>$SCAPurchaseUnitCreditOut.Done/ns0:Done</to>
+                    </copy>
+                </assign>
+                <reply name="Reply1" partnerLink="SCA" operation="PurchaseUnitCredit" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAPurchaseUnitCreditOut"/>
+            </sequence>
+        </if>
+        
+    </sequence>
+</process>

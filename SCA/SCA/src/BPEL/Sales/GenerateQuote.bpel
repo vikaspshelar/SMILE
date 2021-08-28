@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GenerateQuote"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:POS="http://xml.smilecoms.com/POS"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:CM="http://xml.smilecoms.com/CM"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/POS" 
+    xmlns:ns3="http://xml.smilecoms.com/schema/BM" xmlns:ns4="http://xml.smilecoms.com/schema/CM" xmlns:ns5="http://xml.smilecoms.com/schema/IM" >
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="TmpString" type="xsd:string"/>
+        <variable name="POSGenerateQuoteOut" messageType="POS:GenerateQuoteResponse"/>
+        <variable name="POSGenerateQuoteIn" messageType="POS:GenerateQuoteRequest"/>
+        <variable name="SCAGenerateQuoteOut" messageType="tns:GenerateQuoteResponse"/>
+        <variable name="SCAGenerateQuoteIn" messageType="tns:GenerateQuoteRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="POS:POSError" faultVariable="POSError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GenerateQuote" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GenerateQuote" portType="tns:SCASoap" variable="SCAGenerateQuoteIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+            
+        </scope>
+        
+        <assign name="SCAtoPOS">
+            <copy>
+                <from>BPELUtils:changeNamespace(sxxf:doMarshal($SCAGenerateQuoteIn.SaleDataForQuote), 'http://xml.smilecoms.com/schema/SCA', 'http://xml.smilecoms.com/schema/POS')</from>
+                <to>$TmpString</to>
+            </copy>
+            <copy>
+                <from>sxxf:doUnMarshal($TmpString)</from>
+                <to variable="POSGenerateQuoteIn" part="SaleDataForQuote"/>
+            </copy>
+        </assign>
+        
+        <invoke name="CallPOS" partnerLink="POS" operation="GenerateQuote" portType="POS:POSSoap" inputVariable="POSGenerateQuoteIn" outputVariable="POSGenerateQuoteOut"/>
+        
+        
+        <assign name="POSToSCA">
+            <copy>
+                <from>BPELUtils:changeNamespace(sxxf:doMarshal($POSGenerateQuoteOut.Quote), 'http://xml.smilecoms.com/schema/POS', 'http://xml.smilecoms.com/schema/SCA')</from>
+                <to>$TmpString</to>
+            </copy>
+            <copy>
+                <from>sxxf:doUnMarshal($TmpString)</from>
+                <to variable="SCAGenerateQuoteOut" part="Quote"/>
+            </copy>
+        </assign>
+        
+        <reply name="Reply213" partnerLink="SCA" operation="GenerateQuote" portType="tns:SCASoap" variable="SCAGenerateQuoteOut"/>
+    </sequence>
+</process>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <!-- XML Schema Generated from XML Document on Wed May 29 2019 11:21:30 GMT+0200 (South Africa Standard Time) -->
+    <!-- with XmlGrid.net Free Online Service http://xmlgrid.net -->
+    <xs:element name="Stackholder">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="StackholderVerifyReq">
+                    <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ControlNumber" type="xs:long"></xs:element>
+                        <xs:element name="IdentityNumber" type="xs:string"></xs:element>
+                        <xs:element name="VendorName" type="xs:string"></xs:element>
+                    </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="StackholderSignature" type="xs:string"/>
+            </xs:sequence>  
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="StackholderResponse">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="StackholderResp">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element type="xs:string" name="Fullname"/>
+                <xs:element type="xs:string" name="IdentityType"/>
+                <xs:element type="xs:string" name="IdentityNumber"/>
+                <xs:element type="xs:int" name="Status"/>
+                <xs:element type="xs:string" name="StatusDescription"/>
+                <xs:element type="xs:string" name="Pdf"/>
+                <xs:element type="xs:string" name="RbNumber"/>
+                <xs:element type="xs:string" name="Dateofloss"/>
+                <xs:element type="xs:string" name="LossLocation"/>
+                <xs:element type="xs:string" name="LossRegion"/>
+                <xs:element type="xs:long" name="ControlNumber"/>
+                <xs:element type="xs:string" name="Itemtype"/>
+                <xs:element type="xs:string" name="Itemname"/>
+                <xs:element type="xs:string" name="Itemnumber"/>
+                <xs:element type="xs:string" name="OthersDetails"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element type="xs:string" name="StackholderSignature"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+</xs:schema>

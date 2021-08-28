@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetProductInstances"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/CM" xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="CMGetProductInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductInstancesResponse"/>
+        <variable name="CMGetProductInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetProductInstancesRequest"/>
+        <variable name="SCAGetProductInstancesOut" messageType="tns:ProductInstancesResponse"/>
+        <variable name="SCAGetProductInstancesIn" messageType="tns:GetProductInstancesRequest"/>
+        <variable name="prodSvcInstMappingCount" type="xsd:int"/>        
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="CMError" xmlns:CM="http://xml.smilecoms.com/CM" faultMessageType="CM:CMError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$CMError.CMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetProductInstances" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetProductInstances" portType="tns:SCASoap" variable="SCAGetProductInstancesIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignCMGetProductInstances">
+            <copy>
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:SCAContext/ns1:TxId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:SCAContext/ns1:Tenant</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:ServiceInstanceId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:ServiceInstanceId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:ProductInstanceId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:ProductInstanceId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:CustomerId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:CustomerId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:OrganisationId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:OrganisationId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:ProductSpecificationId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:ProductSpecificationId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:PhysicalId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:PhysicalId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:Verbosity</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:Verbosity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:ResultLimit</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:ResultLimit</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetProductInstancesIn.ProductInstanceQuery/ns1:Offset</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns0:Offset</to>
+            </copy>
+        </assign>
+        <invoke name="CallCMGetProductInstances" partnerLink="CM" operation="GetProductInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOut"/>
+        <assign name="AssignCnt">
+            <copy>
+                <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:NumberOfProductInstances</from>
+                <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:NumberOfProductInstances</to>
+            </copy>
+        </assign>
+        <forEach name="ForEachPI" parallel="no" counterName="pi">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances)</finalCounterValue>
+            <scope name="LoopScope">
+                <sequence name="LoopSequence">
+                    <assign name="CheckPermissions1">
+                        <copy>
+                            <from>BPELUtils:checkPermissions($SCAGetProductInstancesIn.ProductInstanceQuery/ns1:SCAContext, 'ProductInstance', $CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductInstanceId)</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:SCAContext/ns1:Obviscated</to>
+                        </copy>
+                    </assign>
+                    <assign name="AssignProdData">
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductInstanceId</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:ProductInstanceId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductSpecificationId</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:ProductSpecificationId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:CustomerId</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:CustomerId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:OrganisationId</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:OrganisationId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>count($CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductServiceInstanceMappings)</from>
+                            <to variable="prodSvcInstMappingCount"/>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Segment</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Segment</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:FriendlyName</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:FriendlyName</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:CreatedDateTime</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:CreatedDateTime</to>
+                        </copy>
+                        <copy>
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:PromotionCode
+                            </from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:PromotionCode
+                            </to>
+                        </copy>
+                        <copy>
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:LogicalId
+                            </from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:LogicalId
+                            </to>
+                        </copy>
+                        <copy>
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:PhysicalId
+                            </from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:PhysicalId
+                            </to>
+                        </copy>
+                        <copy>
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:LastDevice</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:LastDevice</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ReferralCode</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:ReferralCode</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:FirstActivityDateTime</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:FirstActivityDateTime</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:LastActivityDateTime</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:LastActivityDateTime</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:CreatedByOrganisationId</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:CreatedByOrganisationId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:CreatedByCustomerProfileId</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:CreatedByCustomerProfileId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Status</from>
+                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Status</to>
+                        </copy>
+                    </assign>                    
+                    <if name="IfHasServices">
+                        <condition>$prodSvcInstMappingCount &gt; 0</condition>
+                        <sequence name="Sequence1">
+                            <scope name="Scope3">
+                                <variables>
+                                    <variable name="SFCopyCMSvcInstancesToSCASvcInstancesOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ServiceInstancesResponse"/>
+                                    <variable name="SFCopyCMSvcInstancesToSCASvcInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+                                </variables>
+                                <sequence name="Sequence3">
+                                    <forEach name="ForEachSI1" parallel="no" counterName="si">
+                                        <startCounterValue>1</startCounterValue>
+                                        <finalCounterValue>$prodSvcInstMappingCount</finalCounterValue>
+                                        <scope name="Scope1">
+                                            <assign name="AssignCopySvcInstance">
+                                                <copy>
+                                                    <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductServiceInstanceMappings[$si]/ns0:ServiceInstance</from>
+                                                    <to>$SFCopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns0:ServiceInstances[$si]</to>
+                                                </copy>
+                                            </assign>
+                                        </scope>
+                                    </forEach>
+                                    <invoke name="CallSubFlow" partnerLink="SCASubFlows" operation="CopyCMSvcInstancesToSCASvcInstances" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" inputVariable="SFCopyCMSvcInstancesToSCASvcInstancesIn" outputVariable="SFCopyCMSvcInstancesToSCASvcInstancesOut">
+                                        <!--sxt:trace>
+                                            <sxt:log level="finest" location="onStart">
+                                                <from>concat('Count of SIs to Copy is ', count($SFCopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns0:ServiceInstances))</from>
+                                            </sxt:log>
+                                        </sxt:trace-->
+                                    </invoke>
+                                    <forEach name="ForEachSI2" parallel="no" counterName="si">
+                                        <startCounterValue>1</startCounterValue>
+                                        <finalCounterValue>$prodSvcInstMappingCount</finalCounterValue>
+                                        <scope name="Scope2">
+                                            <assign name="AssignServiceInstance">
+                                                <copy>
+                                                    <from>$SFCopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]</from>
+                                                    <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:ProductServiceInstanceMappings[$si]/ns1:ServiceInstance</to>
+                                                </copy>
+                                                <copy>
+                                                    <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:ProductServiceInstanceMappings[$si]/ns0:RatePlanId</from>
+                                                    <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:ProductServiceInstanceMappings[$si]/ns1:RatePlanId
+                                                    </to>
+                                                </copy>
+                                            </assign>
+                                        </scope>
+                                    </forEach>
+                                </sequence>
+                            </scope>
+                        </sequence>
+                    </if>
+                    <if name="IfHasCampaigns">
+                        <condition>count($CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances/ns0:Campaigns) &gt; 0</condition>
+                        <sequence name="campaginSequence">
+                            <forEach name="ForEachCD" parallel="no" counterName="cd">
+                                <startCounterValue>1</startCounterValue>
+                                <finalCounterValue>count($CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances/ns0:Campaigns)</finalCounterValue>
+                                <scope name="campaignScope">
+                                    <assign name="AssignCampaignData">
+                                        <copy>
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Campaigns[$cd]/ns0:CampaignId</from>
+                                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Campaigns[$cd]/ns1:CampaignId</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Campaigns[$cd]/ns0:Name</from>
+                                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Campaigns[$cd]/ns1:Name</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Campaigns[$cd]/ns0:StartDateTime</from>
+                                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Campaigns[$cd]/ns1:StartDateTime</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Campaigns[$cd]/ns0:EndDateTime</from>
+                                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Campaigns[$cd]/ns1:EndDateTime</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Campaigns[$cd]/ns0:Status</from>
+                                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Campaigns[$cd]/ns1:Status</to>
+                                        </copy>                                 
+                                        <copy>
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Campaigns[$cd]/ns0:LastCheckDateTime</from>
+                                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Campaigns[$cd]/ns1:LastCheckDateTime</to>
+                                        </copy>
+                                        <copy ignoreMissingFromData="yes">
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns0:ProductInstances[$pi]/ns0:Campaigns[$cd]/ns0:CampaignUnitCredits</from>
+                                            <to>$SCAGetProductInstancesOut.ProductInstanceList/ns1:ProductInstances[$pi]/ns1:Campaigns[$cd]/ns1:CampaignUnitCredits</to>
+                                        </copy>
+                                    </assign>
+                                </scope>
+                            </forEach>
+                        </sequence>
+                    </if>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        
+        
+        <reply name="Reply1" partnerLink="SCA" operation="GetProductInstances" portType="tns:SCASoap" variable="SCAGetProductInstancesOut"/>
+    </sequence>
+</process>

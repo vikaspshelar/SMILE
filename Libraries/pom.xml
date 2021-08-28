@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.smilecoms</groupId>
+        <artifactId>HOBIT</artifactId>
+        <version>2.3.1</version>
+    </parent>
+    <artifactId>Libraries</artifactId>
+    <packaging>pom</packaging>
+    <prerequisites>
+        <maven>3.2.5</maven>
+    </prerequisites>
+    <name>HOBIT :: Libraries</name>
+    
+    <modules>
+        <module>SmileSIP</module> 
+        <module>SC-Base</module>
+        <module>SC-Util</module>
+        <module>SCAAuth</module>
+        <module>SC-SCAClient</module>
+        <module>SC-Platform</module>
+        <module>SC-Logger</module>
+        <module>SC-PaymentGatewayPlugins</module>
+        <module>SmileStripes</module>
+        <module>SC-Stripes</module>
+        <module>SC-TPGWApi</module>
+        <module>SC-BPEL</module>
+        <module>SoapCacheHandler</module>
+        <module>SmileAsteriskJava</module>
+	<module>SC-TelecomsRegulatorPlugins</module>
+        <module>SmileFingerMatcher</module>
+    </modules>
+    <build>
+    	<pluginManagement>
+    		<plugins>
+    			<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    			<plugin>
+    				<groupId>org.eclipse.m2e</groupId>
+    				<artifactId>lifecycle-mapping</artifactId>
+    				<version>1.0.0</version>
+    				<configuration>
+    					<lifecycleMappingMetadata>
+    						<pluginExecutions>
+    							<pluginExecution>
+    								<pluginExecutionFilter>
+    									<groupId>
+    										org.apache.maven.plugins
+    									</groupId>
+    									<artifactId>
+    										maven-install-plugin
+    									</artifactId>
+    									<versionRange>
+    										[2.5.2,)
+    									</versionRange>
+    									<goals>
+    										<goal>install-file</goal>
+    									</goals>
+    								</pluginExecutionFilter>
+    								<action>
+    									<ignore></ignore>
+    								</action>
+    							</pluginExecution>
+    						</pluginExecutions>
+    					</lifecycleMappingMetadata>
+    				</configuration>
+    			</plugin>
+    		</plugins>
+    	</pluginManagement>
+    </build>
+</project>

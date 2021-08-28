@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.smilecoms</groupId>
+        <artifactId>HOBIT</artifactId>
+        <version>2.3.1</version>
+    </parent>
+    <artifactId>Portals</artifactId>
+    <packaging>pom</packaging>
+    <prerequisites>
+        <maven>3.2.5</maven>
+    </prerequisites>
+    <name>HOBIT :: Portals</name>
+    <modules>
+        <module>SEP</module>
+        <module>SCP</module>
+        <module>MNP</module>
+        <module>SOP</module>
+        <module>SRA</module>
+        <module>TPGW</module>
+        <module>SmileTPGWWeb</module>
+        <module>SmileTPGW</module>
+        <module>TRA</module>
+	<module>RRA</module>
+        <module>SAPI</module>
+  </modules>
+</project>

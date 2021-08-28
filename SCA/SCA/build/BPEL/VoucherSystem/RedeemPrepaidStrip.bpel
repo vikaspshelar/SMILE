@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="RedeemPrepaidStrip"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="_NS_"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/PVS" xmlns:ns2="http://xml.smilecoms.com/schema/BM" xmlns:ns3="http://xml.smilecoms.com/schema/CM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/PVS" location="../Partners/PVS/PVSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="PVS" xmlns:tns="http://xml.smilecoms.com/PVS" partnerLinkType="tns:PVSServiceDefinition" partnerRole="PVS"/>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="BM" xmlns:tns="http://xml.smilecoms.com/BM" partnerLinkType="tns:BMServiceDefinition" partnerRole="BM"/>
+
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="BMProvisionUnitCreditOut" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:ProvisionUnitCreditResponse"/>
+        <variable name="BMProvisionUnitCreditIn" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:ProvisionUnitCreditRequest"/>
+        <variable name="CMGetUnitCreditSpecificationsOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:UnitCreditSpecificationsResponse"/>
+        <variable name="CMGetUnitCreditSpecificationsIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetUnitCreditSpecificationsRequest"/>
+        <variable name="BMGetAccountHistoryOut" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:GetAccountHistoryResponse"/>
+        <variable name="BMGetAccountHistoryIn" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:GetAccountHistoryRequest"/>
+        <variable name="PVSUpdatePrepaidStripOut" xmlns:tns="http://xml.smilecoms.com/PVS" messageType="tns:PrepaidStripResponse"/>
+        <variable name="PVSUpdatePrepaidStripIn" xmlns:tns="http://xml.smilecoms.com/PVS" messageType="tns:UpdatePrepaidStripRequest"/>
+        <variable name="BMTransferBalanceOut" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:TransferBalanceResponse"/>
+        <variable name="BMTransferBalanceIn" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:TransferBalanceRequest"/>
+        <variable name="Fault1FaultVar" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:SCAError"/>
+        <variable name="PVSRedeemPrepaidStripOut" xmlns:tns="http://xml.smilecoms.com/PVS" messageType="tns:PrepaidStripResponse"/>
+        <variable name="PVSRedeemPrepaidStripIn" xmlns:tns="http://xml.smilecoms.com/PVS" messageType="tns:RedeemPrepaidStripRequest"/>
+        <variable name="SCARedeemPrepaidStripOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:Done"/>
+        <variable name="SCARedeemPrepaidStripIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:RedeemPrepaidStripRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:PVS="http://xml.smilecoms.com/PVS" faultMessageType="PVS:PVSError" faultVariable="PVSError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="RedeemPrepaidStrip" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch xmlns:tns="http://xml.smilecoms.com/BM" faultMessageType="tns:BMError" faultVariable="BMError">
+            <sequence name="Sequence2">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply3" partnerLink="SCA" operation="RedeemPrepaidStrip" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="RedeemPrepaidStrip" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCARedeemPrepaidStripIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('BM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('PVS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="PVS"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs3">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignRedeem">
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:TxId</from>
+                <to>$PVSRedeemPrepaidStripIn.PrepaidStripRedemptionData/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$PVSRedeemPrepaidStripIn.PrepaidStripRedemptionData/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$PVSRedeemPrepaidStripIn.PrepaidStripRedemptionData/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:Tenant</from>
+                <to>$PVSRedeemPrepaidStripIn.PrepaidStripRedemptionData/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:AccountId</from>
+                <to>$PVSRedeemPrepaidStripIn.PrepaidStripRedemptionData/ns1:AccountId</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:EncryptedPIN</from>
+                <to>$PVSRedeemPrepaidStripIn.PrepaidStripRedemptionData/ns1:EncryptedPIN</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:RedeemedByAccountId</from>
+                <to>$PVSRedeemPrepaidStripIn.PrepaidStripRedemptionData/ns1:RedeemedByAccountId</to>
+            </copy>
+        </assign>
+        <invoke name="RedeemStrip" partnerLink="PVS" operation="RedeemPrepaidStrip" xmlns:tns="http://xml.smilecoms.com/PVS" portType="tns:PVSSoap" inputVariable="PVSRedeemPrepaidStripIn" outputVariable="PVSRedeemPrepaidStripOut"/>
+        <assign name="AssignUpdateStrip1">
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:TxId</from>
+                <to>$PVSUpdatePrepaidStripIn.UpdatedPrepaidStrip/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$PVSUpdatePrepaidStripIn.UpdatedPrepaidStrip/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$PVSUpdatePrepaidStripIn.UpdatedPrepaidStrip/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:Tenant</from>
+                <to>$PVSUpdatePrepaidStripIn.UpdatedPrepaidStrip/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$PVSRedeemPrepaidStripOut.PrepaidStrip/ns1:PrepaidStripId</from>
+                <to>$PVSUpdatePrepaidStripIn.UpdatedPrepaidStrip/ns1:PrepaidStripId</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:AccountId</from>
+                <to>$PVSUpdatePrepaidStripIn.UpdatedPrepaidStrip/ns1:RedemptionAccountId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$PVSRedeemPrepaidStripOut.PrepaidStrip/ns1:GeneratedDate</from>
+                <to>$PVSUpdatePrepaidStripIn.UpdatedPrepaidStrip/ns1:GeneratedDate</to>
+            </copy>
+            <copy>
+                <from>'RI'</from>
+                <to>$PVSUpdatePrepaidStripIn.UpdatedPrepaidStrip/ns1:Status</to>
+            </copy>
+        </assign>
+        <invoke name="UpdateStripStage1" partnerLink="PVS" operation="UpdatePrepaidStrip" xmlns:tns="http://xml.smilecoms.com/PVS" portType="tns:PVSSoap" inputVariable="PVSUpdatePrepaidStripIn" outputVariable="PVSUpdatePrepaidStripOut"/>
+        <if name="IfUCSIDandAMOUNT">
+            <condition>$PVSUpdatePrepaidStripOut.PrepaidStrip/ns1:ValueInCents = 0.0 and $PVSUpdatePrepaidStripOut.PrepaidStrip/ns1:UnitCreditSpecificationId &gt; 0</condition>
+            <sequence name="Sequence3">
+                <assign name="Assign3">
+                    <copy>
+                        <from>$PVSUpdatePrepaidStripOut.PrepaidStrip/ns1:UnitCreditSpecificationId</from>
+                        <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns3:UnitCreditSpecificationId</to>
+                    </copy>
+                    <copy>
+                        <from>'MAIN'</from>
+                        <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns3:Verbosity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:TxId</from>
+                        <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns3:PlatformContext/ns3:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                        <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns3:PlatformContext/ns3:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns3:PlatformContext/ns3:Tenant</to>
+                    </copy>
+                </assign>
+                <invoke name="InvkGetUCSpec" partnerLink="CM" operation="GetUnitCreditSpecifications" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetUnitCreditSpecificationsIn" outputVariable="CMGetUnitCreditSpecificationsOut"/>
+
+                <if name="IfInvalidDate">
+                    <condition>sxxf:dateTime-less-than(sxxf:current-date(), $CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns3:UnitCreditSpecifications[1]/ns3:AvailableFrom) or sxxf:dateTime-less-than($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns3:UnitCreditSpecifications[1]/ns3:AvailableTo, sxxf:current-date())
+                    </condition>
+                    <sequence name="Sequence1CMU">
+                        <assign name="AssignError">
+                            <copy>
+                                <from>'Unit Credit Is not valid for current date'</from>
+                                <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                            </copy>
+                            <copy>
+                                <from>'business'</from>
+                                <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                            </copy>
+                            <copy>
+                                <from>'SCA-0021'</from>
+                                <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                            </copy>
+                        </assign>
+                        <reply name="ReplyError" partnerLink="SCA" operation="RedeemPrepaidStrip" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                        <exit name="Exit1"/>
+                    </sequence>
+                </if>
+                
+                <assign name="Assign4">
+                    <copy>
+                        <from>$PVSUpdatePrepaidStripOut.PrepaidStrip/ns1:UnitCreditSpecificationId</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines[1]/ns2:UnitCreditSpecificationId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:AccountId</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines[1]/ns2:AccountId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:TxId</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:PlatformContext/ns2:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:PlatformContext/ns2:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:PlatformContext/ns2:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>1</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines[1]/ns2:NumberToProvision</to>
+                    </copy>
+                    <copy>
+                        <from>$CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList/ns3:UnitCreditSpecifications[1]/ns3:PriceInCents</from>
+                        <to>$BMProvisionUnitCreditIn.ProvisionUnitCreditRequest/ns2:ProvisionUnitCreditLines[1]/ns2:POSCentsPaidEach
+                        </to>
+                    </copy>
+                </assign>
+                <invoke name="InvkProvisionUC" partnerLink="BM" operation="ProvisionUnitCredit" xmlns:tns="http://xml.smilecoms.com/BM" portType="tns:BMSoap" inputVariable="BMProvisionUnitCreditIn" outputVariable="BMProvisionUnitCreditOut"/>
+            </sequence>
+            <else>
+                <sequence name="Sequence4">
+                    <assign name="AssignTransfer">
+                        <copy>
+                            <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:TxId</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns2:PlatformContext/ns2:TxId</to>
+                        </copy>
+                        <copy>
+                            <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                        </copy>
+                        <copy>
+                            <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIP</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns2:PlatformContext/ns2:OriginatingIP</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:Tenant</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns2:PlatformContext/ns2:Tenant</to>
+                        </copy>
+                        <copy>
+                            <from>$PVSUpdatePrepaidStripOut.PrepaidStrip/ns1:ValueInCents</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns2:BalanceTransferLines[1]/ns2:AmountInCents</to>
+                        </copy>
+                        <copy>
+                            <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:AccountId</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns2:BalanceTransferLines[1]/ns2:TargetAccountId</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:getProperty('env.vouchers.account.id')</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns2:BalanceTransferLines[1]/ns2:SourceAccountId
+                                <sxed:editor>
+                                    <sxed:predicate path="$BMTransferBalanceIn.BalanceTransferData/ns2:BalanceTransferLines[1]" source="to"/>
+                                </sxed:editor>
+                            </to>
+                        </copy>
+                        <copy>
+                            <from>'vtu'</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns2:BalanceTransferLines[1]/ns2:TransferType</to>
+                        </copy>
+                    </assign>
+                    <invoke name="TransferStripAmount" partnerLink="BM" operation="TransferBalance" xmlns:tns="http://xml.smilecoms.com/BM" portType="tns:BMSoap" inputVariable="BMTransferBalanceIn" outputVariable="BMTransferBalanceOut"/>
+
+                </sequence>
+            </else>
+        </if>
+        <assign name="AssignGetHistory">
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:TxId</from>
+                <to>$BMGetAccountHistoryIn.AccountHistoryQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$BMGetAccountHistoryIn.AccountHistoryQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$BMGetAccountHistoryIn.AccountHistoryQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:Tenant</from>
+                <to>$BMGetAccountHistoryIn.AccountHistoryQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:AccountId</from>
+                <to>$BMGetAccountHistoryIn.AccountHistoryQuery/ns2:AccountId</to>
+            </copy>
+            <copy>
+                <from>1</from>
+                <to>$BMGetAccountHistoryIn.AccountHistoryQuery/ns2:ResultLimit</to>
+            </copy>
+            <copy>
+                <from>$SCARedeemPrepaidStripIn.PrepaidStripRedemptionData/ns0:SCAContext/ns0:TxId</from>
+                <to>$BMGetAccountHistoryIn.AccountHistoryQuery/ns2:ExtTxId</to>
+            </copy>
+        </assign>
+        <invoke name="GetHistoryRecord" partnerLink="BM" operation="GetAccountHistory" xmlns:tns="http://xml.smilecoms.com/BM" portType="tns:BMSoap" inputVariable="BMGetAccountHistoryIn" outputVariable="BMGetAccountHistoryOut"/>
+        <assign name="AssignFinalStripData">
+            <copy>
+                <from>'RE'</from>
+                <to>$PVSUpdatePrepaidStripIn.UpdatedPrepaidStrip/ns1:Status</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$BMGetAccountHistoryOut.AccountHistory/ns2:TransactionRecords[1]/ns2:TransactionRecordId</from>
+                <to>$PVSUpdatePrepaidStripIn.UpdatedPrepaidStrip/ns1:RedemptionAccountHistoryId</to>
+            </copy>
+        </assign>
+        <invoke name="UpdateStripFinal" partnerLink="PVS" operation="UpdatePrepaidStrip" xmlns:tns="http://xml.smilecoms.com/PVS" portType="tns:PVSSoap" inputVariable="PVSUpdatePrepaidStripIn" outputVariable="PVSUpdatePrepaidStripOut"/>
+        <assign name="AssignResult">
+            <copy>
+                <from>'true'</from>
+                <to>$SCARedeemPrepaidStripOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="RedeemPrepaidStrip" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCARedeemPrepaidStripOut"/>
+    </sequence>
+</process>
+
+
+
+
+
+
+
+
+
+
+

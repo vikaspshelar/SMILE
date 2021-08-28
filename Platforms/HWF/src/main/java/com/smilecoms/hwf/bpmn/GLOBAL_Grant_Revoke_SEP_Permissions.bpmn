@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions id="definitions"
+             targetNamespace="http://activiti.org/bpmn20" 
+             xmlns:activiti="http://activiti.org/bpmn"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
+    <process name="Grant or Revoke SEP Permission" id="GRSP">
+        <startEvent id="theStart"/>
+        <sequenceFlow id="flow1" sourceRef="theStart" targetRef="UserTask_RequestPermission"/>
+        <sequenceFlow id="flow2" sourceRef="UserTask_RequestPermission" targetRef="ServiceTask_SendMail"/> <!-- send email to SDNationHead-->
+        <sequenceFlow id="flow3" sourceRef="ServiceTask_SendMail" targetRef="UserTask_ApprovePermissionChange"/>
+        <sequenceFlow id="flow4" sourceRef="UserTask_ApprovePermissionChange" targetRef="ServiceTask_SendAdmistratorMail"/>
+        <sequenceFlow id="flow5" sourceRef="ServiceTask_SendAdmistratorMail" targetRef="Gateway_ApprovePermission"/>        
+        
+        <exclusiveGateway id="Gateway_ApprovePermission" name="Was The Permission Request Approved?"/>
+        
+        <sequenceFlow id="flowA" sourceRef="Gateway_ApprovePermission" targetRef="UserTask_ExecutePermissionChange">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${Approved == 'Yes'}
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flowB" sourceRef="Gateway_ApprovePermission" targetRef="End_end">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${Approved == 'No'}
+            </conditionExpression>
+        </sequenceFlow>  
+        <sequenceFlow id="flow6" sourceRef="UserTask_ExecutePermissionChange" targetRef="Gateway_ImplementPermission"/>
+        
+        <exclusiveGateway id="Gateway_ImplementPermission" name="Would You Like To Implement The Already Approved Permission Request?"/>
+        
+        <sequenceFlow id="flowC" sourceRef="Gateway_ImplementPermission" targetRef="ServiceTask_ModifyPermission">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${Verified == 'Yes'}
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flowD" sourceRef="Gateway_ImplementPermission" targetRef="End_end">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${Verified == 'No'}
+            </conditionExpression>
+        </sequenceFlow>         
+        
+        <sequenceFlow id="flow7" sourceRef="ServiceTask_ModifyPermission" targetRef="End_end"/>
+         <!-- Trying to determine if this is needed-->
+        
+        <endEvent id="End_end"/>
+        
+        <userTask id="UserTask_RequestPermission" name="Request Addition or Removal of Permssion">
+            <documentation>Capture details regarding the removal or granting of permission</documentation>
+            <extensionElements>
+                <activiti:formProperty name="FirstName" id="FirstName"/>
+                <activiti:formProperty name="LastName" id="LastName"/>
+                <activiti:formProperty name="Username" id="Username"/>
+                <activiti:formProperty name="Reason" id="Reason"/>
+                <activiti:formProperty name="Permission" id="Permission" type="enum">                    
+                    <!--<activiti:value name="Customer" id="" />-->
+                    <activiti:value name="SOP" id="SOP" />
+                    <activiti:value name="Administrator" id="Administrator" />
+                    <activiti:value name="GroupITSupport" id="GroupITSupport" />
+                    <activiti:value name="GroupITManager" id="GroupITManager" />
+                    <activiti:value name="GroupNWSupport" id="GroupNWSupport" />
+                    <activiti:value name="GroupNWManager" id="GroupNWManager" />
+                    <activiti:value name="GroupLogistics" id="GroupLogistics" />
+                    <activiti:value name="GroupProcesses" id="GroupProcesses" />
+                    <activiti:value name="GroupFinance" id="GroupFinance" />
+                    <activiti:value name="GroupProducts" id="GroupProducts" />
+                    <activiti:value name="GroupSDManager" id="GroupSDManager" />
+                    <activiti:value name="CashInClerk" id="CashInClerk" />
+                    <activiti:value name="FinanceAccountant" id="FinanceAccountant" />
+                    <activiti:value name="FinanceManager" id="FinanceManager" />
+                    <activiti:value name="InboundLogistics" id="InboundLogistics" />
+                    <activiti:value name="RevenueAssurance" id="RevenueAssurance" />
+                    <activiti:value name="ITSupport" id="ITSupport" />
+                    <activiti:value name="ITManager" id="ITManager" />
+                    <activiti:value name="NWSupport" id="NWSupport" />
+                    <activiti:value name="NWManager" id="NWManager" />
+                    <activiti:value name="Products" id="Products" />
+                    <activiti:value name="MarketAnalyst" id="MarketAnalyst" />
+                    <activiti:value name="SDNationalHead" id="SDNationalHead" />
+                    <activiti:value name="SDOperationsManager" id="SDOperationsManager" />
+                    <activiti:value name="DirectSalesManager" id="DirectSalesManager" />
+                    <activiti:value name="IndirectSalesManager" id="IndirectSalesManager" />
+                    <activiti:value name="CorporateSalesManager" id="CorporateSalesManager" />
+                    <activiti:value name="RetailSalesManager" id="RetailSalesManager" />
+                    <activiti:value name="CustomerServiceManager" id="CustomerServiceManager" />
+                    <activiti:value name="CallCentreOperationsManager" id="CallCentreOperationsManager" />
+                    <activiti:value name="SecondLineComplainsManager" id="SecondLineComplainsManager" />
+                    <activiti:value name="InboundCallCentreManager" id="InboundCallCentreManager" />
+                    <activiti:value name="OutboundCallCentreManager" id="OutboundCallCentreManager" />
+                    <activiti:value name="InboundCallCentreAgent" id="InboundCallCentreAgent" />
+                    <activiti:value name="OutboundCallCentreAgent" id="OutboundCallCentreAgent" />
+                    <activiti:value name="CallCentreShiftSupervisor" id="CallCentreShiftSupervisor" />
+                    <activiti:value name="TechnicalSalesSupport" id="TechnicalSalesSupport" />
+                    <activiti:value name="RegionalSDManager" id="RegionalSDManager" />
+                    <activiti:value name="RegionalSDOperationsManager" id="RegionalSDOperationsManager" />
+                    <activiti:value name="KioskSales" id="KioskSales" />
+                    <activiti:value name="ShopSales" id="ShopSales" />
+                    <activiti:value name="CorporateSales" id="CorporateSales" />
+                    <activiti:value name="DirectSales" id="DirectSales" />
+                    <activiti:value name="IndirectSales" id="IndirectSales" />
+                    <activiti:value name="RegionalRetailSalesManager" id="RegionalRetailSalesManager" />
+                    <activiti:value name="ShopManagement" id="ShopManagement" />
+                    <activiti:value name="RegionalDirectSalesManager" id="RegionalDirectSalesManager" />
+                    <activiti:value name="RegionalCorporateSalesManager" id="RegionalCorporateSalesManager" />
+                    <activiti:value name="RegionalIndirectSalesManager" id="RegionalIndirectSalesManager" />
+                    <activiti:value name="RegionalTechnicalSalesSupport" id="RegionalTechnicalSalesSupport" />
+                    <activiti:value name="ICPSales" id="ICPSales" />
+                    <activiti:value name="ICPManager" id="ICPManager" />
+                    <activiti:value name="Trainer" id="Trainer" />
+                    <activiti:value name="Talent" id="Talent" />
+                    <activiti:value name="TPGW" id="TPGW" />
+                    <activiti:value name="MarketingOperations" id="MarketingOperations" />
+                    <activiti:value name="FreeBundleRequestor" id="FreeBundleRequestor" /> 
+                    <activiti:value name="GroupMDManager" id="GroupMDManager" />
+                    <activiti:value name="RegionalMDManager" id="RegionalMDManager" />
+                </activiti:formProperty>
+                <activiti:formProperty name="Action" variable="Action" id="Action" type="enum">
+                    <activiti:value name="Grant" id="Grant"/> 
+                    <activiti:value name="Revoke" id="Revoke"/>
+                </activiti:formProperty>
+            </extensionElements>
+            <potentialOwner>
+                <resourceAssignmentExpression>
+                    <formalExpression>
+                        SDNationalHead, Administrator
+                    </formalExpression>
+                </resourceAssignmentExpression>
+            </potentialOwner>
+        </userTask>
+        
+        <userTask id="UserTask_ApprovePermissionChange" name="Approve Permission Change">
+            <documentation>Approve Permission Change Request By National Head.</documentation>
+            <extensionElements>
+                <activiti:formProperty name="Approved" variable="Approved" id="Approved" type="enum">
+                    <activiti:value name="Yes" id="Yes"/> 
+                    <activiti:value name="No" id="No"/>
+                </activiti:formProperty>
+            </extensionElements>
+            <potentialOwner>
+                <resourceAssignmentExpression>
+                    <formalExpression>
+                        SDNationalHead, Administrator
+                    </formalExpression>
+                </resourceAssignmentExpression>
+            </potentialOwner>
+        </userTask>
+        <userTask id="UserTask_ExecutePermissionChange" name="Execute Permission Change" activiti:candidateUsers="admin">
+            <documentation>Execute Permission Change Request By Admin</documentation>
+            <extensionElements>
+                <activiti:formProperty name="Verified" variable="Verified" id="Verified" type="enum">
+                    <activiti:value name="Yes" id="Yes"/>
+                    <activiti:value name="Yes" id="No"/>
+                </activiti:formProperty>
+            </extensionElements>
+            <potentialOwner>
+                <resourceAssignmentExpression>
+                    <formalExpression>
+                        Adminstrator
+                    </formalExpression>
+                </resourceAssignmentExpression>
+            </potentialOwner>
+        </userTask>
+            
+        <serviceTask id="ServiceTask_SendMail" name="Send Mail to Approver"  activiti:type="mail">
+            <documentation></documentation>
+            <extensionElements>
+                <activiti:field name="to">
+                    <activiti:expression><![CDATA[lesiba@smilecoms.com]]></activiti:expression>
+                </activiti:field>
+                <activiti:field name="from">
+                    <activiti:string><![CDATA[admin@smilecoms.com]]></activiti:string>
+                </activiti:field>
+                <activiti:field name="subject">
+                    <activiti:string><![CDATA[Requesting SEP Permission Approval Email]]></activiti:string>
+                </activiti:field> 
+               <activiti:field name="text">
+                    <activiti:string><![CDATA[You have a new task that requires your approval on SEP.]]></activiti:string>
+                </activiti:field>
+            </extensionElements>
+        </serviceTask>
+        <serviceTask id="ServiceTask_SendAdmistratorMail" name="Send Mail to Admin for Implemetation of change" activiti:type="mail">
+            <documentation></documentation>
+            <extensionElements>
+                <activiti:field name="to">
+                    <activiti:expression><![CDATA[pcb@smilecoms.com]]></activiti:expression>
+                </activiti:field>
+                <activiti:field name="from">
+                    <activiti:string><![CDATA[admin@smilecoms.com]]></activiti:string>
+                </activiti:field>
+                <activiti:field name="subject">
+                    <activiti:string><![CDATA[Requesting SEP Permission Implementation Email]]></activiti:string>
+                </activiti:field>
+                <activiti:field name="text">
+                    <activiti:string><![CDATA[You have a new task that requires you to implement on SEP.]]></activiti:string>
+                </activiti:field>
+            </extensionElements>
+        </serviceTask>
+        
+        <serviceTask id="ServiceTask_ModifyPermission" name="Call SCA to Change Permission" activiti:class="com.smilecoms.hwf.activiti.ActivitiSCADelegate">
+            <extensionElements>
+                <activiti:field stringValue="modifyCustomerPermission"  name="method"/>
+            </extensionElements>  
+        </serviceTask>        
+    </process>
+</definitions>

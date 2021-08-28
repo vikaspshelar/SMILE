@@ -1,0 +1,665 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ModifyCustomer"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:IM="http://xml.smilecoms.com/IM"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/IM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/CM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCACalling" partnerLinkType="tns:SCA" partnerRole="SCAImplementation"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="IMGetCustomersOut" messageType="IM:GetCustomersResponse"/>
+        <variable name="IMGetCustomersIn" messageType="IM:GetCustomersRequest"/>
+        <variable name="foundOrg" type="xsd:boolean"/>
+        <variable name="CustomerWasPending" type="xsd:boolean"/>
+        <variable name="Dummy" type="xsd:string"/>
+        <variable name="CMGetProductInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductInstancesResponse"/>
+        <variable name="CMGetProductInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetProductInstancesRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="IMModifyCustomerOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:Done"/>
+        <variable name="IMModifyCustomerIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyCustomerRequest"/>
+        <variable name="SCAModifyCustomerOut" messageType="tns:Done"/>
+        <variable name="SCAModifyCustomerIn" messageType="tns:ModifyCustomerRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="IM:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ModifyCustomer" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch faultMessageType="tns:SCAError" faultVariable="SCAError">
+            <sequence name="Sequence101">
+                <assign name="AssignErr6">
+                    <copy>
+                        <from>$SCAError.SCAError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAError.SCAError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAError.SCAError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErr6" partnerLink="SCA" operation="ModifyCustomer" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ModifyCustomer" portType="tns:SCASoap" variable="SCAModifyCustomerIn"/>
+
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>                
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>     
+            </sequence>
+        </scope>
+        <assign name="AssignDefaults">
+            <copy>
+                <from>false()</from>
+                <to variable="CustomerWasPending"/>
+            </copy>
+        </assign>
+        <assign name="CheckPermissions">
+            <copy>
+                <from>BPELUtils:checkPermissions($SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext, 'Customer', $SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerId)</from>
+                <to>$Dummy</to>
+            </copy>
+        </assign>
+        
+        <assign name="AssignMainFields">
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:TxId</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:Tenant</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerId</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:Title</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:Title</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:FirstName</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:FirstName</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MiddleName</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MiddleName</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:LastName</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:LastName</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerStatus</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerStatus</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:IdentityNumber</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:IdentityNumber</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:IdentityNumberType</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:IdentityNumberType</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:NationalIdentityNumber</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:NationalIdentityNumber</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:IsNinVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:IsNinVerified</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:Version</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:Version</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:DateOfBirth</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:DateOfBirth</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:Gender</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:Gender</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:Language</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:Language</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:EmailAddress</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:EmailAddress</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:AlternativeContact1</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:AlternativeContact1</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:AlternativeContact2</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:AlternativeContact2</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:Classification</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:Classification</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SecurityGroups</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:SecurityGroups</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerSellers</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerSellers</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SSOIdentity</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:SSOIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SSODigest</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:SSODigest</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:OptInLevel</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:OptInLevel</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:KYCStatus</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:KYCStatus</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:ReferralCode</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:ReferralCode</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:AccountManagerCustomerProfileId</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:AccountManagerCustomerProfileId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:OutstandingTermsAndConditions</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:OutstandingTermsAndConditions</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SSOAuthFlags</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:SSOAuthFlags</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MothersMaidenName</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MothersMaidenName</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:Nationality</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:Nationality</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:PassportExpiryDate</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:PassportExpiryDate</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:VisaExpiryDate</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:VisaExpiryDate</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:WarehouseId</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:WarehouseId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CardNumber</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CardNumber</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:CustomerId</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:CustomerId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:titleVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:titleVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:nameVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:nameVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:mobileVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:mobileVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:emailVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:emailVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:genderVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:genderVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:dobVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:dobVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:nationalityVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:nationalityVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:physicalAddressVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:physicalAddressVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:facialPitureVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:facialPitureVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:validIdCardVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:validIdCardVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:MandatoryKYCFields/ns1:fingerPrintVerified</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:MandatoryKYCFields/ns0:fingerPrintVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerNinData/ns1:NinDataId</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerNinData/ns0:NinDataId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerNinData/ns1:CustomerProfileId</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerNinData/ns0:CustomerProfileId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerNinData/ns1:NinVerificationTrackingId</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerNinData/ns0:NinVerificationTrackingId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerNinData/ns1:NinVerificationType</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerNinData/ns0:NinVerificationType</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerNinData/ns1:NinVerifiedDate</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerNinData/ns0:NinVerifiedDate</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerNinData/ns1:NinResponseStatus</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerNinData/ns0:NinResponseStatus</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerNinData/ns1:NinCollectionDate</from>
+                <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerNinData/ns0:NinCollectionDate</to>
+            </copy>
+        </assign>
+        <if name="IfHasPhotos">
+            <condition>count($SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerPhotographs) &gt; 0</condition>
+            <sequence name="Sequence4">
+                <assign name="AssignGetCurrentCustomer">
+                    <copy>
+                        <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:TxId</from>
+                        <to>$IMGetCustomersIn.CustomerQuery/ns0:PlatformContext/ns0:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                        <to>$IMGetCustomersIn.CustomerQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:OriginatingIP</from>
+                        <to>$IMGetCustomersIn.CustomerQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:Tenant</from>
+                        <to>$IMGetCustomersIn.CustomerQuery/ns0:PlatformContext/ns0:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerId</from>
+                        <to>$IMGetCustomersIn.CustomerQuery/ns0:CustomerId</to>
+                    </copy>
+                    <copy>
+                        <from>'MAIN'</from>
+                        <to>$IMGetCustomersIn.CustomerQuery/ns0:Verbosity</to>
+                    </copy>
+                    <copy>
+                        <from>1</from>
+                        <to>$IMGetCustomersIn.CustomerQuery/ns0:ResultLimit</to>
+                    </copy>
+                </assign>
+                <invoke name="GetCurrentProfile" partnerLink="IM" operation="GetCustomers" portType="IM:IMSoap" inputVariable="IMGetCustomersIn" outputVariable="IMGetCustomersOut"/>
+                <if name="IfIsPending">
+                    <condition>$IMGetCustomersOut.CustomerList/ns0:Customers/ns0:Classification = 'pending'</condition>
+                    <assign name="AssignWasPending">
+                        <copy>
+                            <from>true()</from>
+                            <to variable="CustomerWasPending"/>
+                        </copy>
+                    </assign>
+                </if>
+            </sequence>
+            <else>
+                <assign name="AssignNotPending">
+                    <copy>
+                        <from>false()</from>
+                        <to variable="CustomerWasPending"/>
+                    </copy>
+                </assign>
+            </else>
+        </if>
+        <forEach name="ForEachPhoto" parallel="no" counterName="photo">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerPhotographs)</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="AssignPhoto">
+                    <copy>
+                        <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerPhotographs[$photo]/ns1:PhotoGuid</from>
+                        <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerPhotographs[$photo]/ns0:PhotoGuid</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerPhotographs[$photo]/ns1:PhotoType</from>
+                        <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerPhotographs[$photo]/ns0:PhotoType</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerPhotographs[$photo]/ns1:Data</from>
+                        <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerPhotographs[$photo]/ns0:Data</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <assign name="AssignGetProdInstances">
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:TxId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:Tenant</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:CustomerId</to>
+            </copy>
+            <copy>
+                <from>'MAIN'</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:Verbosity</to>
+            </copy>
+        </assign>
+        <invoke name="GetCustomersProductInstances" partnerLink="CM" operation="GetProductInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOut"/>
+        
+        
+        
+        <forEach name="ForEachProdInstance" parallel="no" counterName="prodInst">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$CMGetProductInstancesOut.ProductInstanceList/ns2:NumberOfProductInstances</finalCounterValue>
+            <scope name="CheckScope">
+                <sequence name="seq1">
+                    <if name="IfProductIsLinkedToOrg">
+                        <condition>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$prodInst]/ns2:OrganisationId &gt; 0</condition>
+                        <sequence name="Sequence3">
+                            <assign name="AssignNotFound">
+                                <copy>
+                                    <from>false()</from>
+                                    <to variable="foundOrg"/>
+                                </copy>
+                            </assign>
+                            <forEach name="ForEachCustomerRoleThatWillStillExist" parallel="no" counterName="role">
+                                <startCounterValue>1</startCounterValue>
+                                <finalCounterValue>count($SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerRoles)</finalCounterValue>
+                                <scope name="Scope3">
+                                    <sxt:trace>
+                                        <sxt:log level="finest" location="onStart">
+                                            <from>concat('Checking if org id ', $CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances/ns2:OrganisationId, ' matches customers org id ', $SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerRoles/ns1:OrganisationId)</from>
+                                        </sxt:log>
+                                    </sxt:trace>
+                                    <if name="IfMatches">
+                                        <condition>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$prodInst]/ns2:OrganisationId = $SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerRoles[$role]/ns1:OrganisationId
+                                            <sxed2:editor>
+                                                <sxed2:predicate path="$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$prodInst]" source="from"/>
+                                                <sxed2:predicate path="$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerRoles[$role]" source="from"/>
+                                            </sxed2:editor>
+                                        </condition>
+                                        <assign name="AssignFound">
+                                            <copy>
+                                                <from>true()</from>
+                                                <to variable="foundOrg"/>
+                                            </copy>
+                                        </assign>
+                                    </if>
+                                </scope>
+                            </forEach>
+                            <if name="IfOrgNotFound">
+                                <condition>not($foundOrg)</condition>
+                                <sequence name="Sequence2">
+                                    <assign name="AssignErr">
+                                        <copy>
+                                            <from>'Cannot remove a customers organisation role if its still associated to a product belonging to the customer'</from>
+                                            <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                                        </copy>
+                                        <copy>
+                                            <from>'business'</from>
+                                            <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                                        </copy>
+                                        <copy>
+                                            <from>'SCA-0006'</from>
+                                            <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                                        </copy>
+                                    </assign>
+                                    <reply name="ReplyErr" partnerLink="SCA" operation="ModifyCustomer" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                                    <exit name="Exit1"/>
+                                </sequence>
+                            </if>
+                        </sequence>
+                    </if>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        
+        
+        <forEach name="ForEachCustomerRole" parallel="no" counterName="role">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerRoles)</finalCounterValue>
+            <scope name="Scope2">
+                <assign name="AssignRole">
+                    <copy>
+                        <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerRoles[$role]/ns1:OrganisationId</from>
+                        <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerRoles[$role]/ns0:OrganisationId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:CustomerRoles[$role]/ns1:RoleName</from>
+                        <to>$IMModifyCustomerIn.ModifiedCustomer/ns0:CustomerRoles[$role]/ns0:RoleName</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        
+        <invoke name="CallIM" partnerLink="IM" operation="ModifyCustomer" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMModifyCustomerIn" outputVariable="IMModifyCustomerOut"/>
+        <assign name="Assign3">
+            <copy>
+                <from>$IMModifyCustomerOut.Done/ns0:Done</from>
+                <to>$SCAModifyCustomerOut.Done/ns1:Done</to>
+            </copy>
+        </assign>
+        <if name="IfWasPending">
+            <condition>$CustomerWasPending</condition>
+            <sequence name="Sequence5">
+                <invoke name="GetModifiedCustomer" partnerLink="IM" operation="GetCustomers" portType="IM:IMSoap" inputVariable="IMGetCustomersIn" outputVariable="IMGetCustomersOut"/>
+                <if name="IfNoLongerPending">
+                    <condition>$IMGetCustomersOut.CustomerList/ns0:Customers/ns0:Classification != 'pending'</condition>
+                    <sequence name="Sequence6">
+                        <assign name="AssignGetPIsWithSvc">
+                            <copy>
+                                <from>'MAIN_SVC'</from>
+                                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:Verbosity</to>
+                            </copy>
+                        </assign>
+                        <invoke name="GetPIsWithSvc" partnerLink="CM" operation="GetProductInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOut"/>
+                        <forEach name="ForEachPI" parallel="no" counterName="PI">
+                            <startCounterValue>1</startCounterValue>
+                            <finalCounterValue>$CMGetProductInstancesOut.ProductInstanceList/ns2:NumberOfProductInstances</finalCounterValue>
+                            <scope name="ProductOrder">
+                                <variables>
+                                    <variable name="SCAProcessOrderOut" messageType="tns:ProcessOrderResponse"/>
+                                    <variable name="SCAProcessOrderIn" messageType="tns:ProcessOrderRequest"/>
+                                </variables>
+                                <sequence name="Sequence7">
+                                    <assign name="AssignOrderPI">
+                                        <copy>
+                                            <from>'processOrder'</from>
+                                            <to>$SCAProcessOrderIn.ProductOrder/ns1:SCAContext/ns1:Method</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:TxId</from>
+                                            <to>$SCAProcessOrderIn.ProductOrder/ns1:SCAContext/ns1:TxId</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                                            <to>$SCAProcessOrderIn.ProductOrder/ns1:SCAContext/ns1:OriginatingIdentity</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:OriginatingIP</from>
+                                            <to>$SCAProcessOrderIn.ProductOrder/ns1:SCAContext/ns1:OriginatingIP</to>
+                                        </copy>
+                                        <copy ignoreMissingFromData="yes">
+                                            <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:Tenant</from>
+                                            <to>$SCAProcessOrderIn.ProductOrder/ns1:SCAContext/ns1:Tenant</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$PI]/ns2:ProductInstanceId</from>
+                                            <to>$SCAProcessOrderIn.ProductOrder/ns1:ProductInstanceId</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$PI]/ns2:CustomerId</from>
+                                            <to>$SCAProcessOrderIn.ProductOrder/ns1:CustomerId</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$PI]/ns2:OrganisationId</from>
+                                            <to>$SCAProcessOrderIn.ProductOrder/ns1:OrganisationId</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$SCAModifyCustomerIn.ModifiedCustomer/ns1:SCAContext/ns1:Roles</from>
+                                            <to>$SCAProcessOrderIn.ProductOrder/ns1:SCAContext/ns1:Roles</to>
+                                        </copy>
+                                        <copy>
+                                            <from>'update'</from>
+                                            <to>$SCAProcessOrderIn.ProductOrder/ns1:Action</to>
+                                        </copy>
+                                    </assign>
+                                    <forEach name="ForEachSI" parallel="no" counterName="SI">
+                                        <startCounterValue>1</startCounterValue>
+                                        <finalCounterValue>count($CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$PI]/ns2:ProductServiceInstanceMappings)</finalCounterValue>
+                                        <scope name="ScopeSI">
+                                            <assign name="AssignSI">
+                                                <copy>
+                                                    <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$PI]/ns2:ProductServiceInstanceMappings[$SI]/ns2:ServiceInstance/ns2:ServiceInstanceId</from>
+                                                    <to>$SCAProcessOrderIn.ProductOrder/ns1:ServiceInstanceOrders[$SI]/ns1:ServiceInstance/ns1:ServiceInstanceId</to>
+                                                </copy>
+                                                <copy>
+                                                    <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$PI]/ns2:ProductServiceInstanceMappings[$SI]/ns2:ServiceInstance/ns2:ServiceSpecificationId</from>
+                                                    <to>$SCAProcessOrderIn.ProductOrder/ns1:ServiceInstanceOrders[$SI]/ns1:ServiceInstance/ns1:ServiceSpecificationId</to>
+                                                </copy>
+                                                <copy>
+                                                    <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$PI]/ns2:ProductServiceInstanceMappings[$SI]/ns2:ServiceInstance/ns2:AccountId</from>
+                                                    <to>$SCAProcessOrderIn.ProductOrder/ns1:ServiceInstanceOrders[$SI]/ns1:ServiceInstance/ns1:AccountId</to>
+                                                </copy>
+                                                <copy>
+                                                    <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances[$PI]/ns2:ProductServiceInstanceMappings[$SI]/ns2:ServiceInstance/ns2:CustomerId</from>
+                                                    <to>$SCAProcessOrderIn.ProductOrder/ns1:ServiceInstanceOrders[$SI]/ns1:ServiceInstance/ns1:CustomerId</to>
+                                                </copy>
+                                                <copy>
+                                                    <from>'AC'</from>
+                                                    <to>$SCAProcessOrderIn.ProductOrder/ns1:ServiceInstanceOrders[$SI]/ns1:ServiceInstance/ns1:Status</to>
+                                                </copy>
+                                                <copy>
+                                                    <from>'update'</from>
+                                                    <to>$SCAProcessOrderIn.ProductOrder/ns1:ServiceInstanceOrders[$SI]/ns1:Action
+                                                    </to>
+                                                </copy>
+                                            </assign>
+                                        </scope>
+                                    </forEach>
+                                    <invoke name="ProcessOrder" partnerLink="SCACalling" operation="ProcessOrder" portType="tns:SCASoap" inputVariable="SCAProcessOrderIn" outputVariable="SCAProcessOrderOut"/>
+                                </sequence>
+                            </scope>
+                        </forEach>
+                    </sequence>
+                </if>
+            </sequence>
+        </if>
+        <reply name="Reply1" partnerLink="SCA" operation="ModifyCustomer" portType="tns:SCASoap" variable="SCAModifyCustomerOut"/>
+    </sequence>
+</process>
+
+
+

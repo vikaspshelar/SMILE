@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="TransferBalance"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:CM="http://xml.smilecoms.com/CM"
+    xmlns:POS="http://xml.smilecoms.com/POS"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/BM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/CM" xmlns:ns3="http://xml.smilecoms.com/schema/POS">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="BM" xmlns:tns="http://xml.smilecoms.com/BM" partnerLinkType="tns:BMServiceDefinition" partnerRole="BM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="BMTransferBalanceOut" messageType="BM:TransferBalanceResponse"/>
+        <variable name="BMTransferBalanceIn" messageType="BM:TransferBalanceRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="SCATransferBalanceOut" messageType="tns:TransferBalanceResponse"/>
+        <variable name="SCATransferBalanceIn" messageType="tns:TransferBalanceRequest"/>
+        <variable name="CMGetServiceInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="CMGetServiceInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetServiceInstancesRequest"/>
+        <variable name="SrcSvcSpecId" type="xsd:int"/>
+        <variable name="SrcProdInstId" type="xsd:int"/>
+        <variable name="offset" type="xsd:int"/>
+        <variable name="DstSvcSpecId" type="xsd:int"/>
+        <variable name="DstProdInstId" type="xsd:int"/>
+        <variable name="srcAcc" type="xsd:long"/>
+        <variable name="dstAcc" type="xsd:long"/>
+        <variable name="isTransferASale" type="xsd:boolean"/>
+        <variable name="isATransferRulesVerification" type="xsd:boolean"/>
+    </variables>
+    <faultHandlers>
+        <catch faultMessageType="BM:BMError" faultVariable="BMError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$BMError.BMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="TransferBalance" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch faultMessageType="CM:CMError" faultVariable="CMError">
+            <sequence name="Sequence2">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$CMError.CMError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply3" partnerLink="SCA" operation="TransferBalance" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="TransferBalance" portType="tns:SCASoap" variable="SCATransferBalanceIn"/>
+        
+        
+        
+                    
+                    
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('BM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignDefaults">
+            <copy>
+                <from>false()</from>
+                <to variable="isATransferRulesVerification"/>
+            </copy>
+        </assign>
+        <if name="IfHasBaseTransfer">
+            <condition>$SCATransferBalanceIn.BalanceTransferData/ns1:SourceAccountId &gt; 0</condition>
+            <assign name="AssignBasics">
+                <copy>
+                    <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SourceAccountId</from>
+                    <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[1]/ns0:SourceAccountId</to>
+                </copy>
+                <copy>
+                    <from>$SCATransferBalanceIn.BalanceTransferData/ns1:TargetAccountId</from>
+                    <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[1]/ns0:TargetAccountId</to>
+                </copy>
+                <copy>
+                    <from>$SCATransferBalanceIn.BalanceTransferData/ns1:AmountInCents</from>
+                    <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[1]/ns0:AmountInCents</to>
+                </copy>
+                <copy ignoreMissingFromData="yes">
+                    <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SaleId</from>
+                    <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[1]/ns0:SaleId</to>
+                </copy>
+                <copy ignoreMissingFromData="yes">
+                    <from>$SCATransferBalanceIn.BalanceTransferData/ns1:Description</from>
+                    <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[1]/ns0:Description</to>
+                </copy>
+                <copy>
+                    <from>1</from>
+                    <to variable="offset"/>
+                </copy>
+            </assign>
+            <else>
+                <assign name="Assignoffset0">
+                    <copy>
+                        <from>0</from>
+                        <to variable="offset"/>
+                    </copy>
+                </assign>
+            </else>
+        </if>
+        <forEach name="ForEachLine" parallel="no" counterName="line">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCATransferBalanceIn.BalanceTransferData/ns1:AdditionalTransferLines)</finalCounterValue>
+            <scope name="Scope1">
+                <sequence name="sqn1"> 
+                    <assign name="AssignBM">
+                        <copy>
+                            <from>$SCATransferBalanceIn.BalanceTransferData/ns1:AdditionalTransferLines[$line]/ns1:SourceAccountId</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$line + $offset]/ns0:SourceAccountId</to>
+                        </copy>
+                        <copy>
+                            <from>$SCATransferBalanceIn.BalanceTransferData/ns1:AdditionalTransferLines[$line]/ns1:TargetAccountId</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$line + $offset]/ns0:TargetAccountId</to>
+                        </copy>
+                        <copy>
+                            <from>$SCATransferBalanceIn.BalanceTransferData/ns1:AdditionalTransferLines[$line]/ns1:AmountInCents</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$line + $offset]/ns0:AmountInCents</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$SCATransferBalanceIn.BalanceTransferData/ns1:AdditionalTransferLines[$line]/ns1:SaleId</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$line + $offset]/ns0:SaleId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$SCATransferBalanceIn.BalanceTransferData/ns1:AdditionalTransferLines[$line]/ns1:Description</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$line + $offset]/ns0:Description</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <assign name="AssignGetSIContext">
+            <copy>
+                <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:TxId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:Tenant</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>'MAIN_SVCAVP'</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:Verbosity</to>
+            </copy>
+        </assign>
+                            
+        <forEach name="ForEachTransfer" parallel="no" counterName="tx">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines)</finalCounterValue>
+            <scope name="Scope2">
+                <variables>
+                    <variable name="CMGetProductInstancesOutSrc" messageType="CM:ProductInstancesResponse"/>
+                    <variable name="CMGetProductInstancesOutDst" messageType="CM:ProductInstancesResponse"/>
+                    <variable name="CMGetProductInstancesIn" messageType="CM:GetProductInstancesRequest"/>
+                </variables>
+                <sequence name="PopulateBooleans">
+                     
+                    <assign name="AssignAllFalse">
+                        <copy>
+                            <from>0</from>
+                            <to>$SrcProdInstId</to>
+                        </copy>
+                        <copy>
+                            <from>0</from>
+                            <to>$DstProdInstId</to>
+                        </copy>
+                        <copy>
+                            <from>0</from>
+                            <to>$SrcSvcSpecId</to>
+                        </copy>
+                        <copy>
+                            <from>0</from>
+                            <to>$DstSvcSpecId</to>
+                        </copy>
+                        <copy>
+                            <from>false()</from>
+                            <to>$isTransferASale</to>
+                        </copy>
+                        <copy>
+                            <from>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:SourceAccountId</from>
+                            <to>$srcAcc</to>
+                        </copy>
+                        <copy>
+                            <from>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TargetAccountId</from>
+                            <to>$dstAcc</to>
+                        </copy>
+                        <copy>
+                            <from>''</from>
+                            <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                        </copy>
+                    </assign>
+                    
+                    <if name="InvalidAccounts">
+                        <condition>$srcAcc = 0 or $dstAcc = 0</condition>
+                        <sequence name="SequenceErrAcc">
+                            <assign name="AssignErrorAcc">
+                                <copy>
+                                    <from>'Invalid source or destination account'</from>
+                                    <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                                </copy>
+                                <copy>
+                                    <from>'business'</from>
+                                    <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                                </copy>
+                                <copy>
+                                    <from>'SCA-0014'</from>
+                                    <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                                </copy>
+                            </assign>
+                            <reply name="ReplyErr1Acc" partnerLink="SCA" operation="TransferBalance" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                            <exit name="ExitAcc"/>
+                        </sequence>
+                    </if>
+                    <if name="isSaleTransfer">
+                        <condition>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:SaleId > 0</condition>
+                        <assign name="AssignIsASale">
+                            <copy>
+                                <from>true()</from>
+                                <to>$isTransferASale</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    <assign name="CheckPermissions1">
+                        <copy>
+                            <from>BPELUtils:checkPermissions($SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext, 'Account', $srcAcc)</from>
+                            <to>$SCATransferBalanceOut.Done/ns1:SCAContext/ns1:Obviscated</to>
+                        </copy>
+                    </assign>
+                    <assign name="AssignGetSrcSI">
+                        <copy>
+                            <from>$srcAcc</from>
+                            <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:AccountId</to>
+                        </copy>
+                    </assign>
+                    <invoke name="GetSourceSI" partnerLink="CM" operation="GetServiceInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetServiceInstancesIn" outputVariable="CMGetServiceInstancesOut"/>
+                    
+                    <forEach name="ForEachSrcSI" parallel="no" counterName="si">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>count($CMGetServiceInstancesOut.ServiceInstanceList/ns2:ServiceInstances)</finalCounterValue>
+                        <scope name="ForEachSrcSIScope">
+                            <sequence name="CheckSrcSIs">
+                                <if name="IfIsFirstSrcSpec">
+                                    <condition>$SrcSvcSpecId = 0</condition>
+                                    <assign name="AssignSrcSpecId">
+                                        <copy>
+                                            <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns2:ServiceInstances[$si]/ns2:ServiceSpecificationId</from>
+                                            <to>$SrcSvcSpecId</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns2:ServiceInstances[$si]/ns2:ProductInstanceId</from>
+                                            <to variable="SrcProdInstId"/>
+                                        </copy>
+                                    </assign>
+                                </if>
+                            </sequence>
+                        </scope>
+                    </forEach>
+                    
+                    <assign name="AssignGetDstSI">
+                        <copy>
+                            <from>$dstAcc</from>
+                            <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:AccountId</to>
+                        </copy>
+                    </assign>
+                    <invoke name="GetTargetSI" partnerLink="CM" operation="GetServiceInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetServiceInstancesIn" outputVariable="CMGetServiceInstancesOut"/>
+                    
+                    <forEach name="ForEachDstSI" parallel="no" counterName="si">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>count($CMGetServiceInstancesOut.ServiceInstanceList/ns2:ServiceInstances)</finalCounterValue>
+                        <scope name="ForEachDstSIScope">
+                            <sequence name="CheckDstSIs">
+                                <if name="IfIsFirstDstSpec">
+                                    <condition>$DstSvcSpecId = 0</condition>
+                                    <assign name="AssignDstSpecId">
+                                        <copy>
+                                            <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns2:ServiceInstances[$si]/ns2:ServiceSpecificationId</from>
+                                            <to>$DstSvcSpecId</to>
+                                        </copy>
+                                        <copy>
+                                            <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns2:ServiceInstances[$si]/ns2:ProductInstanceId</from>
+                                            <to variable="DstProdInstId"/>
+                                        </copy>
+                                    </assign>
+                                </if>
+                            </sequence>
+                        </scope>
+                    </forEach>
+                    
+                    
+                    
+                    
+                    
+                    
+                    <!-- We use the term ‘replenish’ for internal account management transfers that do not involve any monetary values. 
+                    - The term ‘top-up’  is used for transfers  where a monetary value is paid to Smile by the receiving party before a transfer is made.
+                    - The accounts in brackets are standard accounts defined and the same account numbers are used across all OPCOs. 
+                    
+                    Special Service Spec Id's:
+                    1000 - Direct Sales (held by a Smile sales agent for selling to customers via SEP)
+                    1001 - TPGW (held by a Smile Partner for transferring to customers via TPGW)
+                    1002 - Corporate Sales (Held by a Smile sales agent for selling specifically to corporates via SEP)
+                    1003 - Indirect Sales (held by a Smile partner and their staff for transferring to customes via SEP)
+                    1004 - Partner Sales (held by a Smile sales agent for selling to partner accounts of spec 1001 or 1003)
+                    1005 - Clearing Bureau
+                    1007 - Direct Airtime Account(held by a Smile sales agent for selling to customers via SEP)
+                    
+                    Special Account Id's:
+                    1000000000 - Root account
+                    1000000010 - Main Distribution account
+                    1000000001 - Vouchers
+                    1000000003 - Commission paying acc
+                    1000000004 - Sales Staging account
+                    1000000005 - Special dumping account
+   
+                    -->
+       
+       
+                    <!-- 
+                    ***************************************************************************************
+                    ******************** TRANSFERS BETWEEN SYSTEM ACCOUNTS **********************************
+                    ***************************************************************************************
+                    -->
+                    <!--MAIN_ACC_REPLENISHMENT (mar) -  the main account is replenished with a balance that is sufficient to cater for the entire airtime distribution as per the business projections.
+                    - This transfer occurs when the source account is 1000000000 and the target account is 1000000010. -->
+                    <if name="isDAR">
+                        <condition>$srcAcc = 1000000000 and $dstAcc = 1000000010 and not($isTransferASale)</condition>
+                        <assign name="AssignTxTypeIsDistAccReplenishment">
+                            <copy>
+                                <from>'mar'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+
+                    
+                    <!--VOUCHER_CHANNEL_ACC_REPLENISHMENT (vcar) – replenish the voucher channel account sufficiently to meet all the voucher redeem requests by Smile customers .
+                    - This transfer is detected when source account is (1000000010) and target account is 1000000001.-->
+                    <if name="isVSAR">
+                        <condition>$srcAcc = 1000000010 and $dstAcc = 1000000001 and not($isTransferASale)</condition>
+                        <assign name="AssignVSAR">
+                            <copy>
+                                <from>'vcar'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--COMMISSION_PAYING_ACC _REPLENISHMENT (cpar) -  this account should be replenished with a balance enough to pay the commissions of third parties and per the business projected values.
+                    - This tranfer happens when the source account is (1000000010) and the target is 1000000003 -->
+                    <if name="isCAR">
+                        <condition>$srcAcc = 1000000010 and $dstAcc = 1000000003 and not($isTransferASale)</condition>
+                        <assign name="AssignVCAR">
+                            <copy>
+                                <from>'cpar'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--SALES_CHANNEL_ACC_REPLENISHEMENT (scar) -  this account should be replenished with sufficient balance for replenishing of airtime floats to DSM’s & DSA’s trading accounts.
+                    - This transfer is defined as a transfer from account 1000000010 to 1000000004. -->
+                    <if name="isDSAR">
+                        <condition>$srcAcc = 1000000010 and $dstAcc = 1000000004 and not($isTransferASale)</condition>
+                        <assign name="AssignTxTypeIsDirectSalesAccReplenishment">
+                            <copy>
+                                <from>'scar'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+
+
+                    <!-- 
+                    ***************************************************************************************
+                    ******************** REPLENISHMENTS TO SMILE SALES AGENTS **********************************
+                    ***************************************************************************************
+                    -->
+                    <!--PSA_TRADE_ACC_REPLENISHMENT (psatar)- Partner sales agent trade account replenishment, each PSA account is replenished with airtime sufficient to sell to smile Partners.
+                    - This transfer is defined as any transfer that happens from account 1000000004 to svc spec 1004 -->
+                    <if name="isPSATAR">
+                        <condition>$srcAcc = 1000000004 and not($isTransferASale) and $DstSvcSpecId = 1004 and $dstAcc &gt; 1100000000</condition>
+                        <assign name="AssignPSATAR">
+                            <copy>
+                                <from>'psatar'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--DSA_TRADE_ACC_REPLENISHMENT (dsatar)- Direct sales agent trade account replenishment, each DSA or DSM account is replenished with airtime sufficient to sell directly to Smile account.
+                    - This transfer is defined as any transfer that happens from account 1000000004 to svcs spec 1000 or 1002-->
+                    <if name="isDSATAR">
+                        <condition>$srcAcc = 1000000004 and not($isTransferASale) and ($DstSvcSpecId = 1000 or $DstSvcSpecId = 1002) and $dstAcc &gt; 1100000000</condition>
+                        <assign name="AssignDSATAR">
+                            <copy>
+                                <from>'dsatar'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--Clearing Bureau Replenishment (cbar)- Clearing Bureau account replenishment, each CB account is replenished with airtime sufficient to transfer to smile customers
+                    - This transfer is defined as any transfer that happens from account 1000000004 to svc spec 1005 -->
+                    <if name="isCBAR">
+                        <condition>$srcAcc = 1000000004 and not($isTransferASale) and $DstSvcSpecId = 1005 and $dstAcc &gt; 1100000000</condition>
+                        <assign name="AssignCBAR">
+                            <copy>
+                                <from>'cbar'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!-- 
+                    ***************************************************************************************
+                    ***************************** SALES FROM STAFF TO PARTNERS *******************************
+                    ***************************************************************************************
+                    -->
+                    
+                    <!--PARTNER_SALES_TOPUP (pstu) – Partner buys airtime from Smile and its loaded on their account, a transfer takes place from the PSA’s trading account into the partners account.
+                    - A partner sales top-up is detected when a transfer takes place from a source account which is associated with a service instance that is defined by service specification 1004.-->
+                    <if name="isPSTU">
+                        <condition>$SrcSvcSpecId = 1004 and $isTransferASale and ($DstSvcSpecId = 1001 or $DstSvcSpecId = 1003 or $DstSvcSpecId = 1005) and $dstAcc &gt; 1100000000 and $srcAcc &gt; 1100000000</condition>
+                        <assign name="AssignPSTU">
+                            <copy>
+                                <from>'pstu'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--PARTNER_SALES_COMMISSION_PAYMENT pscp – Partner buys airtime from Smile and gets additional airtime commission.-->
+                    <if name="isPSCP">
+                        <condition>$srcAcc = 1000000003 and $isTransferASale and ($DstSvcSpecId = 1001 or $DstSvcSpecId = 1003 or $DstSvcSpecId = 1007)</condition>
+                        <assign name="AssignPSCP">
+                            <copy>
+                                <from>'pscp'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--PARTNER_SALES_COMMISSION_TRANSFER psct – Partner is paid a commission in airtime.-->
+                    <if name="isPSCT">
+                        <condition>$srcAcc = 1000000003 and not($isTransferASale) and ($DstSvcSpecId = 1001 or $DstSvcSpecId = 1003 or $DstSvcSpecId = 1007)</condition>
+                        <assign name="AssignPSCT">
+                            <copy>
+                                <from>'psct'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    <!--PARTNER_SALES_COMMISSION_TRANSFER psct – Partner is deducted for an activation due to a negative nett out -->
+                    <if name="isPSCD">
+                        <condition>$dstAcc = 1000000003 and not($isTransferASale) and ($SrcSvcSpecId = 1001 or $SrcSvcSpecId = 1003)</condition>
+                        <assign name="AssignPSCT_2">
+                            <copy>
+                                <from>'psct'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+
+
+                    <!-- 
+                    ***************************************************************************************
+                    *************************** SALES FROM SMILE STAFF TO CUSTOMERS ***************************
+                    ***************************************************************************************
+                    -->
+                    
+                    <!--DIRECT_SALES_TOPUP (dstu) – Customer buys airtime from Smile and its loaded on their account, a transfer takes place from the DSA/DSM’s trading account into the customer’s account.
+                    - A direct sales top-up is detected when a transfer takes place from a source account which is associated with a service instance that is defined by service specification 1000 (the direct sales service specification).-->
+                    <if name="isDSTU">
+                        <condition>$SrcSvcSpecId = 1000 and $isTransferASale and $DstSvcSpecId &lt; 1000 and $dstAcc &gt; 1100000000 and $srcAcc &gt; 1100000000</condition>
+                        <assign name="AssignDSTU">
+                            <copy>
+                                <from>'dstu'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--DIRECT_AIRTIME_ACCOUNT_TOPUP (daat) – FSR buys airtime from Smile and its loaded on their account, a transfer takes place from the DSA/DSM’s trading account into the FSR’s account.
+                    - A direct sales top-up is detected when a transfer takes place from a source account which is associated with a service instance that is defined by service specification 1000 (the direct sales service specification).-->
+                    <if name="isDAAT">
+                        <condition>$SrcSvcSpecId = 1000 and $isTransferASale and $DstSvcSpecId = 1007 and $dstAcc &gt; 1100000000 and $srcAcc &gt; 1100000000</condition>
+                        <assign name="AssignDAAT">
+                            <copy>
+                                <from>'daat'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    <!--DIRECT_AIRTIME_RESALE (dars) – Customer buys airtime from Smile and its loaded on their account, a transfer takes place from the DSA/DSM’s trading account into the customer’s account.
+                    - A airtime resale is detected when a transfer takes place from a source account which is associated with a service instance that is defined by service specification 1007 (the direct airtime resale).-->
+                    <if name="isDARS">
+                        <condition>$SrcSvcSpecId = 1007 and $isTransferASale and $DstSvcSpecId &lt; 1000 and $dstAcc &gt; 1100000000 and $srcAcc &gt; 1100000000</condition>
+                        <assign name="AssignDARS">
+                            <copy>
+                                <from>'dars'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--CORPORATE_SALES_TOPUP (cstu) – Customer buys airtime from Smile Corporate Account and its loaded on their account, a transfer takes place from the DSA/DSM’s corportae trading account into the customer’s account.
+                    - A corporate sales top-up is detected when a transfer takes place from a source account which is associated with a service instance that is defined by service specification 1002 (the corporate direct sales service specification).-->
+                    <if name="isCSTU">
+                        <condition>$SrcSvcSpecId = 1002 and $isTransferASale and $DstSvcSpecId &lt; 1000 and $dstAcc &gt; 1100000000 and $srcAcc &gt; 1100000000</condition>
+                        <assign name="AssignCSTU">
+                            <copy>
+                                <from>'cstu'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    
+                    <!-- 
+                    ***************************************************************************************
+                    ****************************** SALES FROM PARTNERS TO CUSTOMERS **************************
+                    ***************************************************************************************
+                    -->
+                    
+                    <!--INDIRECT_SALES_TOPUP (idstu) – Customer buys airtime from Smile indirect channel and its loaded on their account, a transfer takes place from the IDSA/IDSM’s trading account into the customer’s account (or another indirect account).
+                    - An  indirect sales top-up is detected when a transfer takes place from a source account which is associated with a service instance that is defined by service specification 1003 (the indirect sales service specification).-->
+                    <if name="isIDSTU">
+                        <condition>$SrcSvcSpecId = 1003 and not($isTransferASale) and $DstSvcSpecId &lt; 1000 and $dstAcc &gt; 1100000000 and $srcAcc &gt; 1100000000</condition>
+                        <assign name="AssignIDSTU">
+                            <copy>
+                                <from>'idstu'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <if name="isIDSTUBetweenIndirectSales">
+                        <condition>$SrcSvcSpecId = 1003 and not($isTransferASale) and $DstSvcSpecId = 1003 and $dstAcc &gt; 1100000000 and $srcAcc &gt; 1100000000</condition>
+                        <sequence name="Sequence3">
+                            <assign name="AssignGetSrcProdInst">
+                                <copy>
+                                    <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:TxId</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:TxId</to>
+                                </copy>
+                                <copy>
+                                    <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                                </copy>
+                                <copy>
+                                    <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:OriginatingIP</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:Tenant</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:Tenant</to>
+                                </copy>
+                                <copy>
+                                    <from variable="SrcProdInstId"/>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:ProductInstanceId</to>
+                                </copy>
+                                <copy>
+                                    <from>1</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:ResultLimit</to>
+                                </copy>
+                                <copy>
+                                    <from>'MAIN'</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:Verbosity</to>
+                                </copy>
+                            </assign>
+                            
+                            <invoke name="GetSrcProdInst" partnerLink="CM" operation="GetProductInstances" portType="CM:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOutSrc"/>
+                            
+                            <assign name="AssignGetDstProdInst">
+                                <copy>
+                                    <from variable="DstProdInstId"/>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:ProductInstanceId</to>
+                                </copy>
+                            </assign>
+                            
+                            <invoke name="GetDstProdInst" partnerLink="CM" operation="GetProductInstances" portType="CM:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOutDst"/>
+                            <if name="IfSameOrg">
+                                <condition>$CMGetProductInstancesOutSrc.ProductInstanceList/ns2:ProductInstances/ns2:OrganisationId = $CMGetProductInstancesOutDst.ProductInstanceList/ns2:ProductInstances/ns2:OrganisationId or BPELUtils:doesPropertySetContain('env.pos.sd.accounts', string($srcAcc))</condition>
+                                <assign name="AssignIDSTU2">
+                                    <copy>
+                                        <from>'idstu'</from>
+                                        <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                                    </copy>
+                                </assign>
+                            </if>
+                        </sequence>
+                    </if>
+                    
+  
+                    <!--TPGW_TOPUP (ttu)– A customer buys airtime from a third-party partner and its loaded on their account. A third-party top-up is detected when a transfer takes place from a source 
+                    account which is associated with a service instance that is defined by service specification 1001 (the TPGW service specification). (ttu)-->
+                    <if name="isTPGW">
+                        <condition>$SrcSvcSpecId = 1001 and not($isTransferASale) and $DstSvcSpecId &lt; 1000 and $dstAcc &gt; 1100000000 and $srcAcc &gt; 1100000000</condition>
+                        <assign name="AssignTxTypeIsTPGW">
+                            <copy>
+                                <from>'ttu'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--Clearing Bureau Topup (cbtu) A customer buys airtime from a clearing bureau and its loaded on their account. A  clearing bureau top-up is detected when a transfer takes place from a source 
+                    account which is associated with a service instance that is defined by service specification 1005 (the  clearing bureau service specification). (cbtu)-->
+                    <if name="isCBTU">
+                        <condition>$SrcSvcSpecId = 1005 and $isTransferASale and $DstSvcSpecId &lt; 1000 and $dstAcc &gt; 1100000000 and $srcAcc &gt; 1100000000</condition>
+                        <sequence name="AssignsForCBTU">
+                            <assign name="AssignTxTypeIsCBTU">
+                                <copy>
+                                    <from>'cbtu'</from>
+                                    <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                                </copy>
+                            </assign>
+                        </sequence>
+                    </if>
+                    
+                    <!-- 
+                    ***************************************************************************************
+                    **************************************** OTHER *****************************************
+                    ***************************************************************************************
+                    -->
+                    
+                    
+                    <!--M2U Transfer (m2u)– A customer can transfer any airtime monetary value from any of their accounts to another Smile account. This transaction does not generate extra revenue to Smile but indirectly promotes airtime usage.
+                    - A M2U transfer is basically any transfer not covered by the above conditions. (m2u)-->
+                    <if name="isME2U">
+                        <condition>$SrcSvcSpecId &lt; 1000 and $srcAcc &gt; 1100000000 and $dstAcc &gt; 1100000000 and $DstSvcSpecId &lt; 1000 and not($isTransferASale)</condition>
+                        <assign name="AssignME2U">
+                            <copy>
+                                <from>'m2u'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--ACCOUNT BALANCE REMOVAL (abre) – A generic means of taking money from an account - e.g. a sales person leaves Smile and we want to remove their balance.-->
+                    <if name="isABRE">
+                        <condition>$dstAcc = 1000000005 and $SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:OriginatingIdentity = 'admin'</condition>
+                        <assign name="AssignABRE">
+                            <copy>
+                                <from>'abre'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    <!--ACCOUNT BALANCE ADDITION (abad) – Taking from the ABRE account and sending to any other account. Between ABRE and ABAD, any transfer can be accomplished. I.e. for admin only. Should never really be used.-->
+                    <if name="isABAD">
+                        <condition>$srcAcc = 1000000005 and $SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:OriginatingIdentity = 'admin'</condition>
+                        <assign name="AssignABAD">
+                            <copy>
+                                <from>'abad'</from>
+                                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType</to>
+                            </copy>
+                        </assign>
+                    </if>
+                    
+                    
+                    <if name="IfUnknownTransferType">
+                        <condition>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:TransferType = ''</condition>
+                        <sequence name="SequenceErr">
+                            <assign name="AssignError1">
+                                <copy>
+                                    <from>'Invalid transfer type. Transferring between those accounts is not permitted'</from>
+                                    <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                                </copy>
+                                <copy>
+                                    <from>'business'</from>
+                                    <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                                </copy>
+                                <copy>
+                                    <from>'SCA-0008'</from>
+                                    <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                                </copy>
+                            </assign>
+                            <reply name="ReplyErr1" partnerLink="SCA" operation="TransferBalance" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                            <exit name="Exit1"/>
+                        </sequence>
+                    </if>
+                    <if name="IfAmountIsZeroOrLess">
+                        <condition>$BMTransferBalanceIn.BalanceTransferData/ns0:BalanceTransferLines[$tx]/ns0:AmountInCents &lt;= 0</condition>
+                        <assign name="AssignIsAVerification">
+                            <copy>
+                                <from>true()</from>
+                                <to variable="isATransferRulesVerification"/>
+                            </copy>
+                        </assign>
+                    </if>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <if name="OnlyATransferVerification">
+            <condition>$isATransferRulesVerification</condition>
+            <sequence name="SequenceErrTestOk">
+                <assign name="AssignErrorTestOk">
+                    <copy>
+                        <from>'TransferTypeIsValid'</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'business'</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0015'</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErr1Acc" partnerLink="SCA" operation="TransferBalance" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                <exit name="ExitAcc"/>
+            </sequence>
+        </if>
+                    
+        <assign name="AssignBMContext">
+            <copy>
+                <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:TxId</from>
+                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCATransferBalanceIn.BalanceTransferData/ns1:SCAContext/ns1:Tenant</from>
+                <to>$BMTransferBalanceIn.BalanceTransferData/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+        </assign>
+        <invoke name="Call_BM" partnerLink="BM" operation="TransferBalance" portType="BM:BMSoap" inputVariable="BMTransferBalanceIn" outputVariable="BMTransferBalanceOut"/>
+        
+        <assign name="AssignResult">
+            <copy>
+                <from>$BMTransferBalanceOut.Done/ns0:Done</from>
+                <to>$SCATransferBalanceOut.Done/ns1:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="TransferBalance" portType="tns:SCASoap" variable="SCATransferBalanceOut"/>
+    </sequence>
+</process>

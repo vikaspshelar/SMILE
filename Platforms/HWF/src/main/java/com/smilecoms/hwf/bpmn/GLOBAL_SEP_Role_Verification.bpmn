@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions id="definitions"
+             targetNamespace="http://activiti.org/bpmn20" 
+             xmlns:activiti="http://activiti.org/bpmn"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
+    <process name="Verify SEP Permissions" id="VSP">
+        <startEvent id="theStart">
+            <timerEventDefinition>
+                <timeCycle>
+                    0 0 0 1 * ?
+                </timeCycle>
+            </timerEventDefinition>
+        </startEvent>
+        <sequenceFlow id="flow1" sourceRef="theStart" targetRef="UserTask_VerifySEPRoles"/>
+        <sequenceFlow id="flow2" sourceRef="UserTask_VerifySEPRoles" targetRef="End_end"/>
+        <endEvent id="End_end"/>
+        
+        <userTask id="UserTask_VerifySEPRoles" name="Verify SEP Permissions">
+            <documentation><![CDATA[Run the "SEP Permissions" General Query in SEP and verify that (a) All users are currently still employed at Smile and (b) all users have the correct role assigned (c) There are no segregation of duties issues.]]></documentation>
+            <extensionElements>
+                <activiti:formProperty name="Completed" variable="Completed" id="Completed" type="enum">
+                    <activiti:value name="Yes" id="Yes"/>
+                    <activiti:value name="No" id="No"/>
+                </activiti:formProperty>
+                <activiti:formProperty name="IrregularitiesFixed" variable="IrregularitiesFixed" id="IrregularitiesFixed"/>
+            </extensionElements>
+            <potentialOwner>
+                <resourceAssignmentExpression>
+                    <formalExpression>
+                        SDOperationsManager, Administrator
+                    </formalExpression>
+                </resourceAssignmentExpression>
+            </potentialOwner>
+        </userTask>
+    </process>
+</definitions>

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions id="definitions"
+             targetNamespace="http://activiti.org/bpmn20" 
+             xmlns:activiti="http://activiti.org/bpmn"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
+    <process name="Grant Free Customer Bundle" id="GFCB">
+        <startEvent id="theStart"/>
+        <!--SQLResult-->
+        <sequenceFlow id="flow1" sourceRef="theStart" targetRef="UserTask_CaptureInfo"/>
+        <sequenceFlow id="flow2" sourceRef="BoundaryEvent_Timer1" targetRef="End_end" />        
+        <sequenceFlow id="flow3" sourceRef="UserTask_CaptureInfo" targetRef="ServiceTask_EmailApprover"/>         
+        <sequenceFlow id="flow4" sourceRef="ServiceTask_EmailApprover" targetRef="Gateway_BundleTypeApproval" />
+        
+        
+        <exclusiveGateway id="Gateway_BundleTypeApproval" name="Which Bundle Type Was Chosen?"/>
+        
+        <sequenceFlow id="flowA" sourceRef="Gateway_BundleTypeApproval" targetRef="UserTask_ApproveAmbasadorsPolicyBundleProvisionRequest">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${UnitCreditName == '10GB Smile Ambassador Data Bundle' || UnitCreditName == '50GB Smile Ambassador Data Bundle'}
+            </conditionExpression>
+        </sequenceFlow>
+        
+        <sequenceFlow id="flowC" sourceRef="Gateway_BundleTypeApproval" targetRef="UserTask_ApproveAbove3GBBundleProvisionRequest">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${UnitCreditName == '10GB Gift Data Bundle' || UnitCreditName == '20GB School Data Bundle'} <!-- UnitCreditName == '5GB Gift Data Bundle' || -->
+            </conditionExpression>
+        </sequenceFlow>         
+        <sequenceFlow id="flowD" sourceRef="Gateway_BundleTypeApproval" targetRef="UserTask_ApproveAbove3andBelow5GBBundleProvisionRequest">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${UnitCreditName == '5GB Gift Data Bundle'}
+            </conditionExpression>
+        </sequenceFlow>        
+        <sequenceFlow id="flowE" sourceRef="Gateway_BundleTypeApproval" targetRef="UserTask_ApproveBundleProvisionRequest">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${UnitCreditName == '500MB Gift Data Bundle' || UnitCreditName == '1GB Gift Data Bundle' || UnitCreditName == '3GB Gift Data Bundle'}
+            </conditionExpression>
+        </sequenceFlow>        
+        <sequenceFlow id="flowF" sourceRef="Gateway_BundleTypeApproval" targetRef="UserTask_ApproveICPBundle">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${UnitCreditName == '5GB ICP Data Bundle'}
+            </conditionExpression>
+        </sequenceFlow>                 
+         
+        <!-- Put prosposed flow to names of appropriate approval users-->         
+        <sequenceFlow id="flow5" sourceRef="UserTask_ApproveBundleProvisionRequest" targetRef="Gateway_WasApproved" /> 
+        <sequenceFlow id="flow6" sourceRef="UserTask_ApproveAbove3GBBundleProvisionRequest" targetRef="Gateway_WasApproved" />               
+        <sequenceFlow id="flow7" sourceRef="UserTask_ApproveAmbasadorsPolicyBundleProvisionRequest" targetRef="Gateway_WasApproved" />        
+        <sequenceFlow id="flow8" sourceRef="UserTask_ApproveAbove3andBelow5GBBundleProvisionRequest" targetRef="Gateway_WasApproved"/>
+        <sequenceFlow id="flow9" sourceRef="UserTask_ApproveICPBundle" targetRef="Gateway_WasApproved"/>
+        
+               
+        <exclusiveGateway id="Gateway_WasApproved" name="Bundle Provision Approved?"/>        
+        
+        <sequenceFlow id="flow10" sourceRef="Gateway_WasApproved" targetRef="ServiceTask_GetAssignee"><!-- ServiceTask_CalculateMonthlyCap add gateway here-->
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${Approved == 'Yes'}]]>
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow11" sourceRef="Gateway_WasApproved" targetRef="End_end">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${Approved == 'No'}]]>
+            </conditionExpression>
+        </sequenceFlow>
+        
+        <sequenceFlow id="flow12" sourceRef="ServiceTask_GetAssignee" targetRef="ServiceTask_CalculateMonthlyCap"/>        
+        <sequenceFlow id="flow13" sourceRef="ServiceTask_CalculateMonthlyCap" targetRef="Gateway_IsApproverWithinMonthlyCap"/> <!-- Gateway_IsApproverWithinMonthlyCap-->
+       
+        
+        <exclusiveGateway id="Gateway_IsApproverWithinMonthlyCap" name="Is Approver Within Monthly Cap?"/>
+                
+        <sequenceFlow id="flowG" sourceRef="Gateway_IsApproverWithinMonthlyCap" targetRef="ServiceTask_ProvisionBundle">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${(Assignee == 'alloy' || Assignee == 'sarah' || Assignee == 'lotanna' || Assignee == 'nilay.naik@smilecoms.com' || Assignee == 'alero2006' || Assignee == 'onyeka' || Assignee == 'chexolala' || Assignee == 'tunde' || Assignee == 'adenike.ajayi' || Assignee == 'jayreal2002ng' || Assignee == 'dapo' || Assignee == 'emmaconomy' || Assignee == 'aniesin' || Assignee == 'ekwere' || Assignee == 'hawiigbems' || Assignee == 'hilhab') && SQLResult < 150000000000}]]>
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flowH" sourceRef="Gateway_IsApproverWithinMonthlyCap" targetRef="ServiceTask_ProvisionBundle">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${(Assignee == 'admin' || Assignee == 'nilay.naik@smilecoms.com' || Assignee == 'buitelaar') && SQLResult < 250000000000}]]>
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flowI" sourceRef="Gateway_IsApproverWithinMonthlyCap" targetRef="End_end">
+            <conditionExpression>
+                <![CDATA[${(Assignee == 'alloy' || Assignee == 'sarah' || Assignee == 'lotanna' || Assignee == 'alero2006' || Assignee == 'onyeka' || Assignee == 'chexolala' || Assignee == 'tunde' || Assignee == 'adenike.ajayi' || Assignee == 'jayreal2002ng' || Assignee == 'dapo' || Assignee == 'emmaconomy' || Assignee == 'aniesin' || Assignee == 'ekwere' || Assignee == 'hawiigbems' || Assignee == 'hilhab') && SQLResult >= 150000000000}]]>
+            </conditionExpression>            
+        </sequenceFlow>
+        <sequenceFlow id="flowJ" sourceRef="Gateway_IsApproverWithinMonthlyCap" targetRef="End_end">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${(Assignee == 'admin' || Assignee == 'nilay.naik@smilecoms.com' || Assignee == 'buitelaar') && SQLResult >= 250000000000}]]>
+            </conditionExpression>
+        </sequenceFlow>        
+        <sequenceFlow id="flow14" sourceRef="ServiceTask_ProvisionBundle" targetRef="End_end"/>        
+        
+        <endEvent id="End_end"/>
+        
+        <userTask id="UserTask_CaptureInfo" name="Capture Free Customer Bundle Request">
+            <documentation>Capture Account Number, Bundle Name, Name of person requesting the customer bundle to be provisioned and the justification.</documentation>
+            <extensionElements>
+                <activiti:formProperty name="AccountId" variable="AccountId" id="AccountId" />                
+                <activiti:formProperty name="NameOfRequestor" variable="NameOfRequestor" id="NameOfRequestor" />
+                <activiti:formProperty name="UnitCreditName" variable="Unit Credit Name" id="Unit Credit Name" type="enum">
+                    <activiti:value name="500MB Gift Data Bundle" id="500MB Gift Data Bundle"/>
+                    <activiti:value name="1GB Gift Data Bundle" id="1GB Gift Data Bundle"/>
+                    <activiti:value name="5GB Gift Data Bundle" id="5GB Gift Data Bundle"/>
+                    <activiti:value name="10GB Gift Data Bundle" id="10GB Gift Data Bundle"/>
+                    <activiti:value name="20GB School Data Bundle" id="20GB School Data Bundle"/>
+                    <activiti:value name="3GB Gift Data Bundle" id="3GB Gift Data Bundle"/>
+                    <activiti:value name="10GB Smile Ambassador Data Bundle" id="10GB Smile Ambassador Data Bundle"/>
+                    <activiti:value name="50GB Smile Ambassador Data Bundle" id="50GB Smile Ambassador Data Bundle"/>                    
+                    <activiti:value name="5GB ICP Data Bundle" id="5GB ICP Data Bundle"/>
+                </activiti:formProperty>
+                
+                <activiti:formProperty name="Reason" variable="Reason" id="Reason" type="enum">
+                    <activiti:value name="Network downtime" id="Network downtime"/>
+                    <activiti:value name="Bad device" id="Bad device"/>
+                    <activiti:value name="Data depletion" id="Data depletion"/>
+                    <activiti:value name="Replacement of devices that has data but lost during handling" id="Replacement of devices that has data but lost during handling"/>
+                    <activiti:value name="Appreciation" id="Appreciation"/>
+                    <activiti:value name="Customer Service breakdown" id="Customer Service breakdown"/>
+                    <activiti:value name="Payment systems issues" id="Payment systems issues"/>
+                    <activiti:value name="Public Relations" id="Public Relations"/>
+                    <activiti:value name="Others" id="Others"/>
+                </activiti:formProperty>
+                <activiti:formProperty name="Justification" variable="Justification" id="Justification" />
+                <activiti:formProperty name="ApproverEmail" variable="ApproverEmail" id="ApproverEmail" type="enum">
+                    <activiti:value name='alero.ladipo@smilecoms.com' id='alero.ladipo@smilecoms.com'/>
+                    <activiti:value name='tunde.baale@smilecoms.com' id='tunde.baale@smilecoms.com'/>
+                    <activiti:value name='adenike.ajayi@smilecoms.com' id='adenike.ajayi@smilecoms.com'/>
+                    <activiti:value name='jubril.sanusi@smilecoms.com' id='jubril.sanusi@smilecoms.com'/>
+                    <activiti:value name='oladapo.ogunmekan@smilecoms.com' id='oladapo.ogunmekan@smilecoms.com'/>
+                    <activiti:value name='emmanuel.ozakpo@smilecoms.com' id='emmanuel.ozakpo@smilecoms.com'/>
+                    <activiti:value name='aniesin.umoh@smilecoms.com' id='aniesin.umoh@smilecoms.com'/>
+                    <activiti:value name='alloysius.bazuaye@smilecoms.com' id='alloysius.bazuaye@smilecoms.com'/>
+                    <activiti:value name='johnson.ekwere@smilecoms.com' id='johnson.ekwere@smilecoms.com'/>
+                    <activiti:value name='gloria.gbemud@smilecoms.com' id='gloria.gbemud@smilecoms.com'/>
+                    <activiti:value name='hilda.lawani@smilecoms.com' id='hilda.lawani@smilecoms.com'/>
+                    <activiti:value name='kenneth.esenwah@smilecoms.com' id='kenneth.esenwah@smilecoms.com'/>
+                    <activiti:value name='chiekezi.dozie@smilecoms.com' id='chiekezi.dozie@smilecoms.com'/>                    
+                    <activiti:value name='michiel.buitelaar@smilecoms.com' id='michiel.buitelaar@smilecoms.com'/>
+                    <activiti:value name='nilay.naik@smilecoms.com' id='nilay.naik@smilecoms.com'/>                                    
+                    <activiti:value name='lotanna.anajemba@smilecoms.com' id='lotanna.anajemba@smilecoms.com'/> <!-- lotanna-->
+                    <activiti:value name='sarah.joseph@smilecoms.com' id='sarah.joseph@smilecoms.com'/> <!-- sarah -->
+                    <activiti:value name='pcb@smilecoms.com' id='pcb@smilecoms.com'/>	
+                    <activiti:value name='lesiba@smilecoms.com' id='lesiba@smilecoms.com'/>
+                    				
+                </activiti:formProperty>
+            </extensionElements>
+            <potentialOwner>
+                <resourceAssignmentExpression>
+                    <formalExpression>
+                        Customer,SOP,Administrator,GroupITSupport,GroupITManager,GroupNWSupport,GroupNWManager,GroupLogistics,GroupProcesses,GroupFinance,GroupProducts,GroupSDManager,GroupMDManager,CashInClerk,FinanceAccountant,FinanceManager,InboundLogistics,RevenueAssurance,ITSupport,ITManager,NWSupport,NWManager,Products,MarketAnalyst,SDNationalHead,SDOperationsManager,DirectSalesManager,IndirectSalesManager,CorporateSalesManager,RetailSalesManager,CustomerServiceManager,CallCentreOperationsManager,SecondLineComplainsManager,InboundCallCentreManager,OutboundCallCentreManager,InboundCallCentreAgent,OutboundCallCentreAgent,CallCentreShiftSupervisor,TechnicalSalesSupport,RegionalSDManager,RegionalMDManager,RegionalSDOperationsManager,KioskSales,ShopSales,CorporateSales,DirectSales,IndirectSales,RegionalRetailSalesManager,ShopManagement,RegionalDirectSalesManager,RegionalCorporateSalesManager,RegionalIndirectSalesManager,RegionalTechnicalSalesSupport,ICPSales,ICPManager,Trainer,Talent,TPGW,MarketingOperations,FreeBundleRequestor
+                    </formalExpression>
+                </resourceAssignmentExpression>
+            </potentialOwner>
+        </userTask>
+        
+        <userTask name="Approve Bundle 3GB And Below Provision Request" id="UserTask_ApproveBundleProvisionRequest" activiti:candidateUsers="alero2006, sarah, lotanna, tunde, jayreal2002ng, adenike.ajayi, dapo, emmaconomy, aniesin, ekwere, onyeka, johnnyo, chexolala, nilay.naik@smilecoms.com, buitelaar, alloy, admin">
+            <documentation> <![CDATA[${NameOfRequestor} requested that ${UnitCreditName} be provisioned for Account Id : ${AccountId}. Justification being that ${Reason} - ${Justification}.]]> </documentation>
+            <extensionElements>
+                <activiti:formProperty name="Approved" variable="Approved" id="Approved" type="enum">
+                    <activiti:value name="Yes" id="Yes"/> 
+                    <activiti:value name="No" id="No"/>
+                </activiti:formProperty>
+            </extensionElements>
+        </userTask>
+        <userTask name="Approve Bundle Provision Above 3GB Request" id="UserTask_ApproveAbove3GBBundleProvisionRequest" activiti:candidateUsers="alero2006, onyeka, chexolala, admin">
+            <documentation> <![CDATA[${NameOfRequestor} requested that ${UnitCreditName} be provisioned for Account Id : ${AccountId}. Justification being that ${Reason} - ${Justification}.]]> </documentation>
+            <extensionElements>
+                <activiti:formProperty name="Approved" variable="Approved" id="Approved" type="enum">
+                    <activiti:value name="Yes" id="Yes"/> 
+                    <activiti:value name="No" id="No"/>
+                </activiti:formProperty>
+            </extensionElements>
+        </userTask>         
+        <userTask name="Approve Bundle Provision 5GB and below Request" id="UserTask_ApproveAbove3andBelow5GBBundleProvisionRequest" activiti:candidateUsers="alero2006, onyeka, chexolala, nilay.naik@smilecoms.com, buitelaar, admin">
+            <documentation> <![CDATA[${NameOfRequestor} requested that ${UnitCreditName} be provisioned for Account Id : ${AccountId}. Justification being that ${Reason} - ${Justification}.]]> </documentation>
+            <extensionElements>
+                <activiti:formProperty name="Approved" variable="Approved" id="Approved" type="enum">
+                    <activiti:value name="Yes" id="Yes"/> 
+                    <activiti:value name="No" id="No"/>
+                </activiti:formProperty>
+            </extensionElements>
+        </userTask>        
+        
+        <userTask name="Approve Ambasadors Policy Bundle Provision Request" id="UserTask_ApproveAmbasadorsPolicyBundleProvisionRequest" activiti:candidateUsers="alero2006, onyeka, admin">
+            <documentation> <![CDATA[${NameOfRequestor} requested that ${UnitCreditName} be provisioned for Account Id : ${AccountId}. Justification being that ${Reason} - ${Justification}.]]> </documentation>
+            <extensionElements>
+                <activiti:formProperty name="Approved" variable="Approved" id="Approved" type="enum">
+                    <activiti:value name="Yes" id="Yes"/> 
+                    <activiti:value name="No" id="No"/>
+                </activiti:formProperty>
+            </extensionElements>
+        </userTask>
+        <!-- New -->
+        <userTask name="Approve ICP Demo Bundle Provision Request" id="UserTask_ApproveICPBundle" activiti:candidateUsers="hawiigbems,lesiba, admin">
+            <documentation> <![CDATA[${NameOfRequestor} requested that ${UnitCreditName} be provisioned for Account Id : ${AccountId}. Justification being that ${Justification}.]]> </documentation>
+            <extensionElements>
+                <activiti:formProperty name="Approved" variable="Approved" id="Approved" type="enum">
+                    <activiti:value name="Yes" id="Yes"/> 
+                    <activiti:value name="No" id="No"/>
+                </activiti:formProperty>
+            </extensionElements>
+        </userTask>
+        
+        
+        <serviceTask id="ServiceTask_CalculateMonthlyCap" name="Run SQL To Check If Approver Is Within Monthly limit" activiti:class="com.smilecoms.hwf.activiti.ActivitiSCADelegate">
+            <extensionElements>
+                <activiti:field stringValue="RunSQL" name="method"/>
+                <activiti:field name="sql">
+                    <activiti:expression>
+                        <![CDATA[select cast(ifnull(sum(uci.units_at_start),0) as signed) from unit_credit_instance uci where (uci.purchase_date between DATE_FORMAT(NOW(),'%Y-%m-01') and NOW()) and uci.provisioned_by_customer_profile_id = (select customer_profile_id from customer_profile where sso_identity = '${Assignee}') and uci.cents_charged = 0]]>
+                    </activiti:expression>
+                </activiti:field>
+            </extensionElements>            
+        </serviceTask>
+        
+        <serviceTask id="ServiceTask_GetAssignee" name="Get User Currently Assigned To The Task" activiti:class="com.smilecoms.hwf.activiti.ActivitiSCADelegate" >
+            <extensionElements>
+                <activiti:field stringValue="getAssignee" name="method"/>
+            </extensionElements>            
+        </serviceTask>
+        
+        <serviceTask id="ServiceTask_ProvisionBundle" name="Call SCA to Provision Bundle" activiti:class="com.smilecoms.hwf.activiti.ActivitiSCADelegate">
+            <extensionElements>
+                <activiti:field stringValue="provisionUnitCredit"  name="method"/>
+            </extensionElements>  
+        </serviceTask>       
+        
+        <serviceTask id="ServiceTask_EmailApprover" name="Email Approver" activiti:type="mail">
+            <documentation>Notify the approver of the request</documentation>
+            <extensionElements>
+                <activiti:field name="to">
+                    <activiti:expression><![CDATA[${ApproverEmail}]]></activiti:expression>    
+                </activiti:field>                
+                <activiti:field name="from">
+                    <activiti:string><![CDATA[admin@smilecoms.com]]></activiti:string>
+                </activiti:field>
+                <activiti:field name="subject">
+                    <activiti:string><![CDATA[Requesting Approval Email]]></activiti:string>
+                </activiti:field>
+                <activiti:field name="text">
+                    <activiti:string><![CDATA[You have a request for a free customer bundle that requires your approval on SEP.]]></activiti:string>
+                </activiti:field>
+            </extensionElements>
+        </serviceTask>                       
+        
+        
+        <boundaryEvent id="BoundaryEvent_Timer1" cancelActivity="true" attachedToRef="UserTask_CaptureInfo">
+            <timerEventDefinition>
+                <timeDuration>PT24H</timeDuration>
+            </timerEventDefinition>
+        </boundaryEvent>        
+    </process>
+</definitions>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses">
+    <xs:import schemaLocation="GatewayService.svc.xsd_xsd3.xsd" namespace="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic"/>
+    <xs:complexType name="GetBasicDemographicDataResponse">
+        <xs:complexContent mixed="false">
+            <xs:extension base="q1:ResponseBase" xmlns:q1="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="GetBasicDemographicDataResponse" nillable="true" type="tns:GetBasicDemographicDataResponse"/>
+    <xs:complexType name="GetFullDemographicDataResponse">
+        <xs:complexContent mixed="false">
+            <xs:extension base="q2:ResponseBase" xmlns:q2="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="GetFullDemographicDataResponse" nillable="true" type="tns:GetFullDemographicDataResponse"/>
+    <xs:complexType name="GetBiometricsDataResponse">
+        <xs:complexContent mixed="false">
+            <xs:extension base="q3:ResponseBase" xmlns:q3="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="GetBiometricsDataResponse" nillable="true" type="tns:GetBiometricsDataResponse"/>
+    <xs:complexType name="GetCardDetailsResponse">
+        <xs:complexContent mixed="false">
+            <xs:extension base="q4:ResponseBase" xmlns:q4="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="GetCardDetailsResponse" nillable="true" type="tns:GetCardDetailsResponse"/>
+    <xs:complexType name="QueryFingerprintRequestResponse">
+        <xs:complexContent mixed="false">
+            <xs:extension base="q5:ResponseBase" xmlns:q5="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="QueryFingerprintRequestResponse" nillable="true" type="tns:QueryFingerprintRequestResponse"/>
+    <xs:complexType name="QueryFingerprintResponseResponse">
+        <xs:complexContent mixed="false">
+            <xs:extension base="q6:ResponseBase" xmlns:q6="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="QueryFingerprintResponseResponse" nillable="true" type="tns:QueryFingerprintResponseResponse"/>
+    <xs:complexType name="UpdateCitizenStatusResponse">
+        <xs:complexContent mixed="false">
+            <xs:extension base="q7:ResponseBase" xmlns:q7="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="UpdateCitizenStatusResponse" nillable="true" type="tns:UpdateCitizenStatusResponse"/>
+    <xs:complexType name="UpdateExtendedInformationResponse">
+        <xs:complexContent mixed="false">
+            <xs:extension base="q8:ResponseBase" xmlns:q8="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="UpdateExtendedInformationResponse" nillable="true" type="tns:UpdateExtendedInformationResponse"/>
+    <xs:complexType name="UpdateAddressResponse">
+        <xs:complexContent mixed="false">
+            <xs:extension base="q9:ResponseBase" xmlns:q9="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="UpdateAddressResponse" nillable="true" type="tns:UpdateAddressResponse"/>
+    <xs:complexType name="UpdateBlacklistResponse">
+        <xs:complexContent mixed="false">
+            <xs:extension base="q10:ResponseBase" xmlns:q10="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic">
+                <xs:sequence/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element name="UpdateBlacklistResponse" nillable="true" type="tns:UpdateBlacklistResponse"/>
+</xs:schema>

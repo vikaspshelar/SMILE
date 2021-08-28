@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="UpdateProperty"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:ns1="http://xml.smilecoms.com/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/PM" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns3="http://xml.smilecoms.com/schema/PM" 
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2" >
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/PM" location="../Partners/PM/PMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="PM" partnerLinkType="ns2:PMServiceDefinition" partnerRole="PM"/>
+        <partnerLink name="SCA" partnerLinkType="ns1:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="UpdatePropertySCAOut" messageType="ns1:UpdatePropertyResponse"/>
+        <variable name="UpdatePropertyPMOut" messageType="ns2:UpdatePropertyResponse"/>
+        <variable name="UpdatePropertyPMIn" messageType="ns2:UpdatePropertyRequest"/>
+        <variable name="UpdatePropertySCAIn" messageType="ns1:UpdatePropertyRequest"/>
+        <variable name="Fault1FaultVar" messageType="ns1:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="pmFault" faultMessageType="ns2:PMError">
+            <sequence name="Sequence1">
+                <assign name="Assign3">
+                    <copy>
+                        <from>$pmFault.PMError/ns3:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$pmFault.PMError/ns3:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$pmFault.PMError/ns3:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="UpdateProperty" portType="ns1:SCASoap" faultName="ns1:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="UpdateProperty" portType="ns1:SCASoap" variable="UpdatePropertySCAIn"/>
+
+
+
+
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('PM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="PM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+
+
+
+
+
+
+
+        <assign name="Assign1">            
+            <copy>
+                <from>$UpdatePropertySCAIn.UpdatePropertyRequest/ns0:Client</from>
+                <to>$UpdatePropertyPMIn.UpdatePropertyRequest/ns3:Client</to>
+            </copy>
+            <copy>
+                <from>$UpdatePropertySCAIn.UpdatePropertyRequest/ns0:PropertyName</from>
+                <to>$UpdatePropertyPMIn.UpdatePropertyRequest/ns3:PropertyName</to>
+            </copy>
+            <copy>
+                <from>$UpdatePropertySCAIn.UpdatePropertyRequest/ns0:PropertyValue</from>
+                <to>$UpdatePropertyPMIn.UpdatePropertyRequest/ns3:PropertyValue</to>
+            </copy>
+            <copy>
+                <from>$UpdatePropertySCAIn.UpdatePropertyRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$UpdatePropertyPMIn.UpdatePropertyRequest/ns3:PlatformContext/ns3:TxId</to>
+            </copy>
+            <copy>
+                <from>$UpdatePropertySCAIn.UpdatePropertyRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$UpdatePropertyPMIn.UpdatePropertyRequest/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$UpdatePropertySCAIn.UpdatePropertyRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$UpdatePropertyPMIn.UpdatePropertyRequest/ns3:PlatformContext/ns3:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$UpdatePropertySCAIn.UpdatePropertyRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$UpdatePropertyPMIn.UpdatePropertyRequest/ns3:PlatformContext/ns3:Tenant</to>
+            </copy>
+        </assign>
+        <invoke name="Invoke1" partnerLink="PM" operation="UpdateProperty" portType="ns2:PMSoap" inputVariable="UpdatePropertyPMIn" outputVariable="UpdatePropertyPMOut">            
+        </invoke>
+        <assign name="Assign2">
+            <copy>
+                <from>$UpdatePropertyPMOut.UpdatePropertyResponse/ns3:Done</from>
+                <to>$UpdatePropertySCAOut.UpdatePropertyResponse/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="UpdateProperty" portType="ns1:SCASoap" variable="UpdatePropertySCAOut"/>
+    </sequence>
+</process>
+

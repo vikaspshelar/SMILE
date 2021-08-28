@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ModifyLTEService"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/IM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/AM">
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/AM" location="../Partners/AM/AMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="AM" xmlns:tns="http://xml.smilecoms.com/AM" partnerLinkType="tns:AMServiceDefinition" partnerRole="AM"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+    </partnerLinks>
+    <variables>
+        <variable name="AMFreeIPOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:Done"/>
+        <variable name="AMFreeIPIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:FreeIPRequest"/>
+        <variable name="AMGetAvailableIPsOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:GetAvailableIPsResponse"/>
+        <variable name="AMGetAvailableIPsIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:GetAvailableIPsRequest"/>
+        <variable name="AMIssueIPOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:Done"/>
+        <variable name="AMIssueIPIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:IssueIPRequest"/>
+        <variable name="IMGetIMSPrivateIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPrivateIdentityResponse"/>
+        <variable name="IMGetIMSPrivateIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPrivateIdentityRequest"/>
+        <variable name="IMModifyIMSPrivateIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyIMSPrivateIdentityResponse"/>
+        <variable name="IMModifyIMSPrivateIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyIMSPrivateIdentityRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SubFlowError"/>
+        <variable name="ModifyLTEServiceOut" messageType="tns:ProvisionServiceResponse"/>
+        <variable name="ModifyLTEServiceIn" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" messageType="tns:ModifyLTEServiceRequest"/>
+        <variable name="APNList" type="xs:string"/>
+        <variable name="IPv4Address" type="xs:string"/>
+        
+    </variables>
+    <faultHandlers>
+        <catch xmlns:im="http://xml.smilecoms.com/IM" faultMessageType="im:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="AssignErr">
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErr" partnerLink="SCASubFlows" operation="ModifyLTEService" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch xmlns:im="http://xml.smilecoms.com/AM" faultMessageType="im:AMError" faultVariable="AMError">
+            <sequence name="Sequence2">
+                <assign name="AssignErrAM">
+                    <copy>
+                        <from>$AMError.AMError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$AMError.AMError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$AMError.AMError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErrAM" partnerLink="SCASubFlows" operation="ModifyLTEService" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="ModifyLTEService" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="ModifyLTEServiceIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('AM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="AM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignGetIMPI">
+            <copy>
+                <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/TxId</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/OriginatingIP</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/Tenant</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>BPELUtils:getAVPValueAsString($ModifyLTEServiceIn.ModifiedLTEServiceData, 'IntegratedCircuitCardIdentifier')</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:IntegratedCircuitCardIdentifier</to>
+            </copy>
+        </assign>
+        <invoke name="GetIMSPrivateIdentityForSIM" partnerLink="IM" operation="GetIMSPrivateIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSPrivateIdentityIn" outputVariable="IMGetIMSPrivateIdentityOut"/>
+        
+        
+        <assign>
+            <copy>
+                <from>''</from>
+                <to variable="IPv4Address"/>
+            </copy>
+        </assign> 
+        
+        <!-- Get IPV4 address and IPv6 address into variables by scrolling through APNs and get IPv4 and IPv6 address from static IP APN name-->
+        <forEach name="ForEachGetIPV4IPV6" parallel="no" counterName="apnCounter">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList)</finalCounterValue>
+            <scope name="GetIPV4IPV6_Scope">
+                <sequence>
+                    <sequence>
+                        <assign name="AssignstaticIP">
+                            <copy ignoreMissingFromData="yes">
+                                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv4Address</from>
+                                <to variable="IPv4Address"/>
+                            </copy>
+                        </assign>   
+                    </sequence>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <assign name="AssignIMSPrivateIdDataFromOrig">
+            <sxt:trace>
+                <sxt:log level="finest" location="onStart">
+                    <from>concat('Existing IMPI has IPv4 Address ', $IPv4Address,' and requested address is ', BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'IPv4Address'))</from>
+                </sxt:log>
+            </sxt:trace>
+            <copy>
+                <from variable="IMGetIMSPrivateIdentityOut" part="IMSPrivateIdentity"/>
+                <to variable="IMModifyIMSPrivateIdentityIn" part="ModifiedIMSPrivateIdentity"/>
+            </copy>
+        </assign>
+        
+        <if name="IfNeedsAPN">
+            <condition>BPELUtils:getStringSplitArrayAtIndex(BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'APNList'),':',0) = 'ASSIGN'</condition>
+            <sequence name="Sequence5a">
+                <assign name="AssignAPN">
+                    <copy>
+                        <from>BPELUtils:getStringSplitArrayAtIndex(BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'APNList'),':',1)</from>
+                        <to variable="APNList"/>
+                    </copy>
+                </assign>
+            </sequence>
+            <else>
+                <sequence>
+                    <assign name="AssignAPNList">
+                        <copy>
+                            <from>BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'APNList')</from>
+                            <to variable="APNList"/>
+                        </copy>
+                    </assign>
+                </sequence>
+            </else>
+        </if>
+        
+        <if name="IfNeedsStaticIP">
+            <condition>BPELUtils:getStringSplitArrayAtIndex(BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'IPv4Address'),':',0) = 'ASSIGN' and $IPv4Address = ''</condition>
+            <sequence name="Sequence5">
+                <assign name="AssignGetIP">
+                    <sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>'Static IP needs to be assigned so we are getting an available one'</from>
+                        </sxt:log>
+                    </sxt:trace>
+                    <copy>
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/TxId</from>
+                        <to>$AMGetAvailableIPsIn.AvailableIPsQuery/ns2:PlatformContext/ns2:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/OriginatingIdentity</from>
+                        <to>$AMGetAvailableIPsIn.AvailableIPsQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/OriginatingIP</from>
+                        <to>$AMGetAvailableIPsIn.AvailableIPsQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/Tenant</from>
+                        <to>$AMGetAvailableIPsIn.AvailableIPsQuery/ns2:PlatformContext/ns2:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>1</from>
+                        <to>$AMGetAvailableIPsIn.AvailableIPsQuery/ns2:NumberOfIPs</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:Identity</from>
+                        <to>$AMGetAvailableIPsIn.AvailableIPsQuery/ns2:IMPI</to>
+                    </copy>
+                    <copy>
+                        <from>
+                            BPELUtils:getStringSplitArrayAtIndex(BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'IPv4Address'),':',1)
+                        </from>
+                        <to>$AMGetAvailableIPsIn.AvailableIPsQuery/ns2:Region</to>
+                    </copy>
+                    <copy>
+                        <from>
+                            BPELUtils:getStringSplitArrayAtIndex(BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'IPv4Address'),':',2)
+                        </from>
+                        <to>$AMGetAvailableIPsIn.AvailableIPsQuery/ns2:ApplicableApnRegex</to>
+                    </copy>
+                    <copy>
+                        <from>
+                            BPELUtils:getStringSplitArrayAtIndex(BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'IPv4Address'),':',3)
+                        </from>
+                        <to>$AMGetAvailableIPsIn.AvailableIPsQuery/ns2:PrivateOnly</to>
+                    </copy>
+                    <copy>
+                        <from>
+                            $APNList
+                        </from>
+                        <to>$AMGetAvailableIPsIn.AvailableIPsQuery/ns2:ApnList</to>
+                    </copy>
+                </assign>
+                <invoke name="GetAvailableIP" partnerLink="AM" operation="GetAvailableIPs" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMGetAvailableIPsIn" outputVariable="AMGetAvailableIPsOut"/>
+                <assign name="AssignIssueIP">
+                    <sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>'Static IP is now being assigned'</from>
+                        </sxt:log>
+                    </sxt:trace>
+                    <copy>
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/TxId</from>
+                        <to>$AMIssueIPIn.IssueIPQuery/ns2:PlatformContext/ns2:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/OriginatingIdentity</from>
+                        <to>$AMIssueIPIn.IssueIPQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/OriginatingIP</from>
+                        <to>$AMIssueIPIn.IssueIPQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/Tenant</from>
+                        <to>$AMIssueIPIn.IssueIPQuery/ns2:PlatformContext/ns2:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$AMGetAvailableIPsOut.AvailableIPs/ns2:IPs</from>
+                        <to>$AMIssueIPIn.IssueIPQuery/ns2:IPToIssue</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:Identity</from>
+                        <to>$AMIssueIPIn.IssueIPQuery/ns2:IMPI</to>
+                    </copy>
+                </assign>
+                <invoke name="IssueIP" partnerLink="AM" operation="IssueIP" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMIssueIPIn" outputVariable="AMIssueIPOut"/>
+                <if name="IfNeedsDefaultAPNAdded">
+                    <condition>$APNList = ''</condition>
+                    <sequence name="Sequence51">
+                        <!-- add the static APN name from props to the front of the APN list if the APN list is empty-->
+                        <assign name = "AddDefaultAPNToAPNList">
+                            <sxt:trace>
+                                <sxt:log level="finest" location="onStart">
+                                    <from>'APNList is empty so need to add default APN to it'</from>
+                                </sxt:log>
+                            </sxt:trace>
+                            <copy>
+                                <from>concat(BPELUtils:getProperty('env.staticip.apnname','internet'),',', $APNList)</from>
+                                <to>$APNList</to>
+                            </copy>
+                        </assign>
+                    </sequence>
+                </if>
+            </sequence>
+        </if>
+        
+        <if name="IfFreeStaticIP">
+            <!-- We free static IP if it is explicitly free-ed or if the APN is free-ed and there is an IPV4Address-->
+            <condition>BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'IPv4Address') = '' or (BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'APNList') = ''and $IPv4Address != '')</condition>
+            <sequence name="Sequence6">
+                
+                <assign name="AssignFreeIP">
+                    <sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>'Static IP is now being free-ed'</from>
+                        </sxt:log>
+                    </sxt:trace>
+                    <copy>
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/TxId</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns2:PlatformContext/ns2:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/OriginatingIdentity</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/OriginatingIP</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$ModifyLTEServiceIn.ModifiedLTEServiceData/SubFlowContext/Tenant</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns2:PlatformContext/ns2:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$IPv4Address</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns2:IPToFree</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:Identity</from>
+                        <to>$AMFreeIPIn.FreeIPQuery/ns2:IMPI</to>
+                    </copy>
+                    
+                </assign>
+                <invoke name="FreeIP" partnerLink="AM" operation="FreeIP" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMFreeIPIn" outputVariable="AMFreeIPOut"/>
+            </sequence>
+        </if>
+        
+        
+        
+        
+        
+        <if name="IfMustResetPublicK">
+            <condition>BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'ResetPublicK') = 'true'</condition>
+            <sequence name="SequenceResetPublicK">
+                <assign name="AssignResetPublicK">
+                    <copy>
+                        <from>'RESET'</from>
+                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:EncryptedPublicKey</to>
+                    </copy>
+                </assign>
+            </sequence>
+        </if>
+        
+        <assign name="AssignStatus">
+            <copy ignoreMissingFromData="yes">
+                <from>BPELUtils:getAVPValueAsString($ModifyLTEServiceIn.ModifiedLTEServiceData, 'Status')</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:Status</to>
+            </copy>
+        </assign>
+        
+        <assign name="AssignSIMLockedIMEIList">
+            <copy ignoreMissingFromData="yes">
+                <from>BPELUtils:getAVPValueAsString($ModifyLTEServiceIn.ModifiedLTEServiceData, 'SIMLockedIMEIList')</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:SIMLockedIMEIList</to>
+            </copy>
+        </assign>
+        <assign name="AssignRegionalSubscriptionZoneCodes">
+            <copy ignoreMissingFromData="yes">
+                <from>BPELUtils:getAVPValueAsString($ModifyLTEServiceIn.ModifiedLTEServiceData, 'RegionalSubscriptionZoneCodes')</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:RegionalSubscriptionZoneCodes</to>
+            </copy>
+        </assign>
+        <assign name="AssignInfo">
+            <copy ignoreMissingFromData="yes">
+                <from>BPELUtils:getAVPValueAsString($ModifyLTEServiceIn.ModifiedLTEServiceData, 'Info')</from>
+                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:Info</to>
+            </copy>
+        </assign>
+        <forEach name="ForEachSetPreviousAPNToNull" parallel="no" counterName="apnCounter">
+            <sxt:trace>
+                <sxt:log level="finest" location="onStart">
+                    <from>concat('Going to loop through APNs in APNlist from 1 to ', count($IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList))</from>
+                </sxt:log>
+            </sxt:trace>
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList)</finalCounterValue>
+            <scope name="SetPreviousAPNToNullLoop_Scope">
+                <sequence>
+                    <assign name="SetPreviousAPNToNull">
+                        <copy ignoreMissingFromData="yes">
+                            <from>''</from>
+                            <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:APNName</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <!-- in the for each loop check if the apn name is the static APN from props if so then add the static IPv4 and static IPv6 address-->
+        <forEach name="ForEachAPN" parallel="no" counterName="apnCounter">
+            <sxt:trace>
+                <sxt:log level="finest" location="onStart">
+                    <from>concat('Going to loop through APNs in APNlist from 1 to ',BPELUtils:getStringSplitArraySize($APNList, ','))</from>
+                </sxt:log>
+            </sxt:trace>
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>BPELUtils:getStringSplitArraySize($APNList, ',')</finalCounterValue>
+            <scope name="APNLoop_Scope">
+                <sequence>
+                    <sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>concat('ApnCounter ', $apnCounter)</from>
+                        </sxt:log>
+                    </sxt:trace>
+                    <sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>concat('ApnName ', BPELUtils:getStringSplitArrayAtIndex($APNList,',',($apnCounter)-1))</from>
+                        </sxt:log>
+                    </sxt:trace>
+                    <assign name="AssignAPNList">
+                        <copy ignoreMissingFromData="yes">
+                            <from>BPELUtils:getStringSplitArrayAtIndex($APNList,',',($apnCounter)-1)</from>
+                            <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:APNName</to>
+                        </copy>
+                    </assign>
+                    <if name="IfNeedsNewStaticIP">
+                        <condition>BPELUtils:getStringSplitArrayAtIndex(BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'IPv4Address'),':',0) = 'ASSIGN' and $IPv4Address = ''</condition>
+                        <sequence>
+                            <sxt:trace>
+                                <sxt:log level="finest" location="onStart">
+                                    <from>'Assigning new IP to APN'</from>
+                                </sxt:log>
+                            </sxt:trace>
+                            <assign name="AssignNewStaticIP">
+                                <copy>
+                                    <from>$AMGetAvailableIPsOut.AvailableIPs/ns2:IPs</from>
+                                    <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv4Address</to>
+                                </copy>
+                                <copy>
+                                    <from>''</from>
+                                    <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv6Address</to>
+                                </copy>
+                            </assign> 
+                        </sequence>   
+                        <else>
+                            <sequence>
+                                <if name="IfSetStaticIPToEmpty">
+                                    <condition>BPELUtils:getAVPValueAsStringEmptyIfMissing($ModifyLTEServiceIn.ModifiedLTEServiceData, 'IPv4Address') = ''</condition>
+                                    <sequence>
+                                        <sxt:trace>
+                                            <sxt:log level="finest" location="onStart">
+                                                <from>'Assigning empty IP to APN'</from>
+                                            </sxt:log>
+                                        </sxt:trace>
+                                        <assign name="AssignEmptyStaticIP">
+                                            <copy>
+                                                <from>''</from>
+                                                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv4Address</to>
+                                            </copy>
+                                            <copy>
+                                                <from>''</from>
+                                                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv6Address</to>
+                                            </copy>
+                                        </assign>
+                                    </sequence>
+                                    <else>
+                                        <sequence>
+                                            <sxt:trace>
+                                                <sxt:log level="finest" location="onStart">
+                                                    <from>'Assigning previous IP to APN'</from>
+                                                </sxt:log>
+                                            </sxt:trace>
+                                            <assign name="AssignPreviousStaticIP">
+                                                <copy>
+                                                    <from>$IPv4Address</from>
+                                                    <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv4Address</to>
+                                                </copy>
+                                                <copy>
+                                                    <from>''</from>
+                                                    <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv6Address</to>
+                                                </copy>
+                                            </assign> 
+                                        </sequence>
+                                    </else>
+                                </if> 
+                            </sequence>        
+                        </else>
+                    </if>     
+                    <if name="IfAPNIsDefault">
+                        <condition>$apnCounter = 1</condition>
+                        <sequence>
+                            <assign name="AssignAPNAsDefault">
+                                <copy>
+                                    <from>1</from>
+                                    <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:Type</to>
+                                </copy>
+                            </assign>   
+                        </sequence>
+                        <else>
+                            <sequence>
+                                <assign name="AssignAPNAsNonDefault">
+                                    <copy>
+                                        <from>0</from>
+                                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:Type</to>
+                                    </copy>
+                                </assign>   
+                            </sequence>
+                        </else>
+                    </if>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <invoke name="ModifyTheIMPI" partnerLink="IM" operation="ModifyIMSPrivateIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMModifyIMSPrivateIdentityIn" outputVariable="IMModifyIMSPrivateIdentityOut"/>
+        <assign name="AssignResult">
+            <copy>
+                <from>concat('HSSOSSBSSID-', $IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:OSSBSSReferenceId)</from>
+                <to>$ModifyLTEServiceOut.ProvisionedServiceData/ResourceId</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="ModifyLTEService" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="ModifyLTEServiceOut"/>
+    </sequence>
+</process>

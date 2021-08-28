@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process
+    name="GetContracts"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/POS">
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+    </partnerLinks>
+    <variables>
+        <variable name="SCAGetContractsOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ContractQueryResponse"/>
+        <variable name="POSGetContractsOut" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:ContractQueryResponse"/>
+        <variable name="POSGetContractsIn" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:ContractQueryRequest"/>
+        <variable name="SCAGetContractsIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ContractQueryRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetContracts" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAGetContractsIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAGetContractsIn.ContractQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$POSGetContractsIn.ContractQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetContractsIn.ContractQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$POSGetContractsIn.ContractQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetContractsIn.ContractQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$POSGetContractsIn.ContractQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetContractsIn.ContractQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$POSGetContractsIn.ContractQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetContractsIn.ContractQuery/ns0:CustomerId</from>
+                <to>$POSGetContractsIn.ContractQuery/ns1:CustomerId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetContractsIn.ContractQuery/ns0:OrganisationId</from>
+                <to>$POSGetContractsIn.ContractQuery/ns1:OrganisationId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetContractsIn.ContractQuery/ns0:ContractId</from>
+                <to>$POSGetContractsIn.ContractQuery/ns1:ContractId</to>
+            </copy>
+        </assign>
+        <invoke name="Invoke1" partnerLink="POS" operation="GetContracts" xmlns:tns="http://xml.smilecoms.com/POS" portType="tns:POSSoap" inputVariable="POSGetContractsIn" outputVariable="POSGetContractsOut"/>
+        <assign name="AssignNumberOfContracts">
+            <copy>
+                <from>$POSGetContractsOut.ContractList/ns1:NumberOfContracts</from>
+                <to>$SCAGetContractsOut.ContractList/ns0:NumberOfContracts</to>
+            </copy>
+        </assign>
+        <if name="If1">
+            <condition>$POSGetContractsOut.ContractList/ns1:NumberOfContracts &gt; 0</condition>
+            <sequence name="Sequence1">
+                <forEach name="ForEachContract" parallel="no" counterName="contractIndex">
+                    <startCounterValue>1</startCounterValue>
+                    <finalCounterValue>$POSGetContractsOut.ContractList/ns1:NumberOfContracts</finalCounterValue>
+                    <scope name="Scope1">
+                        <sequence name="Sequence2">
+                            <assign name="Assign2">
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:ContractId
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:ContractId
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:ContractStartDateTime
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:ContractStartDateTime
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:ContractEndDateTime
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:ContractEndDateTime
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:CreatedDateTime
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:CreatedDateTime
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:LastModifiedDateTime
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:LastModifiedDateTime
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:Status
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:Status
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:CustomerProfileId
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:CustomerProfileId
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:OrganisationId
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:OrganisationId
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:InvoiceCycleDay
+                                        <sxed:editor>
+                                            <sxed:predicate path="$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]" source="from"/>
+                                        </sxed:editor>
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:InvoiceCycleDay
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:ContractName
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:ContractName
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:CreditAccountNumber
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:CreditAccountNumber
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:CreatedByCustomerId
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:CreatedByCustomerId
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:FulfilmentItemsAllowed</from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:FulfilmentItemsAllowed
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:StaffMembersAllowed
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:StaffMembersAllowed
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:PaymentMethod
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:PaymentMethod
+                                    </to>
+                                </copy>
+                                <copy>
+                                    <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:AccountId
+                                    </from>
+                                    <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:AccountId
+                                    </to>
+                                </copy>
+                            </assign>
+                            <forEach name="ForEachDocument" parallel="no" counterName="document">
+                                <startCounterValue>1</startCounterValue>
+                                <finalCounterValue>count($POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:ContractDocuments)</finalCounterValue>
+                                <scope name="Scope2">
+                                    <assign name="Assign3">
+                                        <copy>
+                                            <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:ContractDocuments[$document]/ns1:PhotoGuid
+                                            </from>
+                                            <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:ContractDocuments[$document]/ns0:PhotoGuid
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:ContractDocuments[$document]/ns1:PhotoType
+                                            </from>
+                                            <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:ContractDocuments[$document]/ns0:PhotoType
+                                            </to>
+                                        </copy>
+                                        <copy>
+                                            <from>$POSGetContractsOut.ContractList/ns1:Contracts[$contractIndex]/ns1:ContractDocuments[$document]/ns1:Data
+                                            </from>
+                                            <to>$SCAGetContractsOut.ContractList/ns0:Contracts[$contractIndex]/ns0:ContractDocuments[$document]/ns0:Data
+                                            </to>
+                                        </copy>
+                                    </assign>
+                                </scope>
+                            </forEach>
+                        </sequence>
+                    </scope>
+                </forEach>
+            </sequence>
+        </if>
+        <reply name="Reply1" partnerLink="SCA" operation="GetContracts" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAGetContractsOut"/>
+    </sequence>
+</process>

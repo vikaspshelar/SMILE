@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/IM"
+            xmlns:tns="http://xml.smilecoms.com/schema/IM"
+            elementFormDefault="qualified">
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PlatformString" >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="String" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformInteger" >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Integer" type="xsd:int">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject">
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="IMError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="IMError" type="tns:IMError">
+    </xsd:element>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+    <xsd:complexType name="Done">
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="Done" type="tns:Done">
+    </xsd:element>
+    
+    
+    <!--
+    **********************************************
+                       CUSTOMER MANAGEMENT
+    **********************************************
+    -->
+    
+    <xsd:complexType name="AuthenticationQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="SSOIdentity" type="xsd:string"/>
+                    <xsd:element name="SSOEncryptedPassword" type="xsd:string"/>
+                    <xsd:element name="IMSPublicIdentity" type="xsd:string"/>
+                    <xsd:element name="ActivationCode" type="xsd:string"/>
+                    <xsd:element name="EncryptedAppKey" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="Photograph">
+        <xsd:sequence>
+            <xsd:element name="PhotoGuid" type="xsd:string"/>
+            <xsd:element name="PhotoType" type="xsd:string"/>
+            <xsd:element name="Data" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+       
+    <xsd:complexType name="AuthenticationResult">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Done" type="tns:stDone">
+                    </xsd:element>
+                    <xsd:element name="SecurityGroups" type="xsd:string" maxOccurs="unbounded">
+                    </xsd:element>
+                    <xsd:element name="CustomerStatus" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+      
+    
+    <xsd:complexType name="Customer">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="CustomerId" type="xsd:int"/>
+                    <xsd:element name="Title" type="xsd:string"/>
+                    <xsd:element name="FirstName" type="xsd:string"/>
+                    <xsd:element name="MiddleName" type="xsd:string"/>                    
+                    <xsd:element name="LastName" type="xsd:string"/>
+                    <xsd:element name="CustomerStatus" type="xsd:string"/>
+                    <xsd:element name="IdentityNumber" type="xsd:string"/>                    
+                    <xsd:element name="IdentityNumberType" type="xsd:string"/>
+                    <xsd:element name="NationalIdentityNumber" type="xsd:string"/>
+                    <xsd:element name="IsNinVerified" type="xsd:string"/>
+                    <xsd:element name="CreatedDateTime" type="xsd:dateTime"/>
+                    <xsd:element name="Version" type="xsd:int"/>
+                    <xsd:element name="Addresses" type="tns:Address" maxOccurs="unbounded"/>
+                    <xsd:element name="DateOfBirth" type="xsd:string"/>
+                    <xsd:element name="Gender" type="xsd:string"/>
+                    <xsd:element name="Language" type="xsd:string"/>
+                    <xsd:element name="EmailAddress" type="xsd:string"/>
+                    <xsd:element name="AlternativeContact1" type="xsd:string"/>
+                    <xsd:element name="AlternativeContact2" type="xsd:string"/>
+                    <xsd:element name="Classification" type="xsd:string"/>
+                    <xsd:element name="SSOIdentity" type="xsd:string"/>
+                    <xsd:element name="SSODigest" type="xsd:string"/>
+                    <xsd:element name="SSOAuthFlags" type="xsd:int"/>
+                    <xsd:element name="OptInLevel" type="xsd:int"/>
+                    <xsd:element name="SecurityGroups" type="xsd:string" maxOccurs="unbounded"/>                    
+                    <xsd:element name="CustomerSellers" type="xsd:int" maxOccurs="unbounded"/>                    
+                    <xsd:element name="CustomerPhotographs" type="tns:Photograph" maxOccurs="unbounded"/>
+                    <xsd:element name="AccountManagerCustomerProfileId" type="xsd:int"/>
+                    <xsd:element name="OutstandingTermsAndConditions" type="xsd:string" maxOccurs="unbounded"/>
+                    <xsd:element name="CustomerRoles" type="tns:CustomerRole" maxOccurs="unbounded"/>
+                    <xsd:element name="MothersMaidenName" type="xsd:string"/>
+                    <xsd:element name="Nationality" type="xsd:string"/>
+                    <xsd:element name="PassportExpiryDate" type="xsd:string"/>
+                    <xsd:element name="WarehouseId" type="xsd:string"/>
+                    <xsd:element name="CreatedByCustomerProfileId" type="xsd:int"/>
+                    <xsd:element name="KYCStatus" type="xsd:string"/>
+                    <xsd:element name="ReferralCode" type="xsd:string"/>
+                    <xsd:element name="CountryCode" type="xsd:string"/>
+                    <xsd:element name="MandatoryKYCFields" type="tns:MandatoryKYCFields"/>
+                    <xsd:element name="CustomerNinData" type="tns:CustomerNinData"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="CustomerQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="CustomerId" type="xsd:int"/>
+                    <xsd:element name="LastName" type="xsd:string"/>
+                    <xsd:element name="FirstName" type="xsd:string"/>
+                    <xsd:element name="OrganisationName" type="xsd:string"/>
+                    <xsd:element name="IdentityNumber" type="xsd:string"/>
+                    <xsd:element name="NationalIdentityNumber" type="xsd:string"/>
+                    <xsd:element name="IsNinVerified" type="xsd:string"/>
+                    <xsd:element name="SecurityGroupType" type="xsd:string"/>
+                    <xsd:element name="SSOIdentity" type="xsd:string"/>
+                    <xsd:element name="AlternativeContact" type="xsd:string"/>
+                    <xsd:element name="EmailAddress" type="xsd:string"/>
+                    <xsd:element name="KYCStatus" type="xsd:string"/>                    
+                    <xsd:element name="ResultLimit" type="xsd:int"/>
+                    <xsd:element name="Verbosity" type="xsd:string"/>
+                    <xsd:element name="MandatoryKYCFields" type="tns:MandatoryKYCFields"/>
+                    <xsd:element name="CustomerNinData" type="tns:CustomerNinData"/>
+                </xsd:sequence>       
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TenantQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="CustomerId" type="xsd:int"/>
+                    <xsd:element name="SSOIdentity" type="xsd:string"/>
+                    <xsd:element name="EmailAddress" type="xsd:string"/>
+                </xsd:sequence>       
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TenantData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="tenant" type="xsd:string"/>
+                </xsd:sequence>       
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SSOPasswordResetData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="GUID" type="xsd:string"/>
+                    <xsd:element name="NewSSODigest" type="xsd:string"/>
+                </xsd:sequence>       
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SSOPasswordResetLinkData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Identifier" type="xsd:string"/>
+                    <xsd:element name="DeliveryMethod" type="xsd:string"/>
+                </xsd:sequence>       
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SSOPasswordResetLink">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="GUID" type="xsd:string"/>
+                    <xsd:element name="URL" type="xsd:string"/>
+                    <xsd:element name="Expiry" type="xsd:dateTime"/>
+                </xsd:sequence>       
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="CustomerList">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Customers" type="tns:Customer" maxOccurs="unbounded"/>
+                    <xsd:element name="NumberOfCustomers" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="CustomerRole">
+        <xsd:sequence>
+            <xsd:element name="RoleName" type="xsd:string"></xsd:element>
+            <xsd:element name="OrganisationName" type="xsd:string"></xsd:element>
+            <xsd:element name="CustomerName" type="xsd:string"></xsd:element>
+            <xsd:element name="OrganisationId" type="xsd:int"></xsd:element>
+            <xsd:element name="CustomerId" type="xsd:int"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <!-- Organisations -->
+    
+    <xsd:complexType name="Organisation">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="OrganisationId" type="xsd:int"/>
+                    <xsd:element name="OrganisationType" type="xsd:string"/>
+                    <xsd:element name="OrganisationSubType" type="xsd:string"/>
+                    <xsd:element name="OrganisationName" type="xsd:string"/>
+                    <xsd:element name="OrganisationStatus" type="xsd:string"/>
+                    <xsd:element name="CreatedDateTime" type="xsd:dateTime"/>
+                    <xsd:element name="Version" type="xsd:int"/>
+                    <xsd:element name="Addresses" type="tns:Address" maxOccurs="unbounded"/>
+                    <xsd:element name="EmailAddress" type="xsd:string"/>
+                    <xsd:element name="AlternativeContact1" type="xsd:string"/>
+                    <xsd:element name="AlternativeContact2" type="xsd:string"/>
+                    <xsd:element name="Industry" type="xsd:string"/>
+                    <xsd:element name="Size" type="xsd:string"/>
+                    <xsd:element name="TaxNumber" type="xsd:string"/>
+                    <xsd:element name="CompanyNumber" type="xsd:string"/>
+                    <xsd:element name="CreditAccountNumber" type="xsd:string"/>
+                    <xsd:element name="ChannelCode" type="xsd:string"/>
+                    <xsd:element name="ModificationRoles" type="xsd:string" maxOccurs="unbounded"/>
+                    <xsd:element name="OrganisationPhotographs" type="tns:Photograph" maxOccurs="unbounded"/>
+                    <xsd:element name="AccountManagerCustomerProfileId" type="xsd:int"/>
+                    <xsd:element name="CustomerRoles" type="tns:CustomerRole" maxOccurs="unbounded"/>
+                    <xsd:element name="OrganisationSellers" type="xsd:int"  maxOccurs="unbounded"/>
+                    <xsd:element name="CreatedByCustomerProfileId" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="OrganisationList">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Organisations" type="tns:Organisation" maxOccurs="unbounded"/>
+                    <xsd:element name="NumberOfOrganisations" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="OrganisationQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="OrganisationId" type="xsd:int"/>
+                    <xsd:element name="CustomerId" type="xsd:int"/>
+                    <xsd:element name="OrganisationName" type="xsd:string"/>
+                    <xsd:element name="ResultLimit" type="xsd:int"/>
+                    <xsd:element name="RolesResultLimit" type="xsd:int"/>
+                    <xsd:element name="RolesOffset" type="xsd:int"/>
+                    <xsd:element name="Verbosity" type="xsd:string"/>
+                </xsd:sequence>       
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <!-- Address -->
+    <xsd:complexType name="Address">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="AddressId" type="xsd:int"/>
+                    <xsd:element name="Line1" type="xsd:string"/>
+                    <xsd:element name="Line2" type="xsd:string"/>
+                    <xsd:element name="Zone" type="xsd:string"/>
+                    <xsd:element name="Town" type="xsd:string"/>
+                    <xsd:element name="State" type="xsd:string"/>
+                    <xsd:element name="Country" type="xsd:string"/>
+                    <xsd:element name="Code" type="xsd:string"/>
+                    <xsd:element name="Type" type="xsd:string"/>
+                    <xsd:element name="PostalMatchesPhysical" type="xsd:boolean"/>
+                    <xsd:element name="CustomerId" type="xsd:int"/>
+                    <xsd:element name="OrganisationId" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+   
+    <xsd:complexType name="VerifyDefacedCustomerRequest">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="nin" type="xsd:int"/>
+                    <xsd:element name="questionCode" type="xsd:string"/>
+                    <xsd:element name="answer" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ProductsKycVerification">
+        <xsd:sequence>
+            <xsd:element name="kycId" type="xsd:int"></xsd:element>
+            <xsd:element name="customerId" type="xsd:int"></xsd:element>
+            <xsd:element name="nin" type="xsd:string"></xsd:element>
+            <xsd:element name="createdDate" type="xsd:string"></xsd:element>            
+            <xsd:element name="status" type="xsd:string"></xsd:element>
+            <xsd:element name="verifiedBy" type="xsd:string"></xsd:element>
+            <xsd:element name="verificationDate" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ProductsKycVerificationQuery">
+        <xsd:complexContent>
+            <xsd:sequence>                
+                <xsd:element name="customerId" type="xsd:int"></xsd:element>
+                <xsd:element name="nin" type="xsd:string"></xsd:element>                                
+                <xsd:element name="status" type="xsd:string"></xsd:element>
+                <xsd:element name="verifiedBy" type="xsd:string"></xsd:element>                
+            </xsd:sequence>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="VerifyDefacedCustomerRequest" type="tns:VerifyDefacedCustomerRequest"/>
+    <xsd:element name="TenantQuery" type="tns:TenantQuery"/>
+    <xsd:element name="TenantData" type="tns:TenantData"/>
+    <xsd:element name="CustomerQuery" type="tns:CustomerQuery"/>
+    <xsd:element name="OrganisationQuery" type="tns:OrganisationQuery"/>
+    <xsd:element name="SSOPasswordResetLink" type="tns:SSOPasswordResetLink"/>
+    <xsd:element name="SSOPasswordResetLinkData" type="tns:SSOPasswordResetLinkData"/>
+    <xsd:element name="SSOPasswordResetData" type="tns:SSOPasswordResetData"/>
+    <xsd:element name="Customer" type="tns:Customer"/>
+    <xsd:element name="Organisation" type="tns:Organisation"/>
+    <xsd:element name="CustomerId" type="tns:PlatformInteger"/>
+    <xsd:element name="OrganisationId" type="tns:PlatformInteger"/>
+    <xsd:element name="NewAddress" type="tns:Address"/>
+    <xsd:element name="ModifiedAddress" type="tns:Address"/>
+    <xsd:element name="AddressToDelete" type="tns:Address"/>
+    <xsd:element name="NewCustomer" type="tns:Customer"/>
+    <xsd:element name="ModifiedCustomer" type="tns:Customer"/>
+    <xsd:element name="NewOrganisation" type="tns:Organisation"/>
+    <xsd:element name="ModifiedOrganisation" type="tns:Organisation"/>
+    <xsd:element name="CustomerList" type="tns:CustomerList"/>
+    <xsd:element name="OrganisationList" type="tns:OrganisationList"/>
+    <xsd:element name="AuthenticationQuery" type="tns:AuthenticationQuery"/>
+    <xsd:element name="AuthenticationResult" type="tns:AuthenticationResult"/>
+    <xsd:element name="Photograph" type="tns:Photograph"/>
+    <xsd:element name="PhotoGuid" type="tns:PlatformString"/>
+    
+    
+    
+    
+    
+    <!--
+    **********************************************
+                       HSS FUNCTIONALITY
+    **********************************************
+    -->
+    
+    <!-- IMSU -->
+    <xsd:complexType name="IMSSubscription">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMSSubscriptionId" type="xsd:int"></xsd:element>
+                    <xsd:element name="Version" type="xsd:int"></xsd:element>
+                    <xsd:element name="CapabilitiesSetId" type="xsd:int"></xsd:element>
+                    <xsd:element name="PreferredSCSCFSetId" type="xsd:int"></xsd:element>
+                    <xsd:element name="SCSCFName" type="xsd:string"></xsd:element>
+                    <xsd:element name="DiameterName" type="xsd:string"></xsd:element>
+                    <xsd:element name="IMSPrivateIdentities" type="tns:IMSPrivateIdentity" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="PreferredSCSCFs" type="xsd:string" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="IMSSubscriptionQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMSSubscriptionId" type="xsd:int"></xsd:element>
+                    <xsd:element name="IMSPrivateIdentity" type="xsd:string"></xsd:element>
+                    <xsd:element name="IMSPublicIdentity" type="xsd:string"></xsd:element>
+                    <xsd:element name="IMSPublicIdentityId" type="xsd:int"></xsd:element>
+                    <xsd:element name="IMSPrivateIdentityId" type="xsd:int"></xsd:element>
+                    <xsd:element name="ImplicitSetId" type="xsd:int"></xsd:element>
+                    <xsd:element name="IntegratedCircuitCardIdentifier" type="xsd:string"></xsd:element>
+                    <xsd:element name="OSSBSSReferenceId" type="xsd:string"></xsd:element>
+                    <xsd:element name="Verbosity" type="tns:stIMSSubscriptionLookupVerbosity"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:simpleType name="stIMSSubscriptionLookupVerbosity">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="NONE"/>
+            <xsd:enumeration value="IMSU"/>
+            <xsd:enumeration value="IMSU_IMPI"/>
+            <xsd:enumeration value="IMSU_IMPI_IMPU"/>
+            <xsd:enumeration value="IMSU_IMPI_IMPU_UD"/>
+            <xsd:enumeration value="IMSU_IMPI_IMPU_BESTEFFORT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="NewIMSSubscription" type="tns:IMSSubscription"></xsd:element>
+    <xsd:element name="DeleteIMSSubscriptionRequest" type="tns:IMSSubscription"></xsd:element>
+    <xsd:element name="IMSSubscription" type="tns:IMSSubscription"></xsd:element>
+    <xsd:element name="IMSSubscriptionQuery" type="tns:IMSSubscriptionQuery"></xsd:element>
+
+    <!-- IMPI -->
+    <xsd:complexType name="IMSPrivateIdentity">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMSPrivateIdentityId" type="xsd:int"></xsd:element>
+                    <xsd:element name="Identity" type="xsd:string"></xsd:element>
+                    <xsd:element name="IMSSubscriptionId" type="xsd:int"></xsd:element>
+                    <xsd:element name="IntegratedCircuitCardIdentifier" type="xsd:string"></xsd:element>
+                    <xsd:element name="AuthScheme" type="xsd:int"></xsd:element>
+                    <xsd:element name="DefaultAuthScheme" type="xsd:int"></xsd:element>
+                    <xsd:element name="EncryptedSecretKey" type="xsd:string"></xsd:element>
+                    <xsd:element name="EncryptedPublicKey" type="xsd:string"></xsd:element>
+                    <xsd:element name="EncryptedOperatorVariant" type="xsd:string"></xsd:element>
+                    <xsd:element name="AuthenticationManagementField" type="xsd:string"></xsd:element>
+                    <xsd:element name="Sequence" type="xsd:string"></xsd:element>
+                    <xsd:element name="Status" type="xsd:string"></xsd:element>
+                    <xsd:element name="OSSBSSReferenceId" type="xsd:string"></xsd:element>
+                    <xsd:element name="SIMLockedIMEIList" type="xsd:string"></xsd:element>
+                    <xsd:element name="Info" type="xsd:string"></xsd:element>
+                    <xsd:element name="RegionalSubscriptionZoneCodes" type="xsd:string"></xsd:element>
+                    <xsd:element name="ImplicitIMSPublicIdentitySets" type="tns:ImplicitIMSPublicIdentitySet" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="APNList" type="tns:APN" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="NewIMSPrivateIdentity" type="tns:IMSPrivateIdentity"></xsd:element>
+    <xsd:element name="DeleteIMSPrivateIdentityRequest" type="tns:IMSPrivateIdentity"></xsd:element>
+    <xsd:element name="IMSPrivateIdentity" type="tns:IMSPrivateIdentity"></xsd:element>
+    <xsd:element name="ModifiedIMSPrivateIdentity" type="tns:IMSPrivateIdentity"></xsd:element>
+    
+    <xsd:complexType name="APN">
+        <xsd:sequence>
+            <xsd:element name="APNName" type="xsd:string"></xsd:element>
+            <xsd:element name="IPv4Address" type="xsd:string"></xsd:element>
+            <xsd:element name="IPv6Address" type="xsd:string"></xsd:element>
+            <xsd:element name="Type" type="xsd:int"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="IMSPrivateIdentityQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Identity" type="xsd:string"/>
+                    <xsd:element name="IntegratedCircuitCardIdentifier" type="xsd:string"/>
+                    <xsd:element name="IMSPrivateIdentityId" type="xsd:int"></xsd:element>
+                    <xsd:element name="OSSBSSReferenceId" type="xsd:string"/>
+                    <xsd:element name="IMSPublicIdentity" type="xsd:string"/>
+                    <xsd:element name="IPv4Address" type="xsd:string"></xsd:element>
+                    <xsd:element name="IPv6Address" type="xsd:string"></xsd:element>
+                    <xsd:element name="SIMLockedIMEIList" type="xsd:string"></xsd:element>
+                    <xsd:element name="RegionalSubscriptionZoneCodes" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ServiceActivationData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ActivationCode" type="xsd:string"/>
+                    <xsd:element name="IMSSubscription" type="tns:IMSSubscription"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="IMSPublicIdentityQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Identity" type="xsd:string"/>
+                    <xsd:element name="IMSPublicIdentityId" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="IMSPublicIdentityQuery" type="tns:IMSPublicIdentityQuery"></xsd:element>
+    <xsd:element name="IMSPrivateIdentityQuery" type="tns:IMSPrivateIdentityQuery"></xsd:element>
+    <xsd:element name="ServiceActivationDataQuery" type="tns:IMSSubscriptionQuery"></xsd:element>
+    <xsd:element name="ServiceActivationData" type="tns:ServiceActivationData"></xsd:element>
+
+    <!-- Implicit Set -->
+    <xsd:complexType name="ImplicitIMSPublicIdentitySet">
+        <xsd:sequence>
+            <xsd:element name="ImplicitSetId" type="xsd:int"></xsd:element>
+            <xsd:element name="UserData" type="xsd:string"></xsd:element>
+            <xsd:element name="AssociatedIMSPublicIdentities" type="tns:IMSNestedIdentityAssociation" maxOccurs="unbounded"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- IMPU -->
+    <xsd:complexType name="IMSPublicIdentity">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMSPublicIdentityId" type="xsd:int"></xsd:element>
+                    <xsd:element name="Type" type="xsd:int"></xsd:element>
+                    <xsd:element name="Identity" type="xsd:string"></xsd:element>
+                    <xsd:element name="Barring" type="xsd:int"></xsd:element>
+                    <xsd:element name="UserState" type="xsd:int"></xsd:element>
+                    <xsd:element name="CanRegister" type="xsd:int"></xsd:element>
+                    <xsd:element name="ImplicitSetId" type="xsd:int"></xsd:element>
+                    <xsd:element name="DisplayName" type="xsd:string"></xsd:element>
+                    <xsd:element name="PSIActivation" type="xsd:int"></xsd:element>
+                    <xsd:element name="WildcardPSI" type="xsd:string"></xsd:element>
+                    <xsd:element name="IMSServiceProfile" type="tns:IMSServiceProfile"></xsd:element>
+                    <xsd:element name="IMSChargingInformation" type="tns:IMSChargingInformation"></xsd:element>
+                    <xsd:element name="AllowedNetworks" type="xsd:string" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>    
+    <xsd:complexType name="IMSServiceProfile">
+        <xsd:sequence>
+            <xsd:element name="IMSServiceProfileId" type="xsd:int"></xsd:element>
+            <xsd:element name="Name" type="xsd:string"></xsd:element>
+            <xsd:element name="UnregisteredServicesCount" type="xsd:int"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="IMSChargingInformation">
+        <xsd:sequence>
+            <xsd:element name="IMSChargingInformationId" type="xsd:int"></xsd:element>
+            <xsd:element name="Name" type="xsd:string"></xsd:element>
+            <xsd:element name="PrimaryECF" type="xsd:string"></xsd:element>
+            <xsd:element name="SecondaryECF" type="xsd:string"></xsd:element>
+            <xsd:element name="PrimaryCCF" type="xsd:string"></xsd:element>
+            <xsd:element name="SecondaryCCF" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="NewIMSPublicIdentity" type="tns:IMSPublicIdentity"></xsd:element>    
+    <xsd:element name="DeleteIMSPublicIdentityRequest" type="tns:IMSPublicIdentity"></xsd:element>
+    <xsd:element name="ModifiedIMSPublicIdentity" type="tns:IMSPublicIdentity"></xsd:element>
+    <xsd:element name="IMSPublicIdentity" type="tns:IMSPublicIdentity"></xsd:element>
+    
+
+    <!-- Identity Association -->
+    <xsd:complexType name="IMSSimpleIdentityAssociation">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMSSimpleIdentityAssociationId" type="xsd:int"></xsd:element>
+                    <xsd:element name="IMSPrivateIdentityId" type="xsd:int"></xsd:element>
+                    <xsd:element name="IMSPublicIdentityId" type="xsd:int"></xsd:element>
+                    <xsd:element name="UserState" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="NewIdentityAssociation" type="tns:IMSSimpleIdentityAssociation"></xsd:element>
+    <xsd:element name="DeleteIdentityAssociationRequest" type="tns:IMSSimpleIdentityAssociation"></xsd:element>
+
+    <xsd:complexType name="IMSNestedIdentityAssociation">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMSNestedIdentityAssociationId" type="xsd:int"></xsd:element>
+                    <xsd:element name="IMSPrivateIdentityId" type="xsd:int"></xsd:element>
+                    <xsd:element name="IMSPublicIdentity" type="tns:IMSPublicIdentity"></xsd:element>
+                    <xsd:element name="UserState" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    
+    
+    
+    
+    <xsd:complexType name="SIMSwapRequest">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="OldIntegratedCircuitCardIdentifier" type="xsd:string"></xsd:element>
+                    <xsd:element name="NewIntegratedCircuitCardIdentifier" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="SIMSwapRequest" type="tns:SIMSwapRequest"></xsd:element>
+    
+    <xsd:complexType name="IMSSubscriptionStatusUpdateData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMSSubscriptionId" type="xsd:int"></xsd:element>
+                    <xsd:element name="Version" type="xsd:int"></xsd:element>
+                    <xsd:element name="NewSCSCFName" type="xsd:string"></xsd:element>
+                    <xsd:element name="NewDiameterName" type="xsd:string"></xsd:element>
+                    <xsd:element name="IMSIdentityChanges" type="tns:IMSIdentityChange" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="IMSIdentityChange">
+        <xsd:sequence>
+            <xsd:element name="IdentityType" type="xsd:string"></xsd:element>
+            <xsd:element name="IdentityId" type="xsd:string"></xsd:element>
+            <xsd:element name="IdentityField" type="xsd:string"></xsd:element>
+            <xsd:element name="NewValue" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="IMSSubscriptionStatusUpdateData" type="tns:IMSSubscriptionStatusUpdateData"></xsd:element>
+    
+    <!--
+    #################################################
+         Third Party Management ( - B2B - )
+    #################################################
+    -->
+
+    <xsd:element name="ThirdPartyId" type="tns:PlatformInteger"></xsd:element>
+    
+    <xsd:complexType name="ThirdPartyAuthorisationRuleSet">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="RuleSetId" type="xsd:int"/>
+                    <xsd:element name="ThirdPartyAuthorisationRules" type="tns:ThirdPartyAuthorisationRule" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="ThirdPartyAuthorisationRuleSet" type="tns:ThirdPartyAuthorisationRuleSet"></xsd:element>
+    
+    <xsd:complexType name="ThirdPartyAuthorisationRule">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="RuleId" type="xsd:int"/>
+                    <xsd:element name="XQuery" type="xsd:string"/>
+                    <xsd:element name="RegexMatch" type="xsd:string"/>
+                    <xsd:element name="Description" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ThirdPartyAuthorisationRuleSetList">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ThirdPartyId" type="xsd:int"/>
+                    <xsd:element name="ThirdPartyAuthorisationRuleSets" type="tns:ThirdPartyAuthorisationRuleSet" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="ThirdPartyAuthorisationRule" type="tns:ThirdPartyAuthorisationRule"></xsd:element>
+    <xsd:element name="ThirdPartyAuthorisationRuleSetList" type="tns:ThirdPartyAuthorisationRuleSetList"></xsd:element>
+    
+    
+   
+</xsd:schema>
+
+
+
+
+
+
+
+

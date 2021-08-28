@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="BMServiceDefinition" targetNamespace="http://xml.smilecoms.com/BM"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://xml.smilecoms.com/schema/BM" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://xml.smilecoms.com/BM" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:fi="http://java.sun.com/xml/ns/wsit/2006/09/policy/fastinfoset/service" xmlns:tcp="http://java.sun.com/xml/ns/wsit/2006/09/policy/soaptcp/service">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/BM">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/BM" schemaLocation="BMSchema.xsd"/>
+        </xsd:schema>
+    </types>
+
+    
+
+    <message name="BMError">
+        <part name="BMError" element="ns:BMError"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="RateAndBillRequest">
+        <part name="ChargingRequest" element="ns:ChargingRequest"/>
+    </message>
+    <message name="RateAndBillResponse">
+        <part name="ChargingResult" element="ns:ChargingResult"/>
+    </message>
+    <message name="GetAccountsRequest">
+        <part name="AccountQuery" element="ns:AccountQuery"/>
+    </message>
+    <message name="GetAccountsResponse">
+        <part name="AccountList" element="ns:AccountList"/>
+    </message>
+    <message name="GetUnitCreditInstancesRequest">
+        <part name="UnitCreditInstanceQuery" element="ns:UnitCreditInstanceQuery"/>
+    </message>
+    <message name="GetUnitCreditInstancesResponse">
+        <part name="UnitCreditInstanceList" element="ns:UnitCreditInstanceList"/>
+    </message>
+    <message name="GetTransferGraphRequest">
+        <part name="TransferGraphQuery" element="ns:TransferGraphQuery"/>
+    </message>
+    <message name="GetTransferGraphResponse">
+        <part name="TransferGraph" element="ns:TransferGraph"/>
+    </message>
+    <message name="TransferBalanceRequest">
+        <part name="BalanceTransferData" element="ns:BalanceTransferData"/>
+    </message>
+    <message name="UpdatePortingDataRequest">
+        <part name="PortingData" element="ns:PortingData"/>
+    </message>
+    <message name="TransferBalanceResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetAccountHistoryRequest">
+        <part name="AccountHistoryQuery" element="ns:AccountHistoryQuery"/>
+    </message>
+    <message name="GetAccountHistoryResponse">
+        <part name="AccountHistory" element="ns:AccountHistory"/>
+    </message>
+    <message name="GetAccountSummaryRequest">
+        <part name="AccountSummaryQuery" element="ns:AccountSummaryQuery"/>
+    </message>
+    <message name="GetAccountSummaryResponse">
+        <part name="AccountSummary" element="ns:AccountSummary"/>
+    </message>
+    <message name="GetRatePlanRequest">
+        <part name="RatePlanId" element="ns:RatePlanId"/>
+    </message>
+    <message name="RatePlanResponse">
+        <part name="RatePlan" element="ns:RatePlan"/>
+    </message>
+    <message name="AddServiceInstanceMappingsRequest">
+        <part name="ServiceInstanceMappingList" element="ns:ServiceInstanceMappingList"/>
+    </message>
+    <message name="ReplaceServiceInstanceMappingsRequest">
+        <part name="ServiceInstanceMappingsReplacementData" element="ns:ServiceInstanceMappingsReplacementData"/>
+    </message>
+    <message name="GetServiceInstanceMappingsResponse">
+        <part name="ServiceInstanceMappingList" element="ns:ServiceInstanceMappingList"/>
+    </message>
+    <message name="GetServiceInstanceMappingsRequest">
+        <part name="ServiceInstanceId" element="ns:ServiceInstanceId"/>
+    </message>
+    <message name="DeleteServiceInstanceMappingsRequest">
+        <part name="ServiceInstanceMappingListToDelete" element="ns:ServiceInstanceMappingListToDelete"/>
+    </message>
+    <message name="ProvisionUnitCreditRequest">
+        <part name="ProvisionUnitCreditRequest" element="ns:ProvisionUnitCreditRequest"/>
+    </message>
+    <message name="ProvisionUnitCreditResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="CreateAccountRequest">
+        <part name="CreateAccountRequest" element="ns:CreateAccountRequest"/>
+    </message>
+    <message name="CreateScheduledAccountHistoryRequest">
+        <part name="CreateScheduledAccountHistoryRequest" element="ns:CreateScheduledAccountHistoryRequest"/>
+    </message>    
+    <message name="CreateScheduledAccountHistoryResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>        
+    <message name="ModifyAccountRequest">
+        <part name="ModifyAccountRequest" element="ns:ModifyAccountRequest"/>
+    </message>
+    <message name="CreateScheduledAccountHistoryRequest">
+        <part name="CreateScheduledAccountHistoryRequest" element="ns:CreateScheduledAccountHistoryRequest"/>
+    </message>
+    <message name="ModifyServiceInstanceAccountRequest">
+        <part name="ModifyServiceInstanceAccountRequest" element="ns:ModifyServiceInstanceAccountRequest"/>
+    </message>
+    <message name="ModifyUnitCreditRequest">
+        <part name="ModifyUnitCreditRequest" element="ns:ModifyUnitCreditRequest"/>
+    </message>
+    <message name="SplitUnitCreditRequest">
+        <part name="SplitUnitCreditRequest" element="ns:SplitUnitCreditRequest"/>
+    </message>
+    <message name="DeleteAccountRequest">
+        <part name="DeleteAccountRequest" element="ns:DeleteAccountRequest"/>
+    </message>
+    <message name="AccountResponse">
+        <part name="Account" element="ns:Account"/>
+    </message>
+    <message name="ReverseTransactionsRequest">
+        <part name="TransactionReversalData" element="ns:TransactionReversalData"/>
+    </message>
+    
+    <message name="MaximumExpiryDateOfUnitCreditOnAccountRequest">
+        <part name="MaximumExpiryDateOfUnitCreditOnAccountQuery" element="ns:MaximumExpiryDateOfUnitCreditOnAccountQuery"/>
+    </message>
+    <message name="MaximumExpiryDateOfUnitCreditOnAccountResponse">
+        <part name="MaximumExpiryDateOfUnitCreditOnAccountReply" element="ns:MaximumExpiryDateOfUnitCreditOnAccountReply"/>
+    </message>
+    
+    
+    <portType name="BMSoap">
+        <operation name="IsUp">
+            <input name="input1" message="tns:IsUpRequest"/>
+            <output name="output1" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="RateAndBill">
+            <input name="input2" message="tns:RateAndBillRequest"/>
+            <output name="output2" message="tns:RateAndBillResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="AddServiceInstanceMappings">
+            <input name="input7" message="tns:AddServiceInstanceMappingsRequest"/>
+            <output name="output7" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="DeleteServiceInstanceMappings">
+            <input name="input11" message="tns:DeleteServiceInstanceMappingsRequest"/>
+            <output name="output11" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="GetServiceInstanceMappings">
+            <input name="input12" message="tns:GetServiceInstanceMappingsRequest"/>
+            <output name="output12" message="tns:GetServiceInstanceMappingsResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="ReplaceServiceInstanceMappings">
+            <input name="input13" message="tns:ReplaceServiceInstanceMappingsRequest"/>
+            <output name="output13" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <!--
+        #################################################
+        Account Management Functions
+        #################################################
+        -->
+        <operation name="GetAccounts">
+            <input name="input3" message="tns:GetAccountsRequest"/>
+            <output name="output3" message="tns:GetAccountsResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="CreateAccount">
+            <input name="input9" message="tns:CreateAccountRequest"/>
+            <output name="output9" message="tns:AccountResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="DeleteAccount">
+            <input name="input10" message="tns:DeleteAccountRequest"/>
+            <output name="output10" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="ModifyAccount">
+            <input name="input18" message="tns:ModifyAccountRequest"/>
+            <output name="output18" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="TransferBalance">
+            <documentation>
+                Performs a balance tranfer from one account to another.
+            </documentation>
+            <input name="input4" message="tns:TransferBalanceRequest"/>
+            <output name="output4" message="tns:TransferBalanceResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="GetAccountHistory">
+            <documentation>
+                Retrieves a list of all activities performed on a given account.
+            </documentation>
+            <input name="input5" message="tns:GetAccountHistoryRequest"/>
+            <output name="output5" message="tns:GetAccountHistoryResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="GetAccountSummary">
+            <input name="input28" message="tns:GetAccountSummaryRequest"/>
+            <output name="output28" message="tns:GetAccountSummaryResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="GetRatePlan">
+            <documentation>
+                Gets the info about a rate plan configuration
+            </documentation>
+            <input name="input6" message="tns:GetRatePlanRequest"/>
+            <output name="output6" message="tns:RatePlanResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="ProvisionUnitCredit">
+            <documentation>
+                Charges for a unit credit and provisions it on the account
+            </documentation>
+            <input name="input8" message="tns:ProvisionUnitCreditRequest"/>
+            <output name="output8" message="tns:ProvisionUnitCreditResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="ReverseTransactions">
+            <input name="input19" message="tns:ReverseTransactionsRequest"/>
+            <output name="output19" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="ModifyUnitCredit">
+            <input name="input20" message="tns:ModifyUnitCreditRequest"/>
+            <output name="output20" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="SplitUnitCredit">
+            <input name="input27" message="tns:SplitUnitCreditRequest"/>
+            <output name="output27" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="ModifyServiceInstanceAccount">
+            <input name="input21" message="tns:ModifyServiceInstanceAccountRequest"/>
+            <output name="output21" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="GetUnitCreditInstances">
+            <input name="input29" message="tns:GetUnitCreditInstancesRequest"/>
+            <output name="output29" message="tns:GetUnitCreditInstancesResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        
+        
+        <operation name="GetMaximumExpiryDateOfUnitCreditOnAccount">
+            <input name="input30" message="tns:MaximumExpiryDateOfUnitCreditOnAccountRequest"/>
+            <output name="output30" message="tns:MaximumExpiryDateOfUnitCreditOnAccountResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <!--
+        #################################################
+        Commissions Functions
+        #################################################
+        -->
+        <operation name="GetTransferGraph">
+            <input name="input25" message="tns:GetTransferGraphRequest"/>
+            <output name="output25" message="tns:GetTransferGraphResponse"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+         <operation name="UpdatePortingData">
+            <input name="input26" message="tns:UpdatePortingDataRequest"/>
+            <output name="output26" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        <operation name="CreateScheduledAccountHistory">
+            <input name="input31" message="tns:CreateScheduledAccountHistoryRequest"/>
+            <output name="output31" message="tns:Done"/>
+            <fault name="fault1" message="tns:BMError"/>
+        </operation>
+        
+    </portType>
+
+    <binding name="BMBinding" type="tns:BMSoap">
+        <wsp:PolicyReference URI="#BMBindingPolicy"/>
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="IsUp">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="RateAndBill">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetAccounts">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="TransferBalance">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetAccountHistory">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetRatePlan">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddServiceInstanceMappings">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProvisionUnitCredit">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateAccount">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteAccount">
+            <input name="input10">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output10">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteServiceInstanceMappings">
+            <input name="input11">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output11">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetServiceInstanceMappings">
+            <input name="input12">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output12">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ReplaceServiceInstanceMappings">
+            <input name="input13">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output13">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyAccount">
+            <input name="input18">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output18">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ReverseTransactions">
+            <input name="input19">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output19">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyUnitCredit">
+            <input name="input20">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output20">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyServiceInstanceAccount">
+            <input name="input21">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output21">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetTransferGraph">
+            <input name="input25">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output25">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="UpdatePortingData">
+            <input name="input26">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output26">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SplitUnitCredit">
+            <input name="input27">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output27">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetAccountSummary">
+            <input name="input28">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output28">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetUnitCreditInstances">
+            <input name="input29">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output29">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetMaximumExpiryDateOfUnitCreditOnAccount">
+            <input name="input30">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output30">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateScheduledAccountHistory">
+            <input name="input31">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output31">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>        
+    </binding>
+    <service name="BM">
+        <port name="BMSoap" binding="tns:BMBinding">
+            <soap:address location="http://dummyhost:${HttpDefaultPort}/BM/BMSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="BMServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="BM" portType="tns:BMSoap"/>
+    </plnk:partnerLinkType>
+    <wsp:Policy wsu:Id="BMBindingPolicy">
+        <wsp:ExactlyOne>
+            <wsp:All/>
+        </wsp:ExactlyOne>
+    </wsp:Policy>
+</definitions>

@@ -1,0 +1,989 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="IMServiceDefinition" targetNamespace="http://xml.smilecoms.com/IM"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://xml.smilecoms.com/schema/IM" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://xml.smilecoms.com/IM">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/IM">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/IM" schemaLocation="IMSchema.xsd"/>           
+        </xsd:schema>
+    </types>
+    <message name="IMError">
+        <part name="IMError" element="ns:IMError"/>
+    </message>
+    <message name="AuthenticateRequest">
+        <part name="AuthenticationQuery" element="ns:AuthenticationQuery"/>
+    </message>
+    <message name="AuthenticateResponse">
+        <part name="AuthenticationResult" element="ns:AuthenticationResult"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="CreateIMSPrivateIdentityRequest">
+        <part name="NewIMSPrivateIdentity" element="ns:NewIMSPrivateIdentity"/>
+    </message>
+    <message name="CreateIMSPrivateIdentityResponse">
+        <part name="IMSPrivateIdentity" element="ns:IMSPrivateIdentity"/>
+    </message>
+    <message name="DeleteIMSPrivateIdentityRequest">
+        <part name="DeleteIMSPrivateIdentityRequest" element="ns:DeleteIMSPrivateIdentityRequest"/>
+    </message>
+    <message name="CreateIMSPublicIdentityRequest">
+        <part name="NewIMSPublicIdentity" element="ns:NewIMSPublicIdentity"/>
+    </message>
+    <message name="CreateIMSPublicIdentityResponse">
+        <part name="IMSPublicIdentity" element="ns:IMSPublicIdentity"/>
+    </message>
+    <message name="DeleteIMSPublicIdentityRequest">
+        <part name="DeleteIMSPublicIdentityRequest" element="ns:DeleteIMSPublicIdentityRequest"/>
+    </message>
+    <message name="CreateIdentityAssociationRequest">
+        <part name="NewIdentityAssociation" element="ns:NewIdentityAssociation"/>
+    </message>
+    <message name="CreateIdentityAssociationResponse">
+        <part name="IdentityAssociation" element="ns:NewIdentityAssociation"/>
+    </message>
+    <message name="DeleteIdentityAssociationRequest">
+        <part name="DeleteIdentityAssociationRequest" element="ns:DeleteIdentityAssociationRequest"/>
+    </message>
+    <message name="GetIMSPrivateIdentityRequest">
+        <part name="IMSPrivateIdentityQuery" element="ns:IMSPrivateIdentityQuery"/>
+    </message>
+    <message name="GetIMSPrivateIdentityResponse">
+        <part name="IMSPrivateIdentity" element="ns:IMSPrivateIdentity"/>
+    </message>
+    <message name="GetServiceActivationDataRequest">
+        <part name="ServiceActivationDataQuery" element="ns:ServiceActivationDataQuery"/>
+    </message>
+    <message name="GetServiceActivationDataResponse">
+        <part name="ServiceActivationData" element="ns:ServiceActivationData"/>
+    </message>
+    <message name="ModifyIMSPrivateIdentityResponse">
+        <part name="IMSPrivateIdentity" element="ns:IMSPrivateIdentity"/>
+    </message>
+    <message name="ModifyIMSPrivateIdentityRequest">
+        <part name="ModifiedIMSPrivateIdentity" element="ns:IMSPrivateIdentity"/>
+    </message>
+    <message name="ModifyIMSPublicIdentityResponse">
+        <part name="IMSPublicIdentity" element="ns:IMSPublicIdentity"/>
+    </message>
+    <message name="ModifyIMSPublicIdentityRequest">
+        <part name="ModifiedIMSPublicIdentity" element="ns:IMSPublicIdentity"/>
+    </message>
+    <message name="GetIMSPublicIdentityRequest">
+        <part name="IMSPublicIdentityQuery" element="ns:IMSPublicIdentityQuery"/>
+    </message>
+    <message name="GetIMSPublicIdentityResponse">
+        <part name="IMSPublicIdentity" element="ns:IMSPublicIdentity"/>
+    </message>
+    <message name="CreateIMSSubscriptionRequest">
+        <part name="NewIMSSubscription" element="ns:NewIMSSubscription"/>
+    </message>
+    <message name="CreateIMSSubscriptionResponse">
+        <part name="IMSSubscription" element="ns:IMSSubscription"/>
+    </message>
+    <message name="DeleteIMSSubscriptionRequest">
+        <part name="DeleteIMSSubscriptionRequest" element="ns:DeleteIMSSubscriptionRequest"/>
+    </message>
+    <message name="GetIMSSubscriptionRequest">
+        <part name="IMSSubscriptionQuery" element="ns:IMSSubscriptionQuery"/>
+    </message>
+    <message name="GetIMSSubscriptionResponse">
+        <part name="IMSSubscription" element="ns:IMSSubscription"/>
+    </message>
+    <message name="ModifyIMSSubscriptionStatusRequest">
+        <part name="IMSSubscriptionStatusUpdateData" element="ns:IMSSubscriptionStatusUpdateData"/>
+    </message>  
+    <message name="ModifyIMSSubscriptionStatusResponse">
+        <part name="Done" element="ns:Done"/>
+    </message> 
+    <message name="GetCustomersRequest">
+        <part name="CustomerQuery" element="ns:CustomerQuery"/>
+    </message>
+    <message name="GetCustomersResponse">
+        <part name="CustomerList" element="ns:CustomerList"/>
+    </message>
+    <message name="GetOrganisationsRequest">
+        <part name="OrganisationQuery" element="ns:OrganisationQuery"/>
+    </message>
+    <message name="GetOrganisationsResponse">
+        <part name="OrganisationList" element="ns:OrganisationList"/>
+    </message>
+    <message name="AddCustomerRequest">
+        <part name="NewCustomer" element="ns:NewCustomer"/>
+    </message>
+    <message name="AddCustomerResponse">
+        <part name="CustomerId" element="ns:CustomerId"/>
+    </message>
+    <message name="AddOrganisationRequest">
+        <part name="NewOrganisation" element="ns:NewOrganisation"/>
+    </message>
+    <message name="AddOrganisationResponse">
+        <part name="OrganisationId" element="ns:OrganisationId"/>
+    </message>
+    <message name="ModifyCustomerRequest">
+        <part name="ModifiedCustomer" element="ns:ModifiedCustomer"/>
+    </message>
+    <message name="ModifyOrganisationRequest">
+        <part name="ModifiedOrganisation" element="ns:ModifiedOrganisation"/>
+    </message>
+    <message name="AddAddressRequest">
+        <part name="NewAddress" element="ns:NewAddress"/>
+    </message>
+    <message name="DeleteAddressRequest">
+        <part name="AddressToDelete" element="ns:AddressToDelete"/>
+    </message>
+    <message name="ModifyAddressRequest">
+        <part name="ModifiedAddress" element="ns:ModifiedAddress"/>
+    </message>
+    <message name="SIMSwapRequest">
+        <part name="SIMSwapRequest" element="ns:SIMSwapRequest"/>
+    </message>
+    <message name="SIMSwapResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="ResetSSOPasswordRequest">
+        <part name="SSOPasswordResetData" element="ns:SSOPasswordResetData"/>
+    </message>
+    <message name="SendSSOPasswordResetLinkRequest">
+        <part name="SSOPasswordResetLinkData" element="ns:SSOPasswordResetLinkData"/>
+    </message>
+    <message name="SendSSOPasswordResetLinkResponse">
+        <part name="SSOPasswordResetLink" element="ns:SSOPasswordResetLink"/>
+    </message>
+    <message name="GetThirdPartyAuthorisationRulesRequest">
+        <part name="ThirdPartyId" element="ns:ThirdPartyId"/>
+    </message>
+    <message name="GetThirdPartyAuthorisationRulesResponse">
+        <part name="ThirdPartyAuthorisationRuleSetList" element="ns:ThirdPartyAuthorisationRuleSetList"/>
+    </message>
+    <message name="GetPhotoRequest">
+        <part name="PhotoGuid" element="ns:PhotoGuid"/>
+    </message>
+    <message name="GetPhotoResponse">
+        <part name="Photo" element="ns:Photograph"/>
+    </message>
+    <message name="GetCustomerTenantRequest">
+        <part name="TenantQuery" element="ns:TenantQuery"/>
+    </message>
+    <message name="GetCustomerTenantResponse">
+        <part name="TenantData" element="ns:TenantData"/>
+    </message>
+    
+    <message name="NiraVerifyRequest">
+        <part name="NiraVerifyQuery" element="ns:NiraVerifyQuery"/>
+    </message>
+    <message name="NiraVerifyResponse">
+        <part name="NiraVerifyReply" element="ns:NiraVerifyReply"/>
+    </message>
+    
+    <message name="NidaVerifyRequest">
+        <part name="NidaVerifyQuery" element="ns:NidaVerifyQuery"/>
+    </message>
+    <message name="NidaVerifyResponse">
+        <part name="NidaVerifyReply" element="ns:NidaVerifyReply"/>
+    </message>
+    
+    <message name="GetUICCDetailsRequest">
+        <part name="UICCDetailsQuery" element="ns:UICCDetailsQuery"/>
+    </message>
+    <message name="GetUICCDetailsResponse">
+        <part name="UICCDetails" element="ns:UICCDetails"/>
+    </message>
+    
+    <message name="NiraPasswordChangeRequest">
+        <part name="NiraPasswordChange" element="ns:NiraPasswordChange"/>
+    </message>
+    <message name="NiraPasswordChangeResponse">
+        <part name="NiraPasswordChangeReply" element="ns:NiraPasswordChangeReply"/>
+    </message>
+    <message name="CreateNAIIdentityRequest">
+        <part name="NewNAIIdentity" element="ns:NewNAIIdentity"/>
+    </message>
+    <message name="CreateNAIIdentityResponse">
+        <part name="NAIIdentity" element="ns:NAIIdentity"/>
+    </message>
+    <message name="ModifyNAIIdentityResponse">
+        <part name="NAIIdentity" element="ns:NAIIdentity"/>
+    </message>
+    <message name="ModifyNAIIdentityRequest">
+        <part name="ModifiedNAIIdentity" element="ns:NAIIdentity"/>
+    </message>
+    <message name="DeleteNAIIdentityRequest">
+        <part name="DeleteNAIIdentityRequest" element="ns:DeleteNAIIdentityRequest"/>
+    </message>
+    <message name="GetNAIIdentityRequest">
+        <part name="NAIIdentityQuery" element="ns:NAIIdentityQuery"/>
+    </message>
+    <message name="GetNAIIdentityResponse">
+        <part name="NAIIdentity" element="ns:NAIIdentity"/>
+    </message>
+    
+    <message name="CheckDocumentUniquenessRequest">
+        <part name="DocumentUniquenessQuery" element="ns:DocumentUniquenessQuery"/>
+    </message>
+    <message name="CheckDocumentUniquenessResponse">
+        <part name="DocumentUniquenessReply" element="ns:DocumentUniquenessReply"/>
+    </message>
+    <message name="VerifyForeignerRequest">
+        <part name="VerifyForeignerQuery" element="ns:VerifyForeignerQuery"/>
+    </message>
+    <message name="VerifyForeignerResponse">
+        <part name="VerifyForeignerReply" element="ns:VerifyForeignerReply"/>
+    </message>
+    <message name="VerifyDefacedCustomerRequest">
+        <part name="VerifyDefacedQuery" element="ns:VerifyDefacedQuery"/>
+    </message>
+    <message name="VerifyDefacedCustomerResponse">
+        <part name="VerifyDefacedReply" element="ns:VerifyDefacedReply"/>
+    </message>
+    <message name="VerifyNinRequest">
+        <part name="VerifyNinQuery" element="ns:VerifyNinQuery"/>
+    </message>
+    <message name="VerifyNinResponse">
+        <part name="VerifyNinResponseList" element="ns:VerifyNinResponseList"/>
+    </message>    
+    <message name="ProductsKycVerificationRequest">
+        <part name="ProductsKycVerificationQuery" element="ns:ProductsKycVerificationQuery"/>
+    </message>
+    <message name="ProductsKycVerificationResponse">
+        <part name="ProductsKycVerificationResponseList" element="ns:ProductsKycVerificationResponseList"/>
+    </message>
+        
+    <portType name="IMSoap">
+        <operation name="Authenticate">
+            <input name="input1" message="tns:AuthenticateRequest"/>
+            <output name="output1" message="tns:AuthenticateResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="IsUp">
+            <input name="input2" message="tns:IsUpRequest"/>
+            <output name="output2" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="GetIMSSubscription">
+            <input name="input9" message="tns:GetIMSSubscriptionRequest"/>
+            <output name="output9" message="tns:GetIMSSubscriptionResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="ModifyIMSSubscriptionStatus">
+            <input name="input10" message="tns:ModifyIMSSubscriptionStatusRequest"/>
+            <output name="output10" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        
+        <operation name="CreateIMSPrivateIdentity">
+            <input name="input3" message="tns:CreateIMSPrivateIdentityRequest"/>
+            <output name="output3" message="tns:CreateIMSPrivateIdentityResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="CreateIMSPublicIdentity">
+            <input name="input4" message="tns:CreateIMSPublicIdentityRequest"/>
+            <output name="output4" message="tns:CreateIMSPublicIdentityResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="CreateIdentityAssociation">
+            <input name="input5"   message="tns:CreateIdentityAssociationRequest"/>
+            <output name="output5" message="tns:CreateIdentityAssociationResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="GetIMSPublicIdentity">
+            <input name="input6" message="tns:GetIMSPublicIdentityRequest"/>
+            <output name="output6" message="tns:GetIMSPublicIdentityResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="GetIMSPrivateIdentity">
+            <input name="input7" message="tns:GetIMSPrivateIdentityRequest"/>
+            <output name="output7" message="tns:GetIMSPrivateIdentityResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="CreateIMSSubscription">
+            <input name="input8" message="tns:CreateIMSSubscriptionRequest"/>
+            <output name="output8" message="tns:CreateIMSSubscriptionResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation  name="DeleteIMSSubscription">
+            <input  name="input11" message="tns:DeleteIMSSubscriptionRequest"/>
+            <output name="output11" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="DeleteIMSPrivateIdentity">
+            <input name="input12" message="tns:DeleteIMSPrivateIdentityRequest"/>
+            <output name="output12" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="DeleteIMSPublicIdentity">
+            <input name="input13" message="tns:DeleteIMSPublicIdentityRequest"/>
+            <output name="output13" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="DeleteIdentityAssociation">
+            <input name="input14" message="tns:DeleteIdentityAssociationRequest"/>
+            <output name="output14" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="GetCustomers">
+            <input name="input15"   message="tns:GetCustomersRequest"/>
+            <output name="output15" message="tns:GetCustomersResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="AddCustomer">
+            <input name="input17"   message="tns:AddCustomerRequest"/>
+            <output name="output17" message="tns:AddCustomerResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="ModifyCustomer">
+            <input name="input18"   message="tns:ModifyCustomerRequest"/>
+            <output name="output18" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="AddAddress">
+            <input name="input19"   message="tns:AddAddressRequest"/>
+            <output name="output19" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="DeleteAddress">
+            <input name="input20"   message="tns:DeleteAddressRequest"/>
+            <output name="output20" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="ModifyAddress">
+            <input name="input21"   message="tns:ModifyAddressRequest"/>
+            <output name="output21" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="ModifyIMSPrivateIdentity">
+            <input name="input22"   message="tns:ModifyIMSPrivateIdentityRequest"/>
+            <output name="output22" message="tns:ModifyIMSPrivateIdentityResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation  name="PerformSIMSwap">
+            <input  name="input23"   message="tns:SIMSwapRequest"/>
+            <output name="output23" message="tns:SIMSwapResponse"/>
+            <fault  name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation  name="ResetSSOPassword">
+            <input  name="input24"   message="tns:ResetSSOPasswordRequest"/>
+            <output name="output24" message="tns:Done"/>
+            <fault  name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation  name="SendSSOPasswordResetLink">
+            <input  name="input25"   message="tns:SendSSOPasswordResetLinkRequest"/>
+            <output name="output25" message="tns:SendSSOPasswordResetLinkResponse"/>
+            <fault  name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="ModifyIMSPublicIdentity">
+            <input name="input26"   message="tns:ModifyIMSPublicIdentityRequest"/>
+            <output name="output26" message="tns:ModifyIMSPublicIdentityResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="GetThirdPartyAuthorisationRules">
+            <input name="input27" message="tns:GetThirdPartyAuthorisationRulesRequest"/>
+            <output name="output27" message="tns:GetThirdPartyAuthorisationRulesResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="GetOrganisations">
+            <input name="input28"   message="tns:GetOrganisationsRequest"/>
+            <output name="output28" message="tns:GetOrganisationsResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="AddOrganisation">
+            <input name="input29"   message="tns:AddOrganisationRequest"/>
+            <output name="output29" message="tns:AddOrganisationResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="ModifyOrganisation">
+            <input name="input30"   message="tns:ModifyOrganisationRequest"/>
+            <output name="output30" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="GetServiceActivationData">
+            <input name="input31"   message="tns:GetServiceActivationDataRequest"/>
+            <output name="output31" message="tns:GetServiceActivationDataResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="GetPhoto">
+            <input name="input36" message="tns:GetPhotoRequest"/>
+            <output name="output36" message="tns:GetPhotoResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="GetCustomerTenant">
+            <input name="input37" message="tns:GetCustomerTenantRequest"/>
+            <output name="output37" message="tns:GetCustomerTenantResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="VerifyCustomerWithNIRA">
+            <input name="input38" message="tns:NiraVerifyRequest"/>
+            <output name="output38" message="tns:NiraVerifyResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="GetUICCDetails">
+            <input name="input39" message="tns:GetUICCDetailsRequest"/>
+            <output name="output39" message="tns:GetUICCDetailsResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="ChangeNiraPassword">
+            <input name="input40" message="tns:NiraPasswordChangeRequest"/>
+            <output name="output40" message="tns:NiraPasswordChangeResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="GetNAIIdentity">
+            <input name="input41" message="tns:GetNAIIdentityRequest"/>
+            <output name="output41" message="tns:GetNAIIdentityResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="DeleteNAIIdentity">
+            <input name="input42" message="tns:DeleteNAIIdentityRequest"/>
+            <output name="output42" message="tns:Done"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="ModifyNAIIdentity">
+            <input name="input43"   message="tns:ModifyNAIIdentityRequest"/>
+            <output name="output43" message="tns:ModifyNAIIdentityResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation> 
+        <operation name="CreateNAIIdentity">
+            <input name="input44" message="tns:CreateNAIIdentityRequest"/>
+            <output name="output44" message="tns:CreateNAIIdentityResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="VerifyCustomerWithNIDA">
+            <input name="input45" message="tns:NidaVerifyRequest"/>
+            <output name="output45" message="tns:NidaVerifyResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="CheckDocumentUniqueness">
+            <input name="input46" message="tns:CheckDocumentUniquenessRequest"/>
+            <output name="output46" message="tns:CheckDocumentUniquenessResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="VerifyForeignerCustomer">
+            <input name="input47" message="tns:VerifyForeignerRequest"/>
+            <output name="output47" message="tns:VerifyForeignerResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="VerifyDefacedCustomer">
+            <input name="input48" message="tns:VerifyDefacedCustomerRequest"/>
+            <output name="output48" message="tns:VerifyDefacedCustomerResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="VerifyNinCustomer">
+            <input name="input49" message="tns:VerifyNinRequest"/>
+            <output name="output49" message="tns:VerifyNinResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+        <operation name="kycVerifySale">
+            <input name="input50" message="tns:ProductsKycVerificationRequest"/>
+            <output name="output50" message="tns:ProductsKycVerificationResponse"/>
+            <fault name="fault1" message="tns:IMError"/>
+        </operation>
+    </portType>
+    <binding name="IMBinding" type="tns:IMSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="Authenticate">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsUp">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateIMSPrivateIdentity">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateIMSPublicIdentity">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateIdentityAssociation">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetIMSPublicIdentity">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetIMSPrivateIdentity">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateIMSSubscription">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetIMSSubscription">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyIMSSubscriptionStatus">
+            <input name="input10">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output10">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteIMSSubscription">
+            <input name="input11">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output11">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteIMSPrivateIdentity">
+            <input name="input12">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output12">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteIMSPublicIdentity">
+            <input name="input13">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output13">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteIdentityAssociation">
+            <input name="input14">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output14">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>       
+        
+        <operation name="GetCustomers">
+            <input name="input15">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output15">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddCustomer">
+            <input name="input17">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output17">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyCustomer">
+            <input name="input18">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output18">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddAddress">
+            <input name="input19">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output19">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteAddress">
+            <input name="input20">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output20">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyAddress">
+            <input name="input21">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output21">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyIMSPrivateIdentity">
+            <input name="input22">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output22">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="PerformSIMSwap">
+            <input name="input23">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output23">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ResetSSOPassword">
+            <input name="input24">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output24">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SendSSOPasswordResetLink">
+            <input name="input25">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output25">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyIMSPublicIdentity">
+            <input name="input26">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output26">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetThirdPartyAuthorisationRules">
+            <input name="input27">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output27">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetOrganisations">
+            <input name="input28">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output28">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddOrganisation">
+            <input name="input29">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output29">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyOrganisation">
+            <input name="input30">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output30">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetServiceActivationData">
+            <input name="input31">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output31">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetPhoto">
+            <input name="input36">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output36">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetCustomerTenant">
+            <input name="input37">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output37">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>        
+        <operation name="VerifyCustomerWithNIRA">
+            <input name="input38">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output38">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetUICCDetails">
+            <input name="input39">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output39">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ChangeNiraPassword">
+            <input name="input40">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output40">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetNAIIdentity">
+            <input name="input41">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output41">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>        
+        <operation name="DeleteNAIIdentity">
+            <input name="input42">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output42">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyNAIIdentity">
+            <input name="input43">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output43">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateNAIIdentity">
+            <input name="input44">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output44">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="VerifyCustomerWithNIDA">
+            <input name="input45">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output45">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CheckDocumentUniqueness">
+            <input name="input46">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output46">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="VerifyForeignerCustomer">
+            <input name="input47">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output47">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="VerifyDefacedCustomer">
+            <input name="input48">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output48">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="VerifyNinCustomer">
+            <input name="input49">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output49">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="IM">
+        <port name="IMSoap" binding="tns:IMBinding">
+            <soap:address location="http://dummyhost:${HttpDefaultPort}/IM/IMSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="IMServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+        In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+        A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="IM" portType="tns:IMSoap"/>
+    </plnk:partnerLinkType>
+</definitions>
+
+
+
+

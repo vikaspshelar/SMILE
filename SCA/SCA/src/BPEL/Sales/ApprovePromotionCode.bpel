@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ApprovePromotionCode"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:POS="http://xml.smilecoms.com/POS"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:CM="http://xml.smilecoms.com/CM"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/POS" xmlns:ns3="http://xml.smilecoms.com/schema/BM" xmlns:ns4="http://xml.smilecoms.com/schema/CM" >
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="POSApprovePromotionCodeOut" messageType="POS:ApprovePromotionCodeResponse"/>
+        <variable name="POSApprovePromotionCodeIn" messageType="POS:ApprovePromotionCodeRequest"/>
+        <variable name="SCAApprovePromotionCodeOut" messageType="tns:ApprovePromotionCodeResponse"/>
+        <variable name="SCAApprovePromotionCodeIn" messageType="tns:ApprovePromotionCodeRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="POS:POSError" faultVariable="POSError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ApprovePromotionCode" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ApprovePromotionCode" portType="tns:SCASoap" variable="SCAApprovePromotionCodeIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign2">
+            <copy>
+                <from>$SCAApprovePromotionCodeIn.PromotionCodeApprovalData/ns1:SCAContext/ns1:TxId</from>
+                <to>$POSApprovePromotionCodeIn.PromotionCodeApprovalData/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAApprovePromotionCodeIn.PromotionCodeApprovalData/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$POSApprovePromotionCodeIn.PromotionCodeApprovalData/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAApprovePromotionCodeIn.PromotionCodeApprovalData/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$POSApprovePromotionCodeIn.PromotionCodeApprovalData/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAApprovePromotionCodeIn.PromotionCodeApprovalData/ns1:SCAContext/ns1:Tenant</from>
+                <to>$POSApprovePromotionCodeIn.PromotionCodeApprovalData/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAApprovePromotionCodeIn.PromotionCodeApprovalData/ns1:CustomerId</from>
+                <to>$POSApprovePromotionCodeIn.PromotionCodeApprovalData/ns2:CustomerId</to>
+            </copy>
+            <copy>
+                <from>$SCAApprovePromotionCodeIn.PromotionCodeApprovalData/ns1:Hash</from>
+                <to>$POSApprovePromotionCodeIn.PromotionCodeApprovalData/ns2:Hash</to>
+            </copy>
+            <copy>
+                <from>$SCAApprovePromotionCodeIn.PromotionCodeApprovalData/ns1:SalesPersonCustomerId</from>
+                <to>$POSApprovePromotionCodeIn.PromotionCodeApprovalData/ns2:SalesPersonCustomerId</to>
+            </copy>
+        </assign>
+        <invoke name="CallPOS" partnerLink="POS" operation="ApprovePromotionCode" portType="POS:POSSoap" inputVariable="POSApprovePromotionCodeIn" outputVariable="POSApprovePromotionCodeOut"/>
+        <assign name="Assign3">
+            <copy>
+                <from>$POSApprovePromotionCodeOut.Done/ns2:Done</from>
+                <to>$SCAApprovePromotionCodeOut.Done/ns1:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="ApprovePromotionCode" portType="tns:SCASoap" variable="SCAApprovePromotionCodeOut"/>
+    </sequence>
+</process>

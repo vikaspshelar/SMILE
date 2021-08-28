@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ModifyUnitCredit"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/BM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="BM" xmlns:tns="http://xml.smilecoms.com/BM" partnerLinkType="tns:BMServiceDefinition" partnerRole="BM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="BMModifyUnitCreditOut" messageType="BM:Done"/>
+        <variable name="BMModifyUnitCreditIn" messageType="BM:ModifyUnitCreditRequest"/>
+        <variable name="SCAModifyUnitCreditOut" messageType="tns:Done"/>
+        <variable name="SCAModifyUnitCreditIn" messageType="tns:ModifyUnitCreditRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="BM:BMError" faultVariable="BMError">
+            <sequence name="Sequence1">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$BMError.BMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ModifyUnitCredit" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ModifyUnitCredit" portType="tns:SCASoap" variable="SCAModifyUnitCreditIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('BM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignBM">
+            <copy>
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:UnitCreditInstanceId</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:UnitCreditInstanceId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:StartDate</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:StartDate</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:EndDate</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:EndDate</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:ExpiryDate</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:ExpiryDate</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:AccountId</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:AccountId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:ProductInstanceId</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:ProductInstanceId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:Info</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:Info</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:CurrentUnitsRemaining</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:CurrentUnitsRemaining</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyUnitCreditIn.ModifyUnitCreditRequest/ns0:Comment</from>
+                <to>$BMModifyUnitCreditIn.ModifyUnitCreditRequest/ns1:Comment</to>
+            </copy>
+        </assign>
+        <invoke name="Call_BM" partnerLink="BM" operation="ModifyUnitCredit" portType="BM:BMSoap" inputVariable="BMModifyUnitCreditIn" outputVariable="BMModifyUnitCreditOut"/>
+        <assign name="AssignResult">
+            <copy>
+                <from>$BMModifyUnitCreditOut.Done/ns1:Done</from>
+                <to>$SCAModifyUnitCreditOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="ModifyUnitCredit" portType="tns:SCASoap" variable="SCAModifyUnitCreditOut"/>
+    </sequence>
+</process>

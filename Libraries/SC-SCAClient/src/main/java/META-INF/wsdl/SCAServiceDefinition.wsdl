@@ -1,0 +1,2762 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="SCAServiceDefinition"
+             targetNamespace="http://xml.smilecoms.com/SCA"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:tns="http://xml.smilecoms.com/SCA"
+             xmlns:ns="http://xml.smilecoms.com/schema/SCA"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+>
+    <documentation>SCA (Smile Coarse Grained API) is the defacto interface with which all front end layers communicate with the sgatervice and enterprise applications. The SCA is the layer exposed by the Enterprise Service Bus which is responsible for all business logic and orchestration that makes up Smiles systems.
+        Effectively SCA is the single layer:
+        - above which freedom lurks in fast changing dynamic front ends
+        - below which lies solid, robust and dependable service platforms
+        - within which Smiles business rules execute, enabling the layer above through utilisation of the layer below.
+    </documentation>
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/SCA">
+            <xsd:import schemaLocation="SCASchema.xsd" namespace="http://xml.smilecoms.com/schema/SCA"/>
+        </xsd:schema>
+    </types>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="PrepaidStrips">
+        <part name="PrepaidStrips" element="ns:PrepaidStrips"/>
+    </message>
+    <message name="SCAError">
+        <part name="SCAError" element="ns:SCAError"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="Test" element="ns:Test"/>
+    </message>
+    <message name="IsUpResponse">
+        <part name="PlatformEndPointList" element="ns:PlatformEndPointList"/>
+    </message>
+    <message name="GetStickyNoteTypeListRequest">
+        <part name="EntityName" element="ns:EntityName"/>
+    </message>
+    <message name="GetStickyNoteTypeListResponse">
+        <part name="StickyNoteTypeList" element="ns:StickyNoteTypeList"/>
+    </message>
+    <message name="AddStickyNoteRequest">
+        <part name="NewStickyNote" element="ns:NewStickyNote"/>
+    </message>
+    <message name="AddStickyNoteResponse">
+        <part name="StickyNote" element="ns:StickyNote"/>
+    </message>
+    <message name="ModifyStickyNoteRequest">
+        <part name="ModifiedStickyNote" element="ns:ModifiedStickyNote"/>
+    </message>
+    <message name="ModifyStickyNoteResponse">
+        <part name="StickyNote" element="ns:StickyNote"/>
+    </message>
+    <message name="GetEntitiesStickyNotesRequest">
+        <part name="StickyNoteEntityIdentifier" element="ns:StickyNoteEntityIdentifier"/>
+    </message>
+    <message name="GetEntitiesStickyNotesResponse">
+        <part name="StickyNoteList" element="ns:StickyNoteList"/>
+    </message>
+    <message name="GetStickyNoteTypeRequest">
+        <part name="StickyNoteTypeName" element="ns:StickyNoteTypeName"/>
+    </message>
+    <message name="GetStickyNoteTypeResponse">
+        <part name="StickyNoteType" element="ns:StickyNoteType"/>
+    </message>
+    <message name="GetStickyNoteRequest">
+        <part name="StickyNoteId" element="ns:StickyNoteId"/>
+    </message>
+    <message name="GetStickyNoteResponse">
+        <part name="StickyNote" element="ns:StickyNote"/>
+    </message>
+    <message name="DeleteStickyNoteRequest">
+        <part name="StickyNoteIdToDelete" element="ns:StickyNoteIdToDelete"/>
+    </message>
+    <message name="DeleteStickyNoteResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetPropertyRequest">
+        <part name="PropertyRequest" element="ns:PropertyRequest"/>
+    </message>
+    <message name="GetPropertyResponse">
+        <part name="PropertyResponse" element="ns:PropertyResponse"/>
+    </message>
+    <message name="IsStaleRequest">
+        <part name="CacheLastRefreshed" element="ns:CacheLastRefreshed"/>
+    </message>
+    <message name="IsStaleResponse">
+        <part name="MustRefresh" element="ns:MustRefresh"/>
+    </message>
+    <message name="FlushPropertyCacheRequest">
+        <part name="FlushPropertyCacheRequest" element="ns:FlushPropertyCacheRequest"/>
+    </message>
+    <message name="FlushPropertyCacheResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="AuthenticateRequest">
+        <part name="AuthenticationQuery" element="ns:AuthenticationQuery"/>
+    </message>
+    <message name="AuthenticateResponse">
+        <part name="AuthenticationResult" element="ns:AuthenticationResult"/>
+    </message>
+    <message name="RunBatchRequest">
+        <part name="BatchRequest" element="ns:BatchRequest"/>
+    </message>
+    <message name="RunBatchResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetResourceListRequest">
+        <part name="ResourceBundleLocale" element="ns:ResourceBundleLocale"/>
+    </message>
+    <message name="GetResourceListResponse">
+        <part name="ResourceList" element="ns:ResourceList"/>
+    </message>
+    <message name="AddResourceRequest">
+        <part name="NewResource" element="ns:NewResource"/>
+    </message>
+    <message name="AddResourceResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetBatchSchedulesRequest">
+        <part name="BatchScheduleListRequest" element="ns:BatchScheduleListRequest"/>
+    </message>
+    <message name="GetBatchSchedulesResponse">
+        <part name="BatchScheduleList" element="ns:BatchScheduleList"/>
+    </message>
+    <message name="ModifyBatchScheduleRequest">
+        <part name="ModifiedBatchSchedule" element="ns:ModifiedBatchSchedule"/>
+    </message>
+    <message name="ModifyBatchScheduleResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetProductInstancesRequest">
+        <part name="ProductInstanceQuery" element="ns:ProductInstanceQuery"/>
+    </message>
+    <message name="ProductInstancesResponse">
+        <part name="ProductInstanceList" element="ns:ProductInstanceList"/>
+    </message>
+    <message name="GetRatePlanRequest">
+        <part name="RatePlanId" element="ns:RatePlanId"/>
+    </message>
+    <message name="RatePlanResponse">
+        <part name="RatePlan" element="ns:RatePlan"/>
+    </message>
+    <message name="GetServiceInstancesRequest">
+        <part name="ServiceInstanceQuery" element="ns:ServiceInstanceQuery"/>
+    </message>
+    <message name="ServiceInstancesResponse">
+        <part name="ServiceInstanceList" element="ns:ServiceInstanceList"/>
+    </message>
+    <message name="CustomerCommunicationRequest">
+        <part name="CustomerCommunicationData" element="ns:CustomerCommunicationData"/>
+    </message>
+    <message name="AddCustomerRequest">
+        <part name="NewCustomer" element="ns:NewCustomer"/>
+    </message>
+    <message name="AddCustomerResponse">
+        <part name="CustomerId" element="ns:CustomerId"/>
+    </message>
+    <message name="ModifyCustomerRequest">
+        <part name="ModifiedCustomer" element="ns:ModifiedCustomer"/>
+    </message>
+    <message name="GetCustomersRequest">
+        <part name="CustomerQuery" element="ns:CustomerQuery"/>
+    </message>
+    <message name="GetCustomersResponse">
+        <part name="CustomerList" element="ns:CustomerList"/>
+    </message>
+    <message name="AddAddressRequest">
+        <part name="NewAddress" element="ns:NewAddress"/>
+    </message>
+    <message name="DeleteAddressRequest">
+        <part name="AddressToDelete" element="ns:AddressToDelete"/>
+    </message>
+    <message name="ModifyAddressRequest">
+        <part name="ModifiedAddress" element="ns:ModifiedAddress"/>
+    </message>
+    <message name="GetServiceSpecificationRequest">
+        <part name="ServiceSpecificationQuery" element="ns:ServiceSpecificationQuery"/>
+    </message>
+    <message name="ServiceSpecificationResponse">
+        <part name="ServiceSpecification" element="ns:ServiceSpecification"/>
+    </message>
+    <message name="GetProductSpecificationsRequest">
+        <part name="ProductSpecificationQuery" element="ns:ProductSpecificationQuery"/>
+    </message>
+    <message name="ProductSpecificationsResponse">
+        <part name="ProductSpecificationList" element="ns:ProductSpecificationList"/>
+    </message>
+    <message name="GetUnitCreditSpecificationsRequest">
+        <part name="UnitCreditSpecificationQuery" element="ns:UnitCreditSpecificationQuery"/>
+    </message>
+    <message name="UnitCreditSpecificationsResponse">
+        <part name="UnitCreditSpecificationList" element="ns:UnitCreditSpecificationList"/>
+    </message>
+    <message name="SplitUnitCreditRequest">
+        <part name="SplitUnitCreditRequest" element="ns:SplitUnitCreditRequest"/>
+    </message>
+    <message name="ProcessOrderRequest">
+        <part name="ProductOrder" element="ns:ProductOrder"/>
+    </message>
+    <message name="ProcessOrderResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="SendShortMessageRequest">
+        <part name="NewShortMessage" element="ns:NewShortMessage"/>
+    </message>
+    <message name="SendShortMessageResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="PCRFDataResponse">
+        <part name="PCRFData" element="ns:PCRFData"/>
+    </message>
+    <message name="DeregisterIMPUResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="DeregisterIMPURequest">
+        <part name="DeregisterIMPUQuery" element="ns:DeregisterIMPUQuery"/>
+    </message>
+    <message name="PurgeUserDataResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetPCRFDataRequest">
+        <part name="PCRFDataQuery" element="ns:PCRFDataQuery"/>
+    </message>
+    <message name="PurgeUserDataRequest">
+        <part name="PurgeUserDataQuery" element="ns:PurgeUserDataQuery"/>
+    </message>
+    <message name="IMSSubscriptionResponse">
+        <part name="IMSSubscription" element="ns:IMSSubscription"/>
+    </message>
+    <message name="GetIMSSubscriptionRequest">
+        <part name="IMSSubscriptionQuery" element="ns:IMSSubscriptionQuery"/>
+    </message>
+    <message name="ModifyIMSSubscriptionStatusRequest">
+        <part name="IMSSubscriptionStatusUpdateData" element="ns:IMSSubscriptionStatusUpdateData"/>
+    </message>
+    <message name="ModifyIMSSubscriptionStatusResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetAccountsRequest">
+        <part name="AccountQuery" element="ns:AccountQuery"/>
+    </message>
+    <message name="AccountsResponse">
+        <part name="AccountList" element="ns:AccountList"/>
+    </message>
+    <message name="GetUnitCreditInstancesRequest">
+        <part name="UnitCreditInstanceQuery" element="ns:UnitCreditInstanceQuery"/>
+    </message>
+    <message name="GetUnitCreditInstancesResponse">
+        <part name="UnitCreditInstanceList" element="ns:UnitCreditInstanceList"/>
+    </message>
+    <message name="CreateAccountRequest">
+        <part name="NewAccountData" element="ns:NewAccountData"/>
+    </message>
+    <message name="ModifyAccountRequest">
+        <part name="ModifyAccountRequest" element="ns:ModifyAccountRequest"/>
+    </message>
+    <message name="CreateScheduledAccountHistoryRequest">
+        <part name="NewScheduledAccountHistoryData" element="ns:NewScheduledAccountHistoryData"/>
+    </message>
+    <message name="ModifyUnitCreditRequest">
+        <part name="ModifyUnitCreditRequest" element="ns:ModifyUnitCreditRequest"/>
+    </message>
+    <message name="AccountResponse">
+        <part name="Account" element="ns:Account"/>
+    </message>
+    <message name="TransferBalanceRequest">
+        <part name="BalanceTransferData" element="ns:BalanceTransferData"/>
+    </message>
+    <message name="TransferBalanceResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetAccountHistoryRequest">
+        <part name="AccountHistoryQuery" element="ns:AccountHistoryQuery"/>
+    </message>
+    <message name="AccountHistoryResponse">
+        <part name="AccountHistory" element="ns:AccountHistory"/>
+    </message>
+    <message name="GetAccountSummaryRequest">
+        <part name="AccountSummaryQuery" element="ns:AccountSummaryQuery"/>
+    </message>
+    <message name="AccountSummaryResponse">
+        <part name="AccountSummary" element="ns:AccountSummary"/>
+    </message>
+    <message name="PurchaseUnitCreditRequest">
+        <part name="PurchaseUnitCreditRequest" element="ns:PurchaseUnitCreditRequest"/>
+    </message>
+    <message name="PurchaseUnitCreditResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="CheckReservationRequest">
+        <part name="ReservationRequestData" element="ns:ReservationRequestData"/>
+    </message>
+    <message name="CheckReservationResponse">
+        <part name="ReservationResultData" element="ns:ReservationResultData"/>
+    </message>
+    <message name="SIMSwapRequest">
+        <part name="SIMSwapRequest" element="ns:SIMSwapRequest"/>
+    </message>
+    <message name="SIMSwapResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="ProvisionSIMCardRequest">
+        <part name="NewSIMCardData" element="ns:NewSIMCardData"/>
+    </message>
+    <message name="RedeemPrepaidStripRequest">
+        <part name="PrepaidStripRedemptionData" element="ns:PrepaidStripRedemptionData"/>
+    </message>
+    <message name="PrepaidStripResponse">
+        <part name="PrepaidStrip" element="ns:PrepaidStrip"/>
+    </message>
+    <message name="GetPrepaidStripRequest">
+        <part name="PrepaidStripQuery" element="ns:PrepaidStripQuery"/>
+    </message>
+    <!--TT Messages -->
+    <message name="CreateTroubleTicketUserRequest">
+        <part name="UserIDForNewTTUser" element="ns:UserIDforNewTTUser"/>
+    </message>
+    <message name="CreateTroubleTicketUserResponse">
+        <part name="TTUser" element="ns:TTUser"/>
+    </message>
+    <message name="GetTroubleTicketMetaDataRequest">
+        <part name="TTMetaDataQuery" element="ns:TTMetaDataQuery"/>
+    </message>
+    <message name="GetTroubleTicketMetaDataResponse">
+        <part name="TTMetaData" element="ns:TTMetaData"/>
+    </message>
+    <message name="CreateTroubleTicketIssueRequest">
+        <part name="NewTTIssue" element="ns:NewTTIssue"/>
+    </message>
+    <message name="CreateTroubleTicketIssueResponse">
+        <part name="TTIssue" element="ns:TTIssue"/>
+    </message>
+    <message name="ModifyTroubleTicketIssueRequest">
+        <part name="ModifiedTTIssue" element="ns:ModifiedTTIssue"/>
+    </message>
+    <message name="ModifyTroubleTicketIssueResponse">
+        <part name="TTIssue" element="ns:TTIssue"/>
+    </message>
+    <message name="GetTroubleTicketIssuesRequest">
+        <part name="TTIssueQuery" element="ns:TTIssueQuery"/>
+    </message>
+    <message name="GetTroubleTicketIssuesResponse">
+        <part name="TTIssueList" element="ns:TTIssueList"/>
+    </message>
+    <message name="CreateTroubleTicketCommentRequest">
+        <part name="NewTTComment" element="ns:NewTTComment"/>
+    </message>
+    <message name="CreateTroubleTicketCommentResponse">
+        <part name="TTComment" element="ns:TTComment"/>
+    </message>
+    <message name="ModifyTroubleTicketCommentRequest">
+        <part name="ModifiedTTComment" element="ns:ModifiedTTComment"/>
+    </message>
+    <message name="ModifyTroubleTicketCommentResponse">
+        <part name="TTComment" element="ns:TTComment"/>
+    </message>
+    <message name="GetTroubleTicketCommentsRequest">
+        <part name="TTCommentQuery" element="ns:TTCommentQuery"/>
+    </message>
+    <message name="GetTroubleTicketCommentsResponse">
+        <part name="TTCommentList" element="ns:TTCommentList"/>
+    </message>
+    <message name="IsUserRequest">
+        <part name="UserIDToCheck" element="ns:UserIDToCheck"/>
+    </message>
+    <message name="IsUserResponse">
+        <part name="TTCheck" element="ns:TTCheck"/>
+    </message>
+    <message name="CloseSalesLeadIssueRequest">
+        <part name="TTCloseSalesLeadIssueQuery" element="ns:TTCloseSalesLeadIssueQuery"/>
+    </message>
+    <message name="GetJiraUserRequest">
+        <part name="TTJiraUserQuery" element="ns:TTJiraUserQuery"/>
+    </message>
+    <message name="GetJiraUserResponse">
+        <part name="TTJiraUserList" element="ns:TTJiraUserList"/>
+    </message>
+    <!--<message name="TTIssueWatcher">
+        <part name="TTIssueWatcher" element="ns:TTIssueWatcher"/>
+    </message>
+    <message name="GetTroubleTicketIssueWatchersRequest">
+        <part name="TTIssueWatcherQuery" element="ns:TTIssueWatcherQuery"/>
+    </message>-->
+    <!-- End TT Messages -->    
+    
+    
+    
+    <message name="CreatePrepaidStripsRequest">
+        <part name="NewPrepaidStripsData" element="ns:NewPrepaidStripsData"/>
+    </message>
+    <message name="BatchUpdatePrepaidStripsRequest">
+        <part name="PrepaidStripBatchData" element="ns:PrepaidStripBatchData"/>
+    </message>
+    <message name="ResetSSOPasswordRequest">
+        <part name="SSOPasswordResetData" element="ns:SSOPasswordResetData"/>
+    </message>
+    <message name="SendSSOPasswordResetLinkRequest">
+        <part name="SSOPasswordResetLinkData" element="ns:SSOPasswordResetLinkData"/>
+    </message>
+    <message name="SendSSOPasswordResetLinkResponse">
+        <part name="SSOPasswordResetLink" element="ns:SSOPasswordResetLink"/>
+    </message>
+    <message name="GetThirdPartyAuthorisationRulesRequest">
+        <part name="ThirdPartyId" element="ns:ThirdPartyId"/>
+    </message>
+    <message name="GetThirdPartyAuthorisationRulesResponse">
+        <part name="ThirdPartyAuthorisationRuleSetList" element="ns:ThirdPartyAuthorisationRuleSetList"/>
+    </message>
+    <message name="LogCCAgentIntoQueuesRequest">
+        <part name="CCQueueLoginData" element="ns:CCQueueLoginData"/>
+    </message>
+    <message name="LogCCAgentIntoQueuesResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="LogCCAgentOutQueuesRequest">
+        <part name="CCQueueLogoutData" element="ns:CCQueueLogoutData"/>
+    </message>
+    <message name="LogCCAgentOutQueuesResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="CheckForNewCCAgentCallRequest">
+        <part name="NewCCCallQueryData" element="ns:NewCCCallQueryData"/>
+    </message>
+    <message name="CheckForNewCCAgentCallResponse">
+        <part name="IncomingCCAgentCallData" element="ns:IncomingCCAgentCallData"/>
+    </message>
+    <message name="GetInventoryRequest">
+        <part name="InventoryQuery" element="ns:InventoryQuery"/>
+    </message>
+    <message name="GetInventoryResponse">
+        <part name="InventoryList" element="ns:InventoryList"/>
+    </message>
+    <message name="ProcessSaleRequest">
+        <part name="Sale" element="ns:Sale"/>
+    </message>
+    <message name="ProcessSaleResponse">
+        <part name="ProcessedSale" element="ns:Sale"/>
+    </message>
+    <message name="GenerateQuoteRequest">
+        <part name="SaleDataForQuote" element="ns:SaleDataForQuote"/>
+    </message>
+    <message name="GenerateQuoteResponse">
+        <part name="Quote" element="ns:Quote"/>
+    </message>
+    <message name="ApprovePromotionCodeRequest">
+        <part name="PromotionCodeApprovalData" element="ns:PromotionCodeApprovalData"/>
+    </message>
+    <message name="ApprovePromotionCodeResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetSalesRequest">
+        <part name="SalesQuery" element="ns:SalesQuery"/>
+    </message>
+    <message name="GetSalesResponse">
+        <part name="SalesList" element="ns:SalesList"/>
+    </message>
+    <message name="GetSoldStockLocationsRequest">
+        <part name="SoldStockLocationQuery" element="ns:SoldStockLocationQuery"/>
+    </message>
+    <message name="GetSoldStockLocationsResponse">
+        <part name="SoldStockLocationList" element="ns:SoldStockLocationList"/>
+    </message>
+    <message name="SetSoldStockLocationsRequest">
+        <part name="SoldStockLocationData" element="ns:SoldStockLocationData"/>
+    </message>
+    <message name="SetSoldStockLocationsResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="ProcessCashInRequest">
+        <part name="CashInData" element="ns:CashInData"/>
+    </message>
+    <message name="ProcessCashInResponse">
+        <part name="CashedInData" element="ns:CashedInData"/>
+    </message>
+    <message name="SCSCFIMPUDataRequest">
+        <part name="SCSCFIMPUQuery" element="ns:SCSCFIMPUQuery"/>
+    </message>
+    <message name="SCSCFIMPUDataResponse">
+        <part name="SCSCFIMPUData" element="ns:SCSCFIMPUData"/>
+    </message>
+    <message name="CreateEventRequest">
+        <part name="NewEvent" element="ns:NewEvent"/>
+    </message>
+    <message name="CreateEventResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetEventsRequest">
+        <part name="EventQuery" element="ns:EventQuery"/>
+    </message>
+    <message name="GetEventsResponse">
+        <part name="EventList" element="ns:EventList"/>
+    </message>
+    <message name="DeleteFutureEventRequest">
+        <part name="EventId" element="ns:EventId"/>
+    </message>
+    <message name="GetAvailableNumbersRequest">
+        <part name="AvailableNumbersQuery" element="ns:AvailableNumbersQuery"/>
+    </message>
+    <message name="GetAvailableNumbersResponse">
+        <part name="AvailableNumbersList" element="ns:AvailableNumbersList"/>
+    </message>
+    <message name="AddOrganisationRequest">
+        <part name="NewOrganisation" element="ns:NewOrganisation"/>
+    </message>
+    <message name="AddOrganisationResponse">
+        <part name="OrganisationId" element="ns:OrganisationId"/>
+    </message>
+    <message name="ModifyOrganisationRequest">
+        <part name="ModifiedOrganisation" element="ns:ModifiedOrganisation"/>
+    </message>
+    <message name="GetOrganisationsRequest">
+        <part name="OrganisationQuery" element="ns:OrganisationQuery"/>
+    </message>
+    <message name="GetOrganisationsResponse">
+        <part name="OrganisationList" element="ns:OrganisationList"/>
+    </message>
+    <message name="ModifySaleRequest">
+        <part name="SaleModificationData" element="ns:SaleModificationData"/>
+    </message>
+    <message name="ModifySaleResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="PostProcessSaleRequest">
+        <part name="SalePostProcessingData" element="ns:SalePostProcessingData"/>
+    </message>
+    <message name="ProcessReturnRequest">
+        <part name="ReturnData" element="ns:ReturnData"/>
+    </message>
+    <message name="ProcessReturnResponse">
+        <part name="CreditNote" element="ns:CreditNote"/>
+    </message>
+    <message name="GetCreditNotesRequest">
+        <part name="CreditNoteQuery" element="ns:CreditNoteQuery"/>
+    </message>
+    <message name="GetCreditNotesResponse">
+        <part name="CreditNoteList" element="ns:CreditNoteList"/>
+    </message>
+    <message name="ReverseTransactionsRequest">
+        <part name="TransactionReversalData" element="ns:TransactionReversalData"/>
+    </message>
+    <message name="ReverseTransactionsResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="UpdatePropertyRequest">
+        <part name="UpdatePropertyRequest" element="ns:UpdatePropertyRequest"/>
+    </message>
+    <message name="UpdatePropertyResponse">
+        <part name="UpdatePropertyResponse" element="ns:Done"/>
+    </message>
+    <message name="GeneralQueryRequest">
+        <part name="GeneralQueryRequest" element="ns:GeneralQueryRequest"/>
+    </message>
+    <message name="GeneralQueryResponse">
+        <part name="GeneralQueryResponse" element="ns:GeneralQueryResponse"/>
+    </message>
+    <message name="GetTransferGraphRequest">
+        <part name="TransferGraphQuery" element="ns:TransferGraphQuery"/>
+    </message>
+    <message name="GetTransferGraphResponse">
+        <part name="TransferGraph" element="ns:TransferGraph"/>
+    </message>
+    <message name="HandlePortInEventRequest">
+        <part name="PortInEventRequest" element="ns:PortInEventRequest"/>
+    </message>
+    <message name="HandlePortInEventResponse">
+        <part name="PortInEventResponse" element="ns:PortInEventResponse"/>
+    </message>
+    <message name="GetServiceActivationDataRequest">
+        <part name="ServiceActivationDataQuery" element="ns:ServiceActivationDataQuery"/>
+    </message>
+    <message name="GetServiceActivationDataResponse">
+        <part name="ServiceActivationData" element="ns:ServiceActivationData"/>
+    </message>
+    <message name="AddContractRequest">
+        <part name="NewContract" element="ns:NewContract"/>
+    </message>
+    <message name="AddContractResponse">
+        <part name="ContractId" element="ns:ContractId"/>
+    </message>
+    <message name="ContractQueryRequest">
+        <part name="ContractQuery" element="ns:ContractQuery"/>
+    </message>
+    <message name="ContractQueryResponse">
+        <part name="ContractList" element="ns:ContractList"/>
+    </message>
+    <message name="DeleteContractRequest">
+        <part name="ContractId" element="ns:ContractId"/>
+    </message>
+    <message name="ModifyContractRequest">
+        <part name="ModifiedContract" element="ns:ModifiedContract"/>
+    </message>
+    
+    <message name="TNFDataRequest">
+        <part name="TNFQuery" element="ns:TNFQuery"/>
+    </message>
+    <message name="TNFDataResponse">
+        <part name="TNFData" element="ns:TNFData"/>
+    </message>
+    
+    <message name="GetPhotoRequest">
+        <part name="PhotoGuid" element="ns:PhotoGuid"/>
+    </message>
+    <message name="GetPhotoResponse">
+        <part name="Photo" element="ns:Photograph"/>
+    </message>
+    
+    <message name="CashInsQueryRequest">
+        <part name="CashInQuery" element="ns:CashInQuery"/>
+    </message>
+    <message name="CashInsQueryResponse">
+        <part name="CashInList" element="ns:CashInList"/>
+    </message>
+    
+    <message name="ProcessReturnOrReplacementRequest">
+        <part name="Return" element="ns:Return"/>
+    </message>
+    
+    <message name="GetPortOrdersRequest">
+        <part name="PortOrdersQuery" element="ns:PortOrdersQuery"/>
+    </message>
+    
+    <message name="GetPortOrdersResponse">
+        <part name="PortOrdersList" element="ns:PortOrdersList"/>
+    </message>
+    <message name="PaymentNotificationRequest">
+        <part name="PaymentNotificationData" element="ns:PaymentNotificationData"/>
+    </message>
+    <message name="GetCustomerTenantRequest">
+        <part name="TenantQuery" element="ns:TenantQuery"/>
+    </message>
+    <message name="GetCustomerTenantResponse">
+        <part name="TenantData" element="ns:TenantData"/>
+    </message>
+    <message name="StoreCampaignDataRequest">
+        <part name="CampaignData" element="ns:CampaignData"/>
+    </message>
+    
+    <portType name="SCASoap">
+
+       
+        <!--
+        #################################################
+        Main SCA Functions
+        #################################################
+        -->
+        <operation name="IsUp">
+            <documentation>(C PCB) Used by SCA Clients to see if the SCA instance is available</documentation>
+            <input name="input1" message="tns:IsUpRequest"/>
+            <output name="output1" message="tns:IsUpResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+
+        <!--
+        #################################################
+        Sticky Notes -
+        Platform Used: SN
+        #################################################
+        -->
+        <operation name="GetStickyNoteTypeList">
+            <documentation>(C PCB)Returns a list of sticky note types from the database.</documentation>
+            <input name="input2" message="tns:GetStickyNoteTypeListRequest"/>
+            <output name="output2" message="tns:GetStickyNoteTypeListResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="AddStickyNote">
+            <documentation>(C PCB)Adds a new sticky note to the database and attach it to the given entity</documentation>
+            <input name="input3" message="tns:AddStickyNoteRequest"/>
+            <output name="output3" message="tns:AddStickyNoteResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ModifyStickyNote">
+            <documentation>(C PCB)Used to modify fields of a sticky note.</documentation>
+            <input name="input4" message="tns:ModifyStickyNoteRequest"/>
+            <output name="output4" message="tns:ModifyStickyNoteResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetEntitiesStickyNotes">
+            <documentation>(C PCB)Returns a list of sticky notes attached to a given Smile entity.</documentation>
+            <input name="input5" message="tns:GetEntitiesStickyNotesRequest"/>
+            <output name="output5" message="tns:GetEntitiesStickyNotesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetStickyNoteType">
+            <documentation>(C PCB)Retrieves the list of sticky note fields and their types.</documentation>
+            <input name="input6" message="tns:GetStickyNoteTypeRequest"/>
+            <output name="output6" message="tns:GetStickyNoteTypeResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetStickyNote">
+            <documentation>(C PCB)Extracts information related to a given sticky note.</documentation>
+            <input name="input7" message="tns:GetStickyNoteRequest"/>
+            <output name="output7" message="tns:GetStickyNoteResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="DeleteStickyNote">
+            <documentation>(C PCB)Deletes a sticky note from the system</documentation>
+            <input name="input8" message="tns:DeleteStickyNoteRequest"/>
+            <output name="output8" message="tns:DeleteStickyNoteResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+
+        <!--
+        #################################################
+        Property Management
+        #################################################
+        -->
+        <operation name="GetProperty">
+            <documentation>(C PCB)Retrieve a property value using the given PropertyName and Client.</documentation>
+            <input name="input9" message="tns:GetPropertyRequest"/>
+            <output name="output9" message="tns:GetPropertyResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+
+        <operation name="IsStale">
+            <documentation>
+                (C PCB)Checks to see if the cached value of a property is old enough to be refreshed.
+                A property is stale if its CacheLastRefreshed timestamp is older than the current LAST_MODIFIED timestamp in the database.
+            </documentation>
+            <input name="input10" message="tns:IsStaleRequest"/>
+            <output name="output10" message="tns:IsStaleResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="FlushPropertyCache">
+            <documentation>
+                (C PCB)Sets the LAST_MODIFIED timestamp field for all properties in the database in order to trigger the process of refreshing the
+                property cache.
+            </documentation>
+            <input name="input11" message="tns:FlushPropertyCacheRequest"/>
+            <output name="output11" message="tns:FlushPropertyCacheResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetResourceList">
+            <documentation>
+                (C PCB)Returns a list of resource strings (including the values) for a given Locale.
+            </documentation>
+            <input name="input23" message="tns:GetResourceListRequest"/>
+            <output name="output23" message="tns:GetResourceListResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="AddResource">
+            <documentation>
+                (C PCB)Creates a new resource string in the database.
+            </documentation>
+            <input name="input24" message="tns:AddResourceRequest"/>
+            <output name="output24" message="tns:AddResourceResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="RunGeneralQuery">
+            <input name="input139" message="tns:GeneralQueryRequest"/>
+            <output name="output139" message="tns:GeneralQueryResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+
+        <!--
+        #################################################
+        Customer Management Functions
+        #################################################
+        -->
+        <operation name="AddCustomer">
+            <documentation>
+                (D PCB)Uses the IM platform to create a new customer on the system.
+                The AddCustomer function mainly captures the biographical details of the customer.
+                Subscription to products and services is done by ProcessOrder.
+            </documentation>
+            <input name="input12"   message="tns:AddCustomerRequest"/>
+            <output name="output12" message="tns:AddCustomerResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ModifyCustomer">
+            <documentation>
+                (D PCB)This function is used to change/edit any information about the customer.
+                The intention is to use this function to change any aspect of the customer.
+                Note that address info is ignored on this function - use the dedictade address
+                management functions
+                This function uses the IM platform.
+            </documentation>
+            <input name="input13"   message="tns:ModifyCustomerRequest"/>
+            <output name="output13" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetCustomers">
+            <documentation>
+                (D PCB)This function is similar to the "GetCustomer" with the difference such that this function can be used to return multiple
+                customers based on the search parameters passed in.
+            </documentation>
+            <input name="input15" message="tns:GetCustomersRequest"/>
+            <output name="output15" message="tns:GetCustomersResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetCustomerTenant">
+            <input name="input166" message="tns:GetCustomerTenantRequest"/>
+            <output name="output166" message="tns:GetCustomerTenantResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="AddAddress">
+            <documentation>
+                (D PCB) Add an address to a customer or organisation.
+            </documentation>
+            <input name="input32"   message="tns:AddAddressRequest"/>
+            <output name="output32" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="DeleteAddress">
+            <documentation>
+                (D PCB) Delete an address on a customer.
+            </documentation>
+            <input name="input33"   message="tns:DeleteAddressRequest"/>
+            <output name="output33" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ModifyAddress">
+            <documentation>
+                (D PCB) Modify an address on a customer.
+            </documentation>
+            <input name="input34"   message="tns:ModifyAddressRequest"/>
+            <output name="output34" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="SendCustomerCommunication">
+            <documentation>
+                (D PCB) Send one or more customers a message. E.g. unit credit is about to run out
+            </documentation>
+            <input name="input100"   message="tns:CustomerCommunicationRequest"/>
+            <output name="output100" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetPhoto">
+            <input name="input156" message="tns:GetPhotoRequest"/>
+            <output name="output156" message="tns:GetPhotoResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <!--
+        #################################################
+        Authentication
+        #################################################
+        -->
+        <operation name="Authenticate">
+            <documentation>
+                (C PCB) This function is used to authenticate a given subscriber with the provided SSO Identity and One way encrypted PIN.                
+            </documentation>
+            <input name="input16" message="tns:AuthenticateRequest"/>
+            <output name="output16" message="tns:AuthenticateResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation  name="ResetSSOPassword">
+            <input  name="input107"   message="tns:ResetSSOPasswordRequest"/>
+            <output name="output107" message="tns:Done"/>
+            <fault  name="fault1" message="tns:SCAError"/>
+        </operation> 
+        <operation  name="SendSSOPasswordResetLink">
+            <input  name="input106"   message="tns:SendSSOPasswordResetLinkRequest"/>
+            <output name="output106" message="tns:SendSSOPasswordResetLinkResponse"/>
+            <fault  name="fault1" message="tns:SCAError"/>
+        </operation> 
+
+        <!--
+        #################################################
+        Order Management:
+        Platform/s Used: CM
+        #################################################
+        -->
+        <!-- GetProductSpecifications must return all the service specifications as well -->
+        <operation name="GetProductSpecifications">
+            <documentation>
+                (T MM)Retrieves all configured product specifications from the database for viewing purposes.
+            </documentation>
+            <input name="input31" message="tns:GetProductSpecificationsRequest"/>
+            <output name="output31" message="tns:ProductSpecificationsResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <!-- GetProductInstance must return all the service instances as well -->
+        <operation name="GetProductInstances">
+            <documentation>
+                (T MM)Loads an instance of a product from the database.
+            </documentation>
+            <input name="input18" message="tns:GetProductInstancesRequest"/>
+            <output name="output18" message="tns:ProductInstancesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <!-- GetServiceInstance must return a service instance identified by the given id -->
+        <operation name="GetServiceInstances">
+            <documentation>
+                (T MM)Loads an instance of a service from the database.
+            </documentation>
+            <input name="input36" message="tns:GetServiceInstancesRequest"/>
+            <output name="output36" message="tns:ServiceInstancesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <operation name="ProcessOrder">
+            <documentation>
+                (T MM)This is the main function for processing a customer order. ProcessOrder funtion is used to provision
+                the Smile products, services and resources required in order to fulfill the customer's request. This is an atomic
+                function, in other words, it only returns successfully when all products, services and resources have been successfully
+                created. If any step of the process fails, it must rollback all changes made before failure.
+            </documentation>
+            <input name="input19" message="tns:ProcessOrderRequest"/>
+            <output name="output19" message="tns:ProcessOrderResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+      
+        <!-- GetServiceSpecification must return a service specification that was requested -->
+        <operation name="GetServiceSpecification">
+            <documentation>
+                (T MM)Retrieves a service specification from the database for viewing purposes.
+            </documentation>
+            <input name="input37" message="tns:GetServiceSpecificationRequest"/>
+            <output name="output37" message="tns:ServiceSpecificationResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <operation name="ProvisionSIMCard">
+            <documentation>
+                (T PCB)Creates a new SIM card in the HSS
+            </documentation>
+            <input name="input42" message="tns:ProvisionSIMCardRequest"/>
+            <output name="output42" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <!-- GetUnitCreditSpecifications returns all the unit cedit specifications that are configured in the database -->
+        <operation name="GetUnitCreditSpecifications">
+            <documentation>
+                (T MM)Retrieves all configured unit credit specifications from the database for viewing purposes.
+            </documentation>
+            <input name="input40" message="tns:GetUnitCreditSpecificationsRequest"/>
+            <output name="output40" message="tns:UnitCreditSpecificationsResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+               
+        
+        <!--
+        #################################################
+        Batch Management
+        #################################################
+        -->
+
+        <operation name="RunBatch">
+            <documentation>
+                (C PCB)Is invoked by the BS BatchSchedule to executing a scheduled batch job configured in the SmileDB batch_schedule table.
+                RunBatch the calls BS BatchManager to update the status of the batch job in the SmileDB batch_schedule table.
+            </documentation>
+            <input name="input20" message="tns:RunBatchRequest"/>
+            <output name="output20" message="tns:RunBatchResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+
+        <operation name="GetBatchSchedules">
+            <documentation>
+                (C PCB)Extracts a list of scheduled batch jobs from the SmileDB batch_schedule table.
+            </documentation>
+            <input name="input21" message="tns:GetBatchSchedulesRequest"/>
+            <output name="output21" message="tns:GetBatchSchedulesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ModifyBatchSchedule">
+            <documentation>
+                (C PCB)Called to modify properties of a scheduled batch job in the database.
+            </documentation>
+            <input name="input22" message="tns:ModifyBatchScheduleRequest"/>
+            <output name="output22" message="tns:ModifyBatchScheduleResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        
+        <!--
+        #################################################
+        Messaging
+        #################################################
+        -->
+        
+        <operation name="SendShortMessage">
+            <documentation>
+                (D JBP)A generic function that can be used to send any message type (e.g. SMS, MMS) from one subscriber to another. This is the new one aligned with new Rating/routing framework
+            </documentation>
+            <input name="input232" message="tns:SendShortMessageRequest"/>
+            <output name="output232" message="tns:SendShortMessageResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        PCRF Specific Functionality
+        #################################################
+        -->
+        <operation name="GetPCRFData">
+            <documentation>
+                (C RG)Retrieves all IPCAN Sessions and associated AF Sessions and PCC Rules from the database. 
+                PCRF Data can be looked-up by IMPI.
+            </documentation>
+            <input name="input50" message="tns:GetPCRFDataRequest"/>
+            <output name="output50" message="tns:PCRFDataResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        Network Purge Specific Functionality
+        #################################################
+        -->
+        
+        <operation name="PurgeUserData">
+            <documentation>
+                (C RG)Purges IMPI information from the EPC - depending on verbsity either PGW purge or MME purge
+            </documentation>
+            <input name="input51" message="tns:PurgeUserDataRequest"/>
+            <output name="output51" message="tns:PurgeUserDataResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        SCSCF Deregister Specific Functionality
+        #################################################
+        -->
+        
+        <operation name="DeregisterIMPU">
+            <documentation>
+                (C RG)Deregisters IMPU from IMS
+            </documentation>
+            <input name="input52" message="tns:DeregisterIMPURequest"/>
+            <output name="output52" message="tns:DeregisterIMPUResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        
+        <!--
+        #################################################
+        IMS Specific Functionality (Used Mainly By HSS)
+        #################################################
+        -->
+        <operation name="GetIMSSubscription">
+            <documentation>
+                (C PCB)Retrieves an IMS subscription from the database. A subscription can be looked-up by
+                IMSU, IMPU, IMPI or Implicitit Set IDs.
+            </documentation>
+            <input name="input26" message="tns:GetIMSSubscriptionRequest"/>
+            <output name="output26" message="tns:IMSSubscriptionResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+
+        <operation name="ModifyIMSSubscriptionStatus">
+            <documentation>
+                (C PCB)Used by the HSS to modify the status of the subscription (IMPU, IMPI, IMSU) as well as the location (S-CSCF).
+                Used to activate or deactivate the IMS user identies and mapping. It is used to activate/deactivate a public user identity (IMPU),
+                private user identity (IMPI) or the association/mapping between IMPI and IMPU.
+                This function is also used to modify the routing nodes of the user which includes Diameter and SCSCF names.
+            </documentation>
+            <input name="input27" message="tns:ModifyIMSSubscriptionStatusRequest"/>
+            <output name="output27" message="tns:ModifyIMSSubscriptionStatusResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetSCSCFIMPUData">
+            <input name="input14" message="tns:SCSCFIMPUDataRequest"/>
+            <output name="output14" message="tns:SCSCFIMPUDataResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetServiceActivationData">
+            <input name="input148"   message="tns:GetServiceActivationDataRequest"/>
+            <output name="output148" message="tns:GetServiceActivationDataResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <!--
+        #################################################
+        Account Management Functions
+        #################################################
+        -->
+        <operation name="GetAccounts">
+            <documentation>
+                (D PCB)Retrieves an account with the given account id from the database.
+            </documentation>
+            <input name="input28" message="tns:GetAccountsRequest"/>
+            <output name="output28" message="tns:AccountsResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="CreateAccount">
+            <input name="input99" message="tns:CreateAccountRequest"/>
+            <output name="output99" message="tns:AccountResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetRatePlan">
+            <documentation>
+                (D PCB)Retrieves a rate plan.
+            </documentation>
+            <input name="input38" message="tns:GetRatePlanRequest"/>
+            <output name="output38" message="tns:RatePlanResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="TransferBalance">
+            <documentation>
+                (D PCB)Performs a balance tranfer from one account to another.
+            </documentation>
+            <input name="input29" message="tns:TransferBalanceRequest"/>
+            <output name="output29" message="tns:TransferBalanceResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetAccountHistory">
+            <documentation>
+                (D PCB)Retrieves a list of all activities performed on a given account.
+            </documentation>
+            <input name="input30" message="tns:GetAccountHistoryRequest"/>
+            <output name="output30" message="tns:AccountHistoryResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetAccountSummary">
+            <input name="input150" message="tns:GetAccountSummaryRequest"/>
+            <output name="output150" message="tns:AccountSummaryResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="PurchaseUnitCredit">
+            <documentation>
+                (D PCB)Provisions a unit credit onto an account via a sale.
+            </documentation>
+            <input name="input39" message="tns:PurchaseUnitCreditRequest"/>
+            <output name="output39" message="tns:PurchaseUnitCreditResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="CreatePrepaidStrips">
+            <input name="input96" message="tns:CreatePrepaidStripsRequest"/>
+            <output name="output96" message="tns:PrepaidStrips"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="BatchUpdatePrepaidStrips">
+            <input name="input97" message="tns:BatchUpdatePrepaidStripsRequest"/>
+            <output name="output97" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="RedeemPrepaidStrip">
+            <input name="input43" message="tns:RedeemPrepaidStripRequest"/>
+            <output name="output43" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetPrepaidStrip">
+            <input name="input98" message="tns:GetPrepaidStripRequest"/>
+            <output name="output98" message="tns:PrepaidStripResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ModifyAccount">
+            <input name="input120" message="tns:ModifyAccountRequest"/>
+            <output name="output120" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ReverseTransactions">
+            <input name="input135" message="tns:ReverseTransactionsRequest"/>
+            <output name="output135" message="tns:ReverseTransactionsResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ModifyUnitCredit">
+            <input name="input141" message="tns:ModifyUnitCreditRequest"/>
+            <output name="output141" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="SplitUnitCredit">
+            <input name="input149" message="tns:SplitUnitCreditRequest"/>
+            <output name="output149" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="CheckReservation">
+            <input name="input145" message="tns:CheckReservationRequest"/>
+            <output name="output145" message="tns:CheckReservationResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetTransferGraph">
+            <input name="input146" message="tns:GetTransferGraphRequest"/>
+            <output name="output146" message="tns:GetTransferGraphResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetUnitCreditInstances">
+            <input name="input165" message="tns:GetUnitCreditInstancesRequest"/>
+            <output name="output165" message="tns:GetUnitCreditInstancesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <!--
+        #################################################
+        SIM Management Functions
+        #################################################
+        -->
+        <operation name="PerformSIMSwap">
+            <documentation>
+                (T MM) Performs a SIM swap operation
+            </documentation>
+            <input name="input41" message="tns:SIMSwapRequest"/>
+            <output name="output41" message="tns:SIMSwapResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        Trouble Ticket (TT) Functions
+        #################################################
+        -->
+        <operation name="GetTroubleTicketMetaData">
+            <input name="input94" message="tns:GetTroubleTicketMetaDataRequest"/>
+            <output name="output94" message="tns:GetTroubleTicketMetaDataResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="CreateTroubleTicketIssue">
+            <input name="input91" message="tns:CreateTroubleTicketIssueRequest"/>
+            <output name="output91" message="tns:CreateTroubleTicketIssueResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ModifyTroubleTicketIssue">
+            <input name="input95" message="tns:ModifyTroubleTicketIssueRequest"/>
+            <output name="output95" message="tns:ModifyTroubleTicketIssueResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetTroubleTicketIssues">
+            <input name="input102" message="tns:GetTroubleTicketIssuesRequest"/>
+            <output name="output102" message="tns:GetTroubleTicketIssuesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="CreateTroubleTicketComment">
+            <input name="input103" message="tns:CreateTroubleTicketCommentRequest"/>
+            <output name="output103" message="tns:CreateTroubleTicketCommentResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ModifyTroubleTicketComment">
+            <input name="input104" message="tns:ModifyTroubleTicketCommentRequest"/>
+            <output name="output104" message="tns:ModifyTroubleTicketCommentResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetTroubleTicketComments">
+            <input name="input105" message="tns:GetTroubleTicketCommentsRequest"/>
+            <output name="output105" message="tns:GetTroubleTicketCommentsResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="CreateTroubleTicketUser">
+            <input name="input93" message="tns:CreateTroubleTicketUserRequest"/>
+            <output name="output93" message="tns:CreateTroubleTicketUserResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="IsTTUser">
+            <input name="input136" message="tns:IsUserRequest"/>
+            <output name="output136" message="tns:IsUserResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="CloseSalesLead">
+            <input name="input137" message="tns:CloseSalesLeadIssueRequest"/>
+            <output name="output137" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetJiraUsers">
+            <input name="input138"   message="tns:GetJiraUserRequest"/>
+            <output name="output138" message="tns:GetJiraUserResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <!--<operation name="ModifyTroubleTicketIssueWatcher">
+            <input name="input119" message="tns:TTIssueWatcher"/>
+            <output name="output119" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetTroubleTicketIssueWatchers">
+            <input name="input120" message="tns:GetTroubleTicketIssueWatchersRequest"/>
+            <output name="output120" message="tns:TTIssueWatcher"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>-->
+        
+        <!--
+        #################################################
+        Third Party Functions
+        #################################################
+        -->
+        <operation name="GetThirdPartyAuthorisationRules">
+            <input name="input108" message="tns:GetThirdPartyAuthorisationRulesRequest"/>
+            <output name="output108" message="tns:GetThirdPartyAuthorisationRulesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        
+        <!--
+        #################################################
+        Commissions Functions
+        #################################################
+        -->
+       
+        <!--
+        #################################################
+        Call Centre PABX Functions
+        #################################################
+        -->
+       
+        <operation name="LogCCAgentIntoQueues">
+            <input name="input113" message="tns:LogCCAgentIntoQueuesRequest"/>
+            <output name="output113" message="tns:LogCCAgentIntoQueuesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="LogCCAgentOutQueues">
+            <input name="input114" message="tns:LogCCAgentOutQueuesRequest"/>
+            <output name="output114" message="tns:LogCCAgentOutQueuesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="CheckForNewCCAgentCall">
+            <input name="input115" message="tns:CheckForNewCCAgentCallRequest"/>
+            <output name="output115" message="tns:CheckForNewCCAgentCallResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        Sales Functions
+        #################################################
+        -->
+        <operation name="GetInventory">
+            <input name="input116" message="tns:GetInventoryRequest"/>
+            <output name="output116" message="tns:GetInventoryResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ProcessSale">
+            <input name="input117" message="tns:ProcessSaleRequest"/>
+            <output name="output117" message="tns:ProcessSaleResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GenerateQuote">
+            <input name="input128" message="tns:GenerateQuoteRequest"/>
+            <output name="output128" message="tns:GenerateQuoteResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetSales">
+            <input name="input118" message="tns:GetSalesRequest"/>
+            <output name="output118" message="tns:GetSalesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ProcessCashIn">
+            <input name="input119" message="tns:ProcessCashInRequest"/>
+            <output name="output119" message="tns:ProcessCashInResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <operation name="GetCashIns">
+            <input name="input157" message="tns:CashInsQueryRequest"/>
+            <output name="output157" message="tns:CashInsQueryResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <operation name="ModifySale">
+            <input name="input130" message="tns:ModifySaleRequest"/>
+            <output name="output130" message="tns:ModifySaleResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ProcessReturn">
+            <input name="input133" message="tns:ProcessReturnRequest"/>
+            <output name="output133" message="tns:ProcessReturnResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetCreditNotes">
+            <input name="input134" message="tns:GetCreditNotesRequest"/>
+            <output name="output134" message="tns:GetCreditNotesResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="PostProcessSale">
+            <input name="input158"   message="tns:PostProcessSaleRequest"/>
+            <output name="output158" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation> 
+        <operation name="ProcessReturnOrReplacement">
+            <input name="input159"   message="tns:ProcessReturnOrReplacementRequest"/>
+            <output name="output159" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation> 
+        <operation name="GetSoldStockLocations">
+            <input name="input161" message="tns:GetSoldStockLocationsRequest"/>
+            <output name="output161" message="tns:GetSoldStockLocationsResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="SetSoldStockLocations">
+            <input name="input162" message="tns:SetSoldStockLocationsRequest"/>
+            <output name="output162" message="tns:SetSoldStockLocationsResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ApprovePromotionCode">
+            <input name="input163" message="tns:ApprovePromotionCodeRequest"/>
+            <output name="output163" message="tns:ApprovePromotionCodeResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="ProcessPaymentNotification">
+            <input name="input164" message="tns:PaymentNotificationRequest"/>
+            <output name="output164" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+         
+        <!--
+        #################################################
+        Event Management Functions
+        #################################################
+        -->
+        <operation name="CreateEvent">
+            <input name="input121" message="tns:CreateEventRequest"/>
+            <output name="output121" message="tns:CreateEventResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetEvents">
+            <input name="input122" message="tns:GetEventsRequest"/>
+            <output name="output122" message="tns:GetEventsResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="DeleteFutureEvent">
+            <input name="input123" message="tns:DeleteFutureEventRequest"/>
+            <output name="output123" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        Address Management Functions
+        #################################################
+        -->
+        <operation name="GetAvailableNumbers">
+            <input name="input140" message="tns:GetAvailableNumbersRequest"/>
+            <output name="output140" message="tns:GetAvailableNumbersResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="GetPortOrders">
+            <input name="input160"   message="tns:GetPortOrdersRequest"/>
+            <output name="output160" message="tns:GetPortOrdersResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        <operation name="HandlePortInEvent">
+            <input name="input147" message="tns:HandlePortInEventRequest"/>
+            <output name="output147" message="tns:HandlePortInEventResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        Organisation Functions
+        #################################################
+        -->
+        
+        <operation name="GetOrganisations">
+            <input name="input125"   message="tns:GetOrganisationsRequest"/>
+            <output name="output125" message="tns:GetOrganisationsResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation> 
+        <operation name="AddOrganisation">
+            <input name="input126"   message="tns:AddOrganisationRequest"/>
+            <output name="output126" message="tns:AddOrganisationResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation> 
+        <operation name="ModifyOrganisation">
+            <input name="input127"   message="tns:ModifyOrganisationRequest"/>
+            <output name="output127" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        Contract Functions
+        #################################################
+        -->
+        
+        <operation name="AddContract">
+            <input name="input151"   message="tns:AddContractRequest"/>
+            <output name="output151" message="tns:AddContractResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation> 
+        <operation name="GetContracts">
+            <input name="input152"   message="tns:ContractQueryRequest"/>
+            <output name="output152" message="tns:ContractQueryResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation> 
+        <operation name="DeleteContract">
+            <input name="input153"   message="tns:DeleteContractRequest"/>
+            <output name="output153" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation> 
+        <operation name="ModifyContract">
+            <input name="input154"   message="tns:ModifyContractRequest"/>
+            <output name="output154" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation> 
+        
+        
+        <operation name="UpdateProperty">
+            <input name="input17" message="tns:UpdatePropertyRequest"/>
+            <output name="output17" message="tns:UpdatePropertyResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <!--
+        #################################################
+        The Now Factory (TNF) Management Functions
+        #################################################
+        -->
+       
+        <operation name="GetTNFData">
+            <input name="input155" message="tns:TNFDataRequest"/>
+            <output name="output155" message="tns:TNFDataResponse"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        
+        <!--
+        #################################################
+        Campaign Functions
+        #################################################
+        -->
+        <operation name="StoreCampaignData">
+            <documentation></documentation>
+            <input name="input167" message="tns:StoreCampaignDataRequest"/>
+            <output name="output167" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+        <operation name="CreateScheduledAccountHistory">
+            <input name="input168" message="tns:CreateScheduledAccountHistoryRequest"/>
+            <output name="output168" message="tns:Done"/>
+            <fault name="fault1" message="tns:SCAError"/>
+        </operation>
+        
+         
+    </portType>
+    
+    <binding name="SCABinding" type="tns:SCASoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="IsUp">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetStickyNoteTypeList">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddStickyNote">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyStickyNote">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetEntitiesStickyNotes">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetStickyNoteType">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetStickyNote">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteStickyNote">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetProperty">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsStale">
+            <input name="input10">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output10">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="FlushPropertyCache">
+            <input name="input11">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output11">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddCustomer">
+            <input name="input12">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output12">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyCustomer">
+            <input name="input13">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output13">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetCustomers">
+            <input name="input15">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output15">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="Authenticate">
+            <input name="input16">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output16">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetProductInstances">
+            <input name="input18">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output18">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessOrder">
+            <input name="input19">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output19">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="RunBatch">
+            <input name="input20">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output20">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetBatchSchedules">
+            <input name="input21">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output21">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyBatchSchedule">
+            <input name="input22">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output22">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetResourceList">
+            <input name="input23">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output23">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddResource">
+            <input name="input24">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output24">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SendShortMessage">
+            <input name="input232">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output232">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetPCRFData">
+            <input name="input50">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output50">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="PurgeUserData">
+            <input name="input51">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output51">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="DeregisterIMPU">
+            <input name="input52">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output52">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        
+        <operation name="GetIMSSubscription">
+            <input name="input26">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output26">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyIMSSubscriptionStatus">
+            <input name="input27">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output27">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetAccounts">
+            <input name="input28">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output28">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="TransferBalance">
+            <input name="input29">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output29">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetAccountHistory">
+            <input name="input30">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output30">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetProductSpecifications">
+            <input name="input31">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output31">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddAddress">
+            <input name="input32">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output32">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteAddress">
+            <input name="input33">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output33">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyAddress">
+            <input name="input34">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output34">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetServiceInstances">
+            <input name="input36">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output36">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetServiceSpecification">
+            <input name="input37">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output37">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetRatePlan">
+            <input name="input38">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output38">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="PurchaseUnitCredit">
+            <input name="input39">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output39">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetUnitCreditSpecifications">
+            <input name="input40">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output40">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="PerformSIMSwap">
+            <input name="input41">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output41">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="ProvisionSIMCard">
+            <input name="input42">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output42">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="RedeemPrepaidStrip">
+            <input name="input43">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output43">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetTroubleTicketMetaData">
+            <input name="input94">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output94">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateTroubleTicketIssue">
+            <input name="input91">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output91">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyTroubleTicketIssue">
+            <input name="input95">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output95">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetTroubleTicketIssues">
+            <input name="input102">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output102">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateTroubleTicketComment">
+            <input name="input103">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output103">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyTroubleTicketComment">
+            <input name="input104">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output104">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetTroubleTicketComments">
+            <input name="input105">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output105">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateTroubleTicketUser">
+            <input name="input93">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output93">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreatePrepaidStrips">
+            <input name="input96">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output96">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="BatchUpdatePrepaidStrips">
+            <input name="input97">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output97">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetPrepaidStrip">
+            <input name="input98">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output98">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateAccount">
+            <input name="input99">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output99">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SendCustomerCommunication">
+            <input name="input100">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output100">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ResetSSOPassword">
+            <input name="input107">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output107">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SendSSOPasswordResetLink">
+            <input name="input106">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output106">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetThirdPartyAuthorisationRules">
+            <input name="input108">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output108">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="LogCCAgentIntoQueues">
+            <input name="input113">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output113">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="LogCCAgentOutQueues">
+            <input name="input114">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output114">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CheckForNewCCAgentCall">
+            <input name="input115">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output115">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetInventory">
+            <input name="input116">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output116">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessSale">
+            <input name="input117">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output117">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetSales">
+            <input name="input118">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output118">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessCashIn">
+            <input name="input119">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output119">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="ModifyAccount">
+            <input name="input120">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output120">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetSCSCFIMPUData">
+            <input name="input14">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output14">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateEvent">
+            <input name="input121">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output121">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetEvents">
+            <input name="input122">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output122">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteFutureEvent">
+            <input name="input123">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output123">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetOrganisations">
+            <input name="input125">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output125">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddOrganisation">
+            <input name="input126">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output126">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyOrganisation">
+            <input name="input127">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output127">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GenerateQuote">
+            <input name="input128">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output128">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifySale">
+            <input name="input130">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output130">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessReturn">
+            <input name="input133">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output133">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetCreditNotes">
+            <input name="input134">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output134">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ReverseTransactions">
+            <input name="input135">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output135">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsTTUser">
+            <input name="input136">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output136">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CloseSalesLead">
+            <input name="input137">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output137">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetJiraUsers">
+            <input name="input138">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output138">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="UpdateProperty">
+            <input name="input17">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output17">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="RunGeneralQuery">
+            <input name="input139">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output139">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetAvailableNumbers">
+            <input name="input140">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output140">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyUnitCredit">
+            <input name="input141">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output141">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CheckReservation">
+            <input name="input145">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output145">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetTransferGraph">
+            <input name="input146">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output146">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="HandlePortInEvent">
+            <input name="input147">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output147">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetServiceActivationData">
+            <input name="input148">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output148">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SplitUnitCredit">
+            <input name="input149">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output149">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetAccountSummary">
+            <input name="input150">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output150">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="AddContract">
+            <input name="input151">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output151">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetContracts">
+            <input name="input152">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output152">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteContract">
+            <input name="input153">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output153">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyContract">
+            <input name="input154">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output154">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetTNFData">
+            <input name="input155">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output155">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetPhoto">
+            <input name="input156">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output156">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetCashIns">
+            <input name="input157">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output157">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="PostProcessSale">
+            <input name="input158">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output158">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessReturnOrReplacement">
+            <input name="input159">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output159">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetPortOrders">
+            <input name="input160">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output160">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetSoldStockLocations">
+            <input name="input161">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output161">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SetSoldStockLocations">
+            <input name="input162">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output162">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ApprovePromotionCode">
+            <input name="input163">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output163">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ProcessPaymentNotification">
+            <input name="input164">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output164">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetUnitCreditInstances">
+            <input name="input165">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output165">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetCustomerTenant">
+            <input name="input166">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output166">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="StoreCampaignData">
+            <input name="input167">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output167">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateScheduledAccountHistory">
+            <input name="input168">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output168">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+    </binding>
+    
+    
+    <service name="SCA">
+        <port name="SCASoap" binding="tns:SCABinding">
+            <soap:address location="http://localhost:${HttpDefaultPort}/SCA/SCASoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="SCA">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+        In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+        A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="SCAImplementation" portType="tns:SCASoap"/>
+    </plnk:partnerLinkType>
+</definitions>
+

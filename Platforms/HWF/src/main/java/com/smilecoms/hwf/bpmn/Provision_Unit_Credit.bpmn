@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions id="definitions"
+             targetNamespace="http://activiti.org/bpmn20" 
+             xmlns:activiti="http://activiti.org/bpmn"
+             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
+        
+    <process id="PUC" name="Provision Unit Credit">
+          
+        <startEvent id="the_start" />
+        <sequenceFlow id="flow1" sourceRef="the_start" targetRef="capture_data" />
+        
+        <userTask id="capture_data" name="Capture Unit Credit Data">            
+            <documentation>Capture the Account Id and Unit Credit Information that must be approved for provisioning</documentation>
+            <extensionElements>
+                <activiti:formProperty name="Account Id" id="Account Id" variable="Account Id" />
+                <activiti:formProperty name="Unit Credit Name" id="Unit Credit Name" variable="Unit Credit Name"/>        
+            </extensionElements>
+            <potentialOwner>
+                <resourceAssignmentExpression>
+                    <formalExpression>Administrator</formalExpression>
+                </resourceAssignmentExpression>
+            </potentialOwner>
+        </userTask>
+        
+        <sequenceFlow id="flow2" sourceRef="capture_data" targetRef="email" />
+        
+        <serviceTask id="email" name="Email Approver" activiti:type="mail">
+            <documentation>Notify the approver of the request</documentation>
+            <extensionElements>
+                <activiti:field name="to">
+                    <activiti:string><![CDATA[pcb@smilecoms.com]]></activiti:string>
+                </activiti:field>
+                <activiti:field name="from">
+                    <activiti:string><![CDATA[admin@smilecoms.com]]></activiti:string>
+                </activiti:field>
+                <activiti:field name="subject">
+                    <activiti:string><![CDATA[Test Email]]></activiti:string>
+                </activiti:field>
+                <activiti:field name="text">
+                    <activiti:string><![CDATA[You have a new task]]></activiti:string>
+                </activiti:field>
+            </extensionElements>
+        </serviceTask>
+    
+        <sequenceFlow id="flow3" sourceRef="email" targetRef="approval" />
+        
+        <userTask id="approval" name="Approve Unit Credit Provisioning">            
+            <documentation>Approve for provisioning</documentation>
+            <potentialOwner>
+                <resourceAssignmentExpression>
+                    <formalExpression>Administrator</formalExpression>
+                </resourceAssignmentExpression>
+            </potentialOwner>
+        </userTask>
+        
+        <sequenceFlow id="flow4" sourceRef="approval" targetRef="sca_call" />  
+        
+        <serviceTask id="sca_call" name="Call SCA To Provision Unit Credit" activiti:class="com.smilecoms.hwf.activiti.ActivitiSCADelegate">
+            <extensionElements>
+                <activiti:field name="method" stringValue="provisionUnitCredit" />
+            </extensionElements>  
+        </serviceTask>
+        
+        <sequenceFlow id="flow5" sourceRef="sca_call" targetRef="the_end" />       
+        
+        <endEvent id="the_end" />
+        
+    </process>
+        
+</definitions>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jbi xmlns="http://java.sun.com/xml/ns/jbi" xmlns:ns1="http://xml.smilecoms.com/SCA" xmlns:ns10="http://xml.smilecoms.com/TT" xmlns:ns11="http://xml.smilecoms.com/AM" xmlns:ns12="http://xml.smilecoms.com/PC" xmlns:ns13="http://xml.smilecoms.com/IMSSC" xmlns:ns14="http://xml.smilecoms.com/BS" xmlns:ns15="http://xml.smilecoms.com/SN" xmlns:ns16="http://xml.smilecoms.com/POS" xmlns:ns17="http://xml.smilecoms.com/BM" xmlns:ns18="http://xml.smilecoms.com/PM" xmlns:ns2="http://xml.smilecoms.com/CTI" xmlns:ns3="http://xml.smilecoms.com/MM" xmlns:ns4="http://xml.smilecoms.com/ET" xmlns:ns5="http://xml.smilecoms.com/SCASubFlows" xmlns:ns6="http://xml.smilecoms.com/CM" xmlns:ns7="http://xml.smilecoms.com/PVS" xmlns:ns8="http://xml.smilecoms.com/IM" xmlns:ns9="http://xml.smilecoms.com/TNF" version="1.0">
+    <services binding-component="true">
+        <provides endpoint-name="CTISoap" interface-name="ns2:CTISoap" service-name="ns2:CTI"/>
+        <provides endpoint-name="MMSoap" interface-name="ns3:MMSoap" service-name="ns3:MM"/>
+        <provides endpoint-name="ETSoap" interface-name="ns4:ETSoap" service-name="ns4:ET"/>
+        <provides endpoint-name="CMSoap" interface-name="ns6:CMSoap" service-name="ns6:CM"/>
+        <provides endpoint-name="PVSSoap" interface-name="ns7:PVSSoap" service-name="ns7:PVS"/>
+        <provides endpoint-name="IMSoap" interface-name="ns8:IMSoap" service-name="ns8:IM"/>
+        <provides endpoint-name="TNFSoap" interface-name="ns9:TNFSoap" service-name="ns9:TNF"/>
+        <provides endpoint-name="TTSoap" interface-name="ns10:TTSoap" service-name="ns10:TT"/>
+        <provides endpoint-name="AMSoap" interface-name="ns11:AMSoap" service-name="ns11:AM"/>
+        <provides endpoint-name="PCSoap" interface-name="ns12:PCSoap" service-name="ns12:PC"/>
+        <provides endpoint-name="IMSSCSoap" interface-name="ns13:IMSSCSoap" service-name="ns13:IMSSC"/>
+        <provides endpoint-name="BSSoap" interface-name="ns14:BSSoap" service-name="ns14:BS"/>
+        <provides endpoint-name="SNSoap" interface-name="ns15:SNSoap" service-name="ns15:SN"/>
+        <provides endpoint-name="POSSoap" interface-name="ns16:POSSoap" service-name="ns16:POS"/>
+        <provides endpoint-name="BMSoap" interface-name="ns17:BMSoap" service-name="ns17:BM"/>
+        <provides endpoint-name="PMSoap" interface-name="ns18:PMSoap" service-name="ns18:PM"/>
+        <consumes endpoint-name="SCASoap" interface-name="ns1:SCASoap" service-name="ns1:SCA"/>
+    </services>
+</jbi>

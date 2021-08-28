@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="SendShortMessage"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:ns0="http://xml.smilecoms.com/schema/MM" xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/BM" xmlns:ns3="http://xml.smilecoms.com/schema/IM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/MM" location="../Partners/MM/MMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="MM" xmlns:tns="http://xml.smilecoms.com/MM" partnerLinkType="tns:MMServiceDefinition" partnerRole="MM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="MMSendShortMessageIn" xmlns:tns="http://xml.smilecoms.com/MM" messageType="tns:SendShortMessageRequest"/>
+        <variable name="MMSendShortMessageOut" xmlns:tns="http://xml.smilecoms.com/MM" messageType="tns:Done"/>
+        <variable name="SCASendShortMessageOut" messageType="tns:SendShortMessageResponse"/>
+        <variable name="SCASendShortMessageIn" messageType="tns:SendShortMessageRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="MMError" xmlns:mmns="http://xml.smilecoms.com/MM" faultMessageType="mmns:MMError">
+            <sequence name="Sequence1">
+                <assign name="Assign3">
+                    <copy>
+                        <from>$MMError.MMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$MMError.MMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$MMError.MMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="SendShortMessage" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="SendShortMessage" portType="tns:SCASoap" variable="SCASendShortMessageIn"/>
+
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('MM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="MM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignRequest">
+            <copy>
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:SCAContext/ns1:TxId</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:SCAContext/ns1:Tenant</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:From</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:Source</to>
+            </copy>
+            <copy>
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:To</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:Destination</to>
+            </copy>
+            <copy>
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:Body</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:DataAsString</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:DataCodingScheme</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:DataCodingScheme</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:CampaignId</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:CampaignId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:Priority</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:Priority</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCASendShortMessageIn.NewShortMessage/ns1:ValiditySeconds</from>
+                <to>$MMSendShortMessageIn.NewShortMessage/ns0:ValiditySeconds</to>
+            </copy>
+        </assign>
+        <invoke name="CallMM" partnerLink="MM" operation="SendShortMessage" xmlns:tns="http://xml.smilecoms.com/MM" portType="tns:MMSoap" inputVariable="MMSendShortMessageIn" outputVariable="MMSendShortMessageOut"/>
+        <assign name="AssignRes">
+            <copy>
+                <from>$MMSendShortMessageOut.Done/ns0:Done</from>
+                <to>$SCASendShortMessageOut.Done/ns1:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="SendShortMessage" portType="tns:SCASoap" variable="SCASendShortMessageOut"/>
+    </sequence>
+</process>
+
+
+
+
+
+
+
+
+
+
+

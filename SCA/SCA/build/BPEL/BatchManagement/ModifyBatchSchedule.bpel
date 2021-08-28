@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ModifyBatchSchedule"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" 
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/BS"
+    xmlns:ns2="http://xml.smilecoms.com/BS" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BS" location="../Partners/BS/BSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="BS" xmlns:tns="http://xml.smilecoms.com/BS" partnerLinkType="tns:BSServiceDefinition" partnerRole="BS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="BSModifyBatchScheduleOut" xmlns:tns="http://xml.smilecoms.com/BS" messageType="tns:Done"/>
+        <variable name="BSModifyBatchScheduleIn" xmlns:tns="http://xml.smilecoms.com/BS" messageType="tns:ModifyBatchScheduleRequest"/>
+        <variable name="SCAModifyBatchScheduleOut" messageType="tns:Done"/>
+        <variable name="SCAModifyBatchScheduleIn" messageType="tns:ModifyBatchScheduleRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="bsFault"  faultMessageType="ns2:BSError">
+            <sequence name="Sequence1">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$bsFault.BSError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$bsFault.BSError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$bsFault.BSError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ModifyBatchSchedule" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ModifyBatchSchedule" portType="tns:SCASoap" variable="SCAModifyBatchScheduleIn"/>
+
+
+         <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('BS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign_Batch">
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:SCAContext/ns0:TxId</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:SCAContext/ns0:Tenant</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:BatchId</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:BatchId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:LastStatus</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:LastStatus</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:Status</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:Status</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:LastFinished</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:LastFinished</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:LastError</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:LastError</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:BatchMethod</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:BatchMethod</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:ClientId</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:ClientId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:Description</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:Description</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:LastRan</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:LastRan</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:SCAEndpoint</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:SCAEndpoint</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:Schedule</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:Schedule</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:LastRunHost</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:LastRunHost</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:LastRuntimeSecs</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:LastRuntimeSecs</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:CurrentLockingHost</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:CurrentLockingHost</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:Version</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:Version</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyBatchScheduleIn.ModifiedBatchSchedule/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$BSModifyBatchScheduleIn.ModifiedBatchSchedule/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+        </assign>
+        <invoke name="Modify_Batch" partnerLink="BS" operation="ModifyBatchSchedule" xmlns:tns="http://xml.smilecoms.com/BS" portType="tns:BSSoap" inputVariable="BSModifyBatchScheduleIn" outputVariable="BSModifyBatchScheduleOut"/>
+        <assign name="Assign1">
+            <copy>
+                <from>$BSModifyBatchScheduleOut.Done/ns1:Done</from>
+                <to>$SCAModifyBatchScheduleOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="ModifyBatchSchedule" portType="tns:SCASoap" variable="SCAModifyBatchScheduleOut"/>
+    </sequence>
+</process>
+

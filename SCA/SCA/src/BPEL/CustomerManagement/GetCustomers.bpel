@@ -1,0 +1,875 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetCustomers"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/IM"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:ns2="http://xml.smilecoms.com/IM" xmlns:ns3="http://xml.smilecoms.com/schema/CM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="addressCount" type="xs:int"/>
+        <variable name="IMGetCustomersOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetCustomersResponse"/>
+        <variable name="IMGetCustomersIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetCustomersRequest"/>
+        <variable name="SCAGetCustomersOut" messageType="tns:GetCustomersResponse"/>
+        <variable name="SCAGetCustomersIn" messageType="tns:GetCustomersRequest"/>
+        <variable name="CMGetProductInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductInstancesResponse"/>
+        <variable name="CMGetProductInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetProductInstancesRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultMessageType="ns2:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetCustomers" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetCustomers" portType="tns:SCASoap" variable="SCAGetCustomersIn"/>
+
+
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+
+        <assign name="AssignIM">
+            <copy>
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:CustomerId</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:CustomerId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:LastName</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:LastName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:FirstName</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:FirstName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:IdentityNumber</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:IdentityNumber</to>
+            </copy>
+             <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:NationalIdentityNumber</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:NationalIdentityNumber</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:IsNinVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:IsNinVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:SSOIdentity</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:SSOIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:AlternativeContact</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:AlternativeContact</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:ResultLimit</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:ResultLimit</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:OrganisationName</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:OrganisationName</to>
+            </copy>
+            <copy>
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:Verbosity</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:Verbosity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:EmailAddress</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:EmailAddress</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:KYCStatus</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:KYCStatus</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:CustomerId</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:CustomerId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:titleVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:titleVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:nameVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:nameVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:mobileVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:mobileVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:emailVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:emailVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:genderVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:genderVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:dobVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:dobVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:nationalityVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:nationalityVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:physicalAddressVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:physicalAddressVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:facialPitureVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:facialPitureVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:validIdCardVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:validIdCardVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:MandatoryKYCFields/ns0:fingerPrintVerified</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:MandatoryKYCFields/ns1:fingerPrintVerified</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:CustomerNinData/ns0:NinDataId</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:CustomerNinData/ns1:NinDataId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:CustomerNinData/ns0:CustomerProfileId</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:CustomerNinData/ns1:CustomerProfileId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:CustomerNinData/ns0:NinVerificationTrackingId</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:CustomerNinData/ns1:NinVerificationTrackingId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:CustomerNinData/ns0:NinVerificationType</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:CustomerNinData/ns1:NinVerificationType</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:CustomerNinData/ns0:NinVerifiedDate</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:CustomerNinData/ns1:NinVerifiedDate</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:CustomerNinData/ns0:NinResponseStatus</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:CustomerNinData/ns1:NinResponseStatus</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetCustomersIn.CustomerQuery/ns0:CustomerNinData/ns0:NinCollectionDate</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:CustomerNinData/ns1:NinCollectionDate</to>
+            </copy>
+        </assign>
+        <invoke name="CallIM" partnerLink="IM" operation="GetCustomers" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetCustomersIn" outputVariable="IMGetCustomersOut"/>
+        <assign name="AssignCount">
+            <copy>
+                <from>$IMGetCustomersOut.CustomerList/ns1:NumberOfCustomers</from>
+                <to>$SCAGetCustomersOut.CustomerList/ns0:NumberOfCustomers</to>
+            </copy>
+        </assign>
+        <forEach name="ForEachCustomer" parallel="no" counterName="customercounter">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$SCAGetCustomersOut.CustomerList/ns0:NumberOfCustomers</finalCounterValue>
+            <scope name="Scope2">
+                <variables>
+                    <variable name="SFCopyCMProdInstancesToSCAProdInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductInstancesResponse"/>
+                    <variable name="SFCopyCMProdInstancesToSCAProdInstancesOut" messageType="tns:ProductInstancesResponse"/>
+                </variables>
+                <sequence name="Sequence2">
+                    <assign name="CheckPermissions">
+                        <copy>
+                            <from>BPELUtils:checkPermissions($SCAGetCustomersIn.CustomerQuery/ns0:SCAContext, 'Customer', $IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerId)</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SCAContext/ns0:Obviscated</to>
+                        </copy>
+                    </assign>
+                    <assign name="AssignResult">
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerId
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerId
+                            </to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Title</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Title</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:FirstName</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:FirstName</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MiddleName</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MiddleName</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:LastName</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:LastName</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerStatus</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerStatus</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:IdentityNumber, $SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:IdentityNumber</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:IdentityNumberType</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:IdentityNumberType</to>
+                        </copy>  
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:NationalIdentityNumber</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:NationalIdentityNumber</to>
+                        </copy> 
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:IsNinVerified</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:IsNinVerified</to>
+                        </copy>                      
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CreatedDateTime</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CreatedDateTime</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Version</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Version</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:DateOfBirth, $SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:DateOfBirth</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Gender</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Gender</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Language</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Language</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:EmailAddress, $SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:EmailAddress</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:AlternativeContact1, $SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:AlternativeContact1</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:AlternativeContact2, $SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:AlternativeContact2</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Classification</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Classification</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>BPELUtils:obviscate($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:SSOIdentity, $SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SSOIdentity</to>
+                        </copy>
+                        <copy>
+                            <from>count($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses)
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to variable="addressCount"/>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:SecurityGroups</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SecurityGroups</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerSellers</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerSellers</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:SSODigest</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SSODigest</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:OptInLevel</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:OptInLevel</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:KYCStatus</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:KYCStatus</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:ReferralCode</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:ReferralCode</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:AccountManagerCustomerProfileId</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:AccountManagerCustomerProfileId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:OutstandingTermsAndConditions</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:OutstandingTermsAndConditions</to>
+                        </copy>
+                        <copy>
+                            <from>BPELUtils:obviscate($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MothersMaidenName, $SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SCAContext/ns0:Obviscated)</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MothersMaidenName</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Nationality</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Nationality</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:PassportExpiryDate</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:PassportExpiryDate</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:VisaExpiryDate</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:VisaExpiryDate</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:WarehouseId</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:WarehouseId</to>
+                        </copy>
+                        <copy>
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CreatedByCustomerProfileId</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CreatedByCustomerProfileId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:SSOAuthFlags</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SSOAuthFlags</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CardNumber</from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CardNumber</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:CustomerId
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:CustomerId
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:titleVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:titleVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:nameVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:nameVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:mobileVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:mobileVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:emailVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:emailVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:genderVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:genderVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:dobVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:dobVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:nationalityVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:nationalityVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:physicalAddressVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:physicalAddressVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:facialPitureVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:facialPitureVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:validIdCardVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:validIdCardVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:MandatoryKYCFields/ns1:fingerPrintVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:MandatoryKYCFields/ns0:fingerPrintVerified
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerNinData/ns1:NinDataId
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerNinData/ns0:NinDataId
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerNinData/ns1:CustomerProfileId
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerNinData/ns0:CustomerProfileId
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerNinData/ns1:NinVerificationTrackingId
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerNinData/ns0:NinVerificationTrackingId
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerNinData/ns1:NinVerificationType
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerNinData/ns0:NinVerificationType
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerNinData/ns1:NinVerifiedDate
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerNinData/ns0:NinVerifiedDate
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerNinData/ns1:NinResponseStatus
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerNinData/ns0:NinResponseStatus
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerNinData/ns1:NinCollectionDate
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]" source="from"/>
+                                </sxed2:editor>
+                            </from>
+                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerNinData/ns0:NinCollectionDate
+                                <sxed2:editor>
+                                    <sxed2:predicate path="$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]" source="to"/>
+                                </sxed2:editor>
+                            </to>
+                        </copy>
+                    </assign>
+                    
+                    <forEach name="ForEachPhoto" parallel="no" counterName="photo">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>count($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerPhotographs)</finalCounterValue>
+                        <scope name="PhotoScope">
+                            <assign name="AssignPhoto">
+                                <copy>
+                                    <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerPhotographs[$photo]/ns1:PhotoGuid</from>
+                                    <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerPhotographs[$photo]/ns0:PhotoGuid</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerPhotographs[$photo]/ns1:PhotoType</from>
+                                    <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerPhotographs[$photo]/ns0:PhotoType</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerPhotographs[$photo]/ns1:Data</from>
+                                    <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerPhotographs[$photo]/ns0:Data</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                    
+                    <forEach name="ForEachCustomerRole" parallel="no" counterName="role">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>count($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerRoles)</finalCounterValue>
+                        <scope name="RoleScope">
+                            <assign name="AssignRole">
+                                <copy>
+                                    <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerRoles[$role]/ns1:OrganisationName</from>
+                                    <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerRoles[$role]/ns0:OrganisationName</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerRoles[$role]/ns1:OrganisationId</from>
+                                    <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerRoles[$role]/ns0:OrganisationId</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerRoles[$role]/ns1:RoleName</from>
+                                    <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerRoles[$role]/ns0:RoleName</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerRoles[$role]/ns1:CustomerId</from>
+                                    <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerRoles[$role]/ns0:CustomerId</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerRoles[$role]/ns1:CustomerName</from>
+                                    <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:CustomerRoles[$role]/ns0:CustomerName</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+        
+                    <if name="IfMustGetProducts">
+                        <condition>contains($SCAGetCustomersIn.CustomerQuery/ns0:Verbosity, 'PRODUCTS')</condition>
+                        <sequence name="Sequence3">
+                            <assign name="AssignGetProducts">
+                                <copy>
+                                    <from>$SCAGetCustomersIn.CustomerQuery/ns0:SCAContext/ns0:TxId</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns3:PlatformContext/ns3:TxId</to>
+                                </copy>
+                                <copy>
+                                    <from>$SCAGetCustomersIn.CustomerQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+                                </copy>
+                                <copy>
+                                    <from>$SCAGetCustomersIn.CustomerQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns3:PlatformContext/ns3:OriginatingIP</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$SCAGetCustomersIn.CustomerQuery/ns0:SCAContext/ns0:Tenant</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns3:PlatformContext/ns3:Tenant</to>
+                                </copy>
+                                <copy>
+                                    <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:CustomerId</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns3:CustomerId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$SCAGetCustomersIn.CustomerQuery/ns0:ProductInstanceResultLimit</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns3:ResultLimit</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$SCAGetCustomersIn.CustomerQuery/ns0:ProductInstanceOffset</from>
+                                    <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns3:Offset</to>
+                                </copy>
+                            </assign>
+                            <if name="IfGetServices">
+                                <condition>contains($SCAGetCustomersIn.CustomerQuery/ns0:Verbosity, 'SERVICE')</condition>
+                                <assign name="AssignGetServices">
+                                    <copy>
+                                        <from>'MAIN_SVC'</from>
+                                        <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns3:Verbosity</to>
+                                    </copy>
+                                </assign>
+                                <else>
+                                    <assign name="AssignDontGetServices">
+                                        <copy>
+                                            <from>'MAIN'</from>
+                                            <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns3:Verbosity</to>
+                                        </copy>
+                                    </assign>
+                                </else>
+                            </if>
+                            <if name="IfSvcAVPs">
+                                <condition>contains($SCAGetCustomersIn.CustomerQuery/ns0:Verbosity, 'SVCAVP')</condition>
+                                <assign name="AssignGetAVPs">
+                                    <copy>
+                                        <from>'MAIN_SVC_SVCAVP'</from>
+                                        <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns3:Verbosity</to>
+                                    </copy>
+                                </assign>
+                            </if>
+                            <invoke name="GetCustomersProducts" partnerLink="CM" operation="GetProductInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOut">
+                                <!--sxt:trace>
+                                    <sxt:log level="finest" location="onStart">
+                                        <from>'In getCustomers and Calling CM to get Customers Product Instances'</from>
+                                    </sxt:log>
+                                    <sxt:log level="finest" location="onComplete">
+                                        <from>'In getCustomers and Called CM to get Customers Product Instances'</from>
+                                    </sxt:log>
+                                </sxt:trace-->
+                            </invoke>
+                            
+                            <if name="ArePIs">
+                                <condition>$CMGetProductInstancesOut.ProductInstanceList/ns3:NumberOfProductInstances &gt; 0</condition>
+                                <sequence name="ifpis">
+                                    <assign name="AssignSF">
+                                        <copy>
+                                            <from variable="CMGetProductInstancesOut" part="ProductInstanceList"/>
+                                            <to variable="SFCopyCMProdInstancesToSCAProdInstancesIn" part="ProductInstanceList"/>
+                                        </copy>
+                                    </assign>
+                                    <invoke name="CopyCMPIsToSCAPIs" partnerLink="SCASubFlows" operation="CopyCMProdInstancesToSCAProdInstances" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" inputVariable="SFCopyCMProdInstancesToSCAProdInstancesIn" outputVariable="SFCopyCMProdInstancesToSCAProdInstancesOut">
+                                        <!--sxt:trace>
+                                            <sxt:log level="finest" location="onStart">
+                                                <from>'In getCustomers and Calling Copy CMPIs to SCAPIs'</from>
+                                            </sxt:log>
+                                            <sxt:log level="finest" location="onComplete">
+                                                <from>'In getCustomers and Called Copy CMPIs to SCAPIs'</from>
+                                            </sxt:log>
+                                        </sxt:trace-->
+                                    </invoke>
+                                    <assign name="AssignPIs">
+                                        <copy>
+                                            <from>$SFCopyCMProdInstancesToSCAProdInstancesOut.ProductInstanceList/ns0:ProductInstances</from>
+                                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:ProductInstances</to>
+                                        </copy>
+                                        <copy ignoreMissingFromData="yes">
+                                            <from>$CMGetProductInstancesOut.ProductInstanceList/ns3:ProductInstancesTotalCount</from>
+                                            <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:ProductInstancesTotalCount</to>
+                                        </copy>
+                                    </assign>
+                                </sequence>
+                            </if>
+                            
+                        </sequence>
+                    </if>
+                    <if name="IfMustGetAddress">
+                        <condition>contains($SCAGetCustomersIn.CustomerQuery/ns0:Verbosity, 'ADDRESS')</condition>
+                        <forEach name="ForEachAddress" parallel="no" counterName="addresscounter">
+                            <startCounterValue>1</startCounterValue>
+                            <finalCounterValue>$addressCount</finalCounterValue>
+                            <scope name="Scope1">
+                                <assign name="AssignAddresses">
+                                    <copy>
+                                        <from>BPELUtils:obviscate($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:Line1, $SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SCAContext/ns0:Obviscated)</from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:Line1</to>
+                                    </copy>
+                                    <copy>
+                                        <from>BPELUtils:obviscate($IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:Line2, $SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:SCAContext/ns0:Obviscated)</from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:Line2</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:Town</from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:Town</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:Country</from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:Country</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:Code</from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:Code</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:Type</from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:Type</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:PostalMatchesPhysical</from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:PostalMatchesPhysical</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:CustomerId</from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:CustomerId</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:Zone</from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:Zone</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:AddressId
+                                        </from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:AddressId
+                                        </to>
+                                    </copy>
+                                    <copy>
+                                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[$customercounter]/ns1:Addresses[$addresscounter]/ns1:State
+                                        </from>
+                                        <to>$SCAGetCustomersOut.CustomerList/ns0:Customers[$customercounter]/ns0:Addresses[$addresscounter]/ns0:State
+                                        </to>
+                                    </copy>
+                                </assign>
+                            </scope>
+                        </forEach>
+                    </if>
+                </sequence>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCA" operation="GetCustomers" portType="tns:SCASoap" variable="SCAGetCustomersOut"/>
+    </sequence>
+</process>
+
+
+
+
+
+
+
+

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process  
+    name="CopyCMUnitCreditSpecsToSCAUnitCreditSpecs"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/CM" xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="svcSpecCount"  type="xs:int"/>
+        <variable name="CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:UnitCreditSpecificationsResponse"/>
+        <variable name="CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:UnitCreditSpecificationsResponse"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="CopyCMUnitCreditSpecsToSCAUnitCreditSpecs" portType="tns:SCASubFlowsSoap" variable="CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn"/>
+        <forEach name="ForEachUCSpec" parallel="no" counterName="uc">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications)</finalCounterValue>
+            <scope name="Scope2">
+                <sequence name="Sequence1">
+                    <assign name="Assign1">
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:Name</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:Name</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:PriceInCents</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:PriceInCents</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:ValidityDays</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:ValidityDays</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:UsableDays</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:UsableDays</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:AvailableFrom</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:AvailableFrom</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:AvailableTo</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:AvailableTo</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:UnitCreditSpecificationId</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:UnitCreditSpecificationId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:Units</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:Units</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>count($CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:ProductServiceMappings)</from>
+                            <to variable="svcSpecCount"/>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:Description</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:Description</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:PurchaseRoles</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:PurchaseRoles</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:Priority</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:Priority</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:UnitType</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:UnitType</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:FilterClass</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:FilterClass</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:WrapperClass</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:WrapperClass</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:Configuration</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:Configuration</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:ItemNumber</from>
+                            <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:ItemNumber</to>
+                        </copy>
+                    </assign>
+                    <forEach name="ForEach_SvcSpecId" parallel="no" counterName="idxSvcSpecId">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>$svcSpecCount</finalCounterValue>
+                        <scope name="Scope1">
+                            <assign name="Assign2">
+                                <copy>
+                                    <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:ProductServiceMappings[$idxSvcSpecId]/ns0:ServiceSpecificationId</from>
+                                    <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:ProductServiceMappings[$idxSvcSpecId]/ns1:ServiceSpecificationId</to>
+                                </copy>
+                                <copy>
+                                    <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:UnitCreditSpecifications[$uc]/ns0:ProductServiceMappings[$idxSvcSpecId]/ns0:ProductSpecificationId</from>
+                                    <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:UnitCreditSpecifications[$uc]/ns1:ProductServiceMappings[$idxSvcSpecId]/ns1:ProductSpecificationId</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                </sequence>
+            </scope>
+        </forEach>
+        <assign name="AssignCnt">
+            <copy>
+                <from>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsIn.UnitCreditSpecificationList/ns0:NumberOfUnitCreditSpecifications</from>
+                <to>$CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut.UnitCreditSpecificationList/ns1:NumberOfUnitCreditSpecifications</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="CopyCMUnitCreditSpecsToSCAUnitCreditSpecs" portType="tns:SCASubFlowsSoap" variable="CopyCMUnitCreditSpecsToSCAUnitCreditSpecsOut"/>
+    </sequence>
+</process>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ProcessReturn"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:POS="http://xml.smilecoms.com/POS"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:CM="http://xml.smilecoms.com/CM"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/POS" 
+    xmlns:ns3="http://xml.smilecoms.com/schema/BM" xmlns:ns4="http://xml.smilecoms.com/schema/CM" xmlns:ns5="http://xml.smilecoms.com/schema/IM" >
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="POSProcessReturnOut" messageType="POS:ProcessReturnResponse"/>
+        <variable name="POSProcessReturnIn" messageType="POS:ProcessReturnRequest"/>
+        <variable name="SCAProcessReturnOut" messageType="tns:ProcessReturnResponse"/>
+        <variable name="SCAProcessReturnIn" messageType="tns:ProcessReturnRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="POS:POSError" faultVariable="POSError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ProcessReturn" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ProcessReturn" portType="tns:SCASoap" variable="SCAProcessReturnIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+            
+        </scope>
+        <assign name="AssignReturn">
+            <copy>
+                <from>$SCAProcessReturnIn.ReturnData/ns1:SCAContext/ns1:TxId</from>
+                <to>$POSProcessReturnIn.ReturnData/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessReturnIn.ReturnData/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$POSProcessReturnIn.ReturnData/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessReturnIn.ReturnData/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$POSProcessReturnIn.ReturnData/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAProcessReturnIn.ReturnData/ns1:SCAContext/ns1:Tenant</from>
+                <to>$POSProcessReturnIn.ReturnData/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessReturnIn.ReturnData/ns1:SalesPersonCustomerId</from>
+                <to>$POSProcessReturnIn.ReturnData/ns2:SalesPersonCustomerId</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessReturnIn.ReturnData/ns1:SaleId</from>
+                <to>$POSProcessReturnIn.ReturnData/ns2:SaleId</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessReturnIn.ReturnData/ns1:ReasonCode</from>
+                <to>$POSProcessReturnIn.ReturnData/ns2:ReasonCode</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessReturnIn.ReturnData/ns1:Description</from>
+                <to>$POSProcessReturnIn.ReturnData/ns2:Description</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessReturnIn.ReturnData/ns1:ReturnLocation</from>
+                <to>$POSProcessReturnIn.ReturnData/ns2:ReturnLocation</to>
+            </copy>
+        </assign>
+        
+        <forEach name="ForEachItem" parallel="no" counterName="item">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($SCAProcessReturnIn.ReturnData/ns1:LineItems)</finalCounterValue>
+            <scope name="SequenceItems">
+                <assign name="ItemsAssign">
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAProcessReturnIn.ReturnData/ns1:LineItems[$item]/ns1:LineId</from>
+                        <to>$POSProcessReturnIn.ReturnData/ns2:LineItems[$item]/ns2:LineId</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAProcessReturnIn.ReturnData/ns1:LineItems[$item]/ns1:Quantity</from>
+                        <to>$POSProcessReturnIn.ReturnData/ns2:LineItems[$item]/ns2:Quantity</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+                    
+        <invoke name="CallPOS" partnerLink="POS" operation="ProcessReturn" portType="POS:POSSoap" inputVariable="POSProcessReturnIn" outputVariable="POSProcessReturnOut"/>
+        <assign name="AssignResult">
+            <copy>
+                <from>$POSProcessReturnOut.CreditNote/ns2:CreditNoteId</from>
+                <to>$SCAProcessReturnOut.CreditNote/ns1:CreditNoteId</to>
+            </copy>
+            <copy>
+                <from>$POSProcessReturnOut.CreditNote/ns2:CreditNotePDFBase64</from>
+                <to>$SCAProcessReturnOut.CreditNote/ns1:CreditNotePDFBase64</to>
+            </copy>
+            <copy>
+                <from>$POSProcessReturnOut.CreditNote/ns2:SalesPersonCustomerId</from>
+                <to>$SCAProcessReturnOut.CreditNote/ns1:SalesPersonCustomerId</to>
+            </copy>
+            <copy>
+                <from>$POSProcessReturnOut.CreditNote/ns2:SaleId</from>
+                <to>$SCAProcessReturnOut.CreditNote/ns1:SaleId</to>
+            </copy>
+            <copy>
+                <from>$POSProcessReturnOut.CreditNote/ns2:ReasonCode</from>
+                <to>$SCAProcessReturnOut.CreditNote/ns1:ReasonCode</to>
+            </copy>
+            <copy>
+                <from>$POSProcessReturnOut.CreditNote/ns2:Description</from>
+                <to>$SCAProcessReturnOut.CreditNote/ns1:Description</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="ProcessReturn" portType="tns:SCASoap" variable="SCAProcessReturnOut"/>
+    </sequence>
+</process>

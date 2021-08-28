@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/PC"
+            xmlns:tns="http://xml.smilecoms.com/schema/PC"
+            elementFormDefault="qualified">
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PlatformString" >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="String" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformInteger" >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Integer" type="xsd:int">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject">
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PCError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="PCError" type="tns:PCError">
+    </xsd:element>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+    <xsd:complexType name="Done">
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="Done" type="tns:Done">
+    </xsd:element>
+    
+    
+    <!--
+    **********************************************
+                       PCRF MANAGEMENT
+    **********************************************
+    -->
+    
+    <!-- PCRF Data -->
+    <xsd:complexType name="PCRFData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="hasIPCANSessions" type="xsd:int"></xsd:element>
+                    <xsd:element name="IPCANSessions" type="tns:IPCANSessionData" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="hasAFSessions" type="xsd:int"></xsd:element>
+                    <xsd:element name="AFSessions" type="tns:AFSessionData" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="hasPCCRules" type="xsd:int"></xsd:element>
+                    <xsd:element name="PCCRules" type="tns:PCCRuleData" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="PCRFDataQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMSPrivateIdentity" type="xsd:string"></xsd:element>
+                    <xsd:element name="Verbosity" type="tns:stPCRFDataLookupVerbosity"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="VoiceAppQoSDataQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="serviceInstanceId" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="stPCRFDataLookupVerbosity">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="NONE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:element name="PCRFData" type="tns:PCRFData"></xsd:element>
+    <xsd:element name="PCRFDataQuery" type="tns:PCRFDataQuery"></xsd:element>
+    
+    <xsd:element name="VoiceAppQoSDataQuery" type="tns:VoiceAppQoSDataQuery"></xsd:element>
+    
+    <!-- IPCAN Session -->
+    <xsd:complexType name="IPCANSessionData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="GxServerSessionId" type="xsd:string"></xsd:element>
+                    <xsd:element name="BindingIdentifier" type="xsd:string"></xsd:element>
+                    <xsd:element name="CalledStationId" type="xsd:string"></xsd:element>
+                    <xsd:element name="HighestPriorityServiceId" type="xsd:int"></xsd:element>
+                    <xsd:element name="Type" type="xsd:int"></xsd:element>
+                    <xsd:element name="State" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="IPCANSessionData" type="tns:IPCANSessionData"></xsd:element>
+    
+    <!-- AFSession -->
+    <xsd:complexType name="AFSessionData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="RxServerSessionId" type="xsd:string"></xsd:element>
+                    <xsd:element name="BindingIdentifier" type="xsd:string"></xsd:element>
+                    <xsd:element name="Type" type="xsd:int"></xsd:element>
+                    <xsd:element name="State" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="AFSessionData" type="tns:AFSessionData"></xsd:element>
+    
+    <!-- PCCRule -->
+    <xsd:complexType name="PCCRuleData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PCCRuleName" type="xsd:string"></xsd:element>
+                    <xsd:element name="BindingIdentifier" type="xsd:string"></xsd:element>
+                    <xsd:element name="Type" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="PCCRuleData" type="tns:PCCRuleData"></xsd:element>
+    
+    <!--
+    **********************************************
+                       PURGE USER DATA MANAGEMENT
+    **********************************************
+    -->
+    
+    <xsd:complexType name="PurgeUserDataQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMSPrivateIdentity" type="xsd:string"></xsd:element>
+                    <xsd:element name="Verbosity" type="tns:stPurgeUserDataVerbosity"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="stPurgeUserDataVerbosity">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="MME_PURGE"/>
+            <xsd:enumeration value="PGW_PURGE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:element name="PurgeUserDataQuery" type="tns:PurgeUserDataQuery"></xsd:element>
+
+    
+</xsd:schema>
+
+
+
+
+
+
+
+

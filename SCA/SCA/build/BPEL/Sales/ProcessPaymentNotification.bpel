@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ProcessPaymentNotification"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:POS="http://xml.smilecoms.com/POS"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/POS">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="POSPaymentNotificationOut" messageType="POS:Done"/>
+        <variable name="POSPaymentNotificationIn" messageType="POS:PaymentNotificationRequest"/>
+        <variable name="SCAPaymentNotificationOut" messageType="tns:Done"/>
+        <variable name="SCAPaymentNotificationIn" messageType="tns:PaymentNotificationRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="POS:POSError" faultVariable="POSError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ProcessPaymentNotification" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ProcessPaymentNotification" portType="tns:SCASoap" variable="SCAPaymentNotificationIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign2">
+            <copy>
+                <from>$SCAPaymentNotificationIn.PaymentNotificationData/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$POSPaymentNotificationIn.PaymentNotificationData/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPaymentNotificationIn.PaymentNotificationData/ns1:SCAContext/ns1:Tenant</from>
+                <to>$POSPaymentNotificationIn.PaymentNotificationData/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAPaymentNotificationIn.PaymentNotificationData/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$POSPaymentNotificationIn.PaymentNotificationData/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAPaymentNotificationIn.PaymentNotificationData/ns1:SCAContext/ns1:TxId</from>
+                <to>$POSPaymentNotificationIn.PaymentNotificationData/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAPaymentNotificationIn.PaymentNotificationData/ns1:PaymentInCents</from>
+                <to>$POSPaymentNotificationIn.PaymentNotificationData/ns2:PaymentInCents</to>
+            </copy>
+            <copy>
+                <from>$SCAPaymentNotificationIn.PaymentNotificationData/ns1:PaymentGatewayCode</from>
+                <to>$POSPaymentNotificationIn.PaymentNotificationData/ns2:PaymentGatewayCode</to>
+            </copy>
+            <copy>
+                <from>$SCAPaymentNotificationIn.PaymentNotificationData/ns1:PaymentGatewayTransactionId</from>
+                <to>$POSPaymentNotificationIn.PaymentNotificationData/ns2:PaymentGatewayTransactionId</to>
+            </copy>
+            <copy>
+                <from>$SCAPaymentNotificationIn.PaymentNotificationData/ns1:SaleId</from>
+                <to>$POSPaymentNotificationIn.PaymentNotificationData/ns2:SaleId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPaymentNotificationIn.PaymentNotificationData/ns1:PaymentGatewayExtraData</from>
+                <to>$POSPaymentNotificationIn.PaymentNotificationData/ns2:PaymentGatewayExtraData</to>
+            </copy>
+        </assign>
+        <invoke name="CallPOS_ProcessPaymentNotification" partnerLink="POS" operation="ProcessPaymentNotification" portType="POS:POSSoap" inputVariable="POSPaymentNotificationIn" outputVariable="POSPaymentNotificationOut"/>
+        <assign name="Assign3">
+            <copy>
+                <from>$POSPaymentNotificationOut.Done/ns2:Done</from>
+                <to>$SCAPaymentNotificationOut.Done/ns1:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="ProcessPaymentNotification" portType="tns:SCASoap" variable="SCAPaymentNotificationOut"/>
+    </sequence>
+</process>
+

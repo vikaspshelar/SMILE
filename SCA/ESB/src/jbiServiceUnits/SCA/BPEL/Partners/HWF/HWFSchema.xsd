@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/HWF"
+            xmlns:tns="http://xml.smilecoms.com/schema/HWF"
+            elementFormDefault="qualified">
+    
+    <xsd:complexType name="PlatformObject">
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:element name="IsUpRequest" type="xsd:string"/>
+    
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"/>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"/>
+            <xsd:element name="OriginatingIP" type="xsd:string"/>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="HWFError" type="tns:HWFError"/>
+    
+    <xsd:complexType name="Done">
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+   
+    <xsd:element name="Done" type="tns:Done"/>
+   
+    <xsd:complexType name="HWFError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string"/>
+            <xsd:element name="ErrorType" type="xsd:string"/>
+            <xsd:element name="ErrorCode" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    
+    <xsd:complexType name="TaskQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/HWF" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="CandidateGroups" type="xsd:string" maxOccurs="unbounded"/>
+                    <xsd:element name="CandidateUser" type="xsd:string"/>
+                    <xsd:element name="Assignee" type="xsd:string"/>
+                    <xsd:element name="TaskId" type="xsd:string"/>
+                    <xsd:element name="InvolvedUser" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ProcessHistoryQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/HWF" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ProcessDefinitionKey" type="xsd:string"/>
+                    <xsd:element name="ProcessInstanceId" type="xsd:string"/>
+                    <xsd:element name="FromDate" type="xsd:dateTime"/>
+                    <xsd:element name="ToDate" type="xsd:dateTime"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ProcessHistory">
+        <xsd:sequence>
+            <xsd:element name="ProcessInstances" type="tns:ProcessInstance" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ProcessInstance">
+        <xsd:sequence>
+            <xsd:element name="Name" type="xsd:string"/>
+            <xsd:element name="StartDate" type="xsd:dateTime"/>
+            <xsd:element name="EndDate" type="xsd:dateTime"/>
+            <xsd:element name="ProcessInstanceId" type="xsd:string"/>
+            <xsd:element name="Tasks" type="tns:Task" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="Task">
+        <xsd:sequence>
+            <xsd:element name="TaskName" type="xsd:string"/>
+            <xsd:element name="CandidateGroups" type="xsd:string" maxOccurs="unbounded"/>
+            <xsd:element name="CandidateUsers" type="xsd:string" maxOccurs="unbounded"/>
+            <xsd:element name="CanCallerClaim" type="xsd:boolean"/>
+            <xsd:element name="TaskId" type="xsd:string"/>
+            <xsd:element name="Owner" type="xsd:string"/>
+            <xsd:element name="Assignee" type="xsd:string"/>
+            <xsd:element name="CreatedDate" type="xsd:dateTime"/>
+            <xsd:element name="EndDate" type="xsd:dateTime"/>
+            <xsd:element name="DueDate" type="xsd:dateTime"/>
+            <xsd:element name="Description" type="xsd:string"/>
+            <xsd:element name="Priority" type="xsd:int"/>
+            <xsd:element name="ProcessDefinitionId" type="xsd:string"/>
+            <xsd:element name="ProcessName" type="xsd:string"/>
+            <xsd:element name="ProcessInstanceId" type="xsd:string"/>
+            <xsd:element name="TaskFields" type="tns:TaskField" maxOccurs="unbounded"/>
+            <xsd:element name="ProcessFields" type="tns:TaskField" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskList">
+        <xsd:sequence>
+            <xsd:element name="Tasks" type="tns:Task" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ProcessDefinitionList">
+        <xsd:sequence>
+            <xsd:element name="ProcessDefinitions" type="tns:ProcessDefinition" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="Variable">
+        <xsd:sequence>
+            <xsd:element name="Name" type="xsd:string" />
+            <xsd:element name="Value" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskField">
+        <xsd:sequence>
+            <xsd:element name="Id" type="xsd:string" />
+            <xsd:element name="Name" type="xsd:string" />
+            <xsd:element name="Value" type="xsd:string" />
+            <xsd:element name="Type" type="xsd:string" />
+            <xsd:element name="DropDownRows" type="tns:DropDownRow" maxOccurs="unbounded" />
+            <xsd:element name="Readable" type="xsd:boolean" />
+            <xsd:element name="Writable" type="xsd:boolean" />
+            <xsd:element name="Required" type="xsd:boolean" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="DropDownRow">
+        <xsd:sequence>
+            <xsd:element name="Value" type="xsd:string" />
+            <xsd:element name="Option" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ProcessDefinition">
+        <xsd:sequence>
+            <xsd:element name="Key" type="xsd:string" />
+            <xsd:element name="Name" type="xsd:string" />
+            <xsd:element name="Version" type="xsd:int" />
+            <xsd:element name="DiagramBase64" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskUpdateData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="TaskId" type="xsd:string"/>
+                    <xsd:element name="Action" type="xsd:string"/>
+                    <xsd:element name="UserName" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="VariableAssignmentData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="TaskId" type="xsd:string"/>
+                    <xsd:element name="Variables" type="tns:Variable" maxOccurs="unbounded" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="PlatformString" >
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="String" type="xsd:string">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="ProcessVariableAssignmentData" type="tns:VariableAssignmentData"/>
+    <xsd:element name="TaskVariableAssignmentData" type="tns:VariableAssignmentData"/>
+    <xsd:element name="TaskList" type="tns:TaskList"/>
+    <xsd:element name="ProcessDefinitionKey" type="tns:PlatformString"/>
+    <xsd:element name="ProcessDefinitionKeyToDelete" type="tns:PlatformString"/>
+    <xsd:element name="ProcessDefinitionQuery" type="tns:PlatformString"/>
+    <xsd:element name="ProcessHistoryQuery" type="tns:ProcessHistoryQuery"/>
+    <xsd:element name="ProcessHistory" type="tns:ProcessHistory"/>
+    <xsd:element name="ProcessDefinitionList" type="tns:ProcessDefinitionList"/>
+    <xsd:element name="TaskIdToComplete" type="tns:PlatformString"/>
+    <xsd:element name="TaskUpdateData" type="tns:TaskUpdateData"/>
+    <xsd:element name="Task" type="tns:Task"/>
+    <xsd:element name="TaskQuery" type="tns:TaskQuery"/>
+    <xsd:element name="ProcessDefinition" type="tns:ProcessDefinition"/>
+    
+</xsd:schema>
+

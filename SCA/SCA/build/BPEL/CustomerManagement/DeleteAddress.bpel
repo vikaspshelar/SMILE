@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="DeleteAddress"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA"
+    xmlns:ns1="http://xml.smilecoms.com/schema/IM"
+    xmlns:IM="http://xml.smilecoms.com/IM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:SCAError"/>
+        <variable name="SCADeleteAddressIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:DeleteAddressRequest"/>
+        <variable name="SCADeleteAddressOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:Done"/>
+        <variable name="IMDeleteAddressOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:Done"/>
+        <variable name="IMDeleteAddressIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:DeleteAddressRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultMessageType="IM:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="DeleteAddress" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="DeleteAddress" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCADeleteAddressIn"/>
+
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+        <assign name="Assign1">
+            <copy>
+                <from>$SCADeleteAddressIn.AddressToDelete/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMDeleteAddressIn.AddressToDelete/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCADeleteAddressIn.AddressToDelete/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMDeleteAddressIn.AddressToDelete/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCADeleteAddressIn.AddressToDelete/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMDeleteAddressIn.AddressToDelete/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCADeleteAddressIn.AddressToDelete/ns0:SCAContext/ns0:Tenant</from>
+                <to>$IMDeleteAddressIn.AddressToDelete/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCADeleteAddressIn.AddressToDelete/ns0:AddressId</from>
+                <to>$IMDeleteAddressIn.AddressToDelete/ns1:AddressId</to>
+            </copy>
+        </assign>
+        <invoke name="CallIM" partnerLink="IM" operation="DeleteAddress" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMDeleteAddressIn" outputVariable="IMDeleteAddressOut"/>
+        <assign name="Assign3">
+            <copy>
+                <from>$IMDeleteAddressOut.Done/ns1:Done</from>
+                <to>$SCADeleteAddressOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="DeleteAddress" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCADeleteAddressOut"/>
+    </sequence>
+</process>
+
+

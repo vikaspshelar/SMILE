@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="IMSSCServiceDefinition" targetNamespace="http://xml.smilecoms.com/IMSSC"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://xml.smilecoms.com/schema/IMSSC" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:tns="http://xml.smilecoms.com/IMSSC" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/IMSSC">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/IMSSC" schemaLocation="IMSSCSchema.xsd"/>           
+        </xsd:schema>
+    </types>
+    
+    <message name="DeregisterIMPURequest">
+        <part name="DeregisterIMPUQuery" element="ns:DeregisterIMPUQuery"/>
+    </message>
+    <message name="DeregisterIMPUResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    
+    <message name="GetSCSCFIMPUInfoRequest">
+        <part name="SCSCFIMPUQuery" element="ns:SCSCFIMPUQuery"/>
+    </message>
+    <message name="GetSCSCFIMPUInfoResponse">
+        <part name="SCSCFIMPUData" element="ns:SCSCFIMPUData"/>
+    </message>
+    <message name="GetSCSCFStatusRequest">
+        <part name="SCSCFStatusQuery" element="ns:ScscfStatusRequest"/>
+    </message>
+    <message name="GetSCSCFStatusResponse">
+        <part name="SCSCFStatusData" element="ns:SCSCFStatusData"/>
+    </message>
+    <message name="IMSSCError">
+        <part name="IMSSCError" element="ns:IMSSCError"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="IsUpResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <portType name="IMSSCSoap">
+        <operation name="DeregisterIMPU">
+            <input name="input1" message="tns:DeregisterIMPURequest"/>
+            <output name="output1" message="tns:DeregisterIMPUResponse"/>
+            <fault name="fault1" message="tns:IMSSCError"/>
+        </operation>
+        <operation name="GetSCSCFIMPUInfo">
+            <input name="input4" message="tns:GetSCSCFIMPUInfoRequest"/>
+            <output name="output4" message="tns:GetSCSCFIMPUInfoResponse"/>
+            <fault name="fault1" message="tns:IMSSCError"/>
+        </operation>
+        <operation name="GetSCSCFStatus">
+            <input name="input2" message="tns:GetSCSCFStatusRequest"/>
+            <output name="output2" message="tns:GetSCSCFStatusResponse"/>
+            <fault name="fault2" message="tns:IMSSCError"/>
+        </operation>
+        <operation name="IsUp">
+            <input name="input3" message="tns:IsUpRequest"/>
+            <output name="output3" message="tns:IsUpResponse"/>
+            <fault name="fault3" message="tns:IMSSCError"/>
+        </operation>
+    </portType>
+    <binding name="IMSSCBinding" type="tns:IMSSCSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        
+        <operation name="GetSCSCFIMPUInfo">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeregisterIMPU">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetSCSCFStatus">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault2">
+                <soap:fault name="fault2" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsUp">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault3">
+                <soap:fault name="fault3" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="IMSSC">
+        <port name="IMSSCSoap" binding="tns:IMSSCBinding">
+            <soap:address location="http://localhost:${HttpDefaultPort}/IMSSC/IMSSCSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="IMSSCServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="IMSSC" portType="tns:IMSSCSoap"/>
+    </plnk:partnerLinkType>
+</definitions>

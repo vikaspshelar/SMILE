@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions name="GatewayService" targetNamespace="http://tempuri.org/"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wspp="http://java.sun.com/xml/ns/wsit/policy"
+                  xmlns:sc="http://schemas.sun.com/2006/03/wss/client" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:tns="http://tempuri.org/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+                  xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract"
+                  xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing"
+                  xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata">
+    <wsp:Policy wsu:Id="CigTxnEndpoint_policy">
+        <wsp:ExactlyOne>
+            <wsp:All>
+                <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                    <wsp:Policy>
+                        <sp:TransportToken>
+                            <wsp:Policy>
+                                <sp:HttpsToken RequireClientCertificate="false"/>
+                            </wsp:Policy>
+                        </sp:TransportToken>
+                        <sp:AlgorithmSuite>
+                            <wsp:Policy>
+                                <sp:Basic256/>
+                            </wsp:Policy>
+                        </sp:AlgorithmSuite>
+                        <sp:Layout>
+                            <wsp:Policy>
+                                <sp:Strict/>
+                            </wsp:Policy>
+                        </sp:Layout>
+                    </wsp:Policy>
+                </sp:TransportBinding>
+                <wsaw:UsingAddressing/>
+                <sc:KeyStore wspp:visibility="private" location="client.keystore" storepass="nosecret" alias="clientkey" keypass="nosecret"/>
+                <sc:TrustStore wspp:visibility="private" location="client.keystore" storepass="nosecret" peeralias="serverkey"/>
+            </wsp:All>
+        </wsp:ExactlyOne>
+    </wsp:Policy>
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://tempuri.org/Imports">
+            <xsd:import schemaLocation="GatewayService.svc.xsd_xsd0.xsd" namespace="http://tempuri.org/"/>
+            <xsd:import schemaLocation="GatewayService.svc.xsd_xsd1.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/"/>
+            <xsd:import schemaLocation="GatewayService.svc.xsd_xsd2.xsd" namespace="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Requests"/>
+            <xsd:import schemaLocation="GatewayService.svc.xsd_xsd3.xsd" namespace="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Generic"/>
+            <xsd:import schemaLocation="GatewayService.svc.xsd_xsd4.xsd" namespace="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Core.Service.Contracts.Sections"/>
+            <xsd:import schemaLocation="GatewayService.svc.xsd_xsd5.xsd" namespace="http://schemas.datacontract.org/2004/07/TZ.ID.CIG.Transactions.Service.DataContracts.Responses"/>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="IGatewayService_QueryBasicDemographic_InputMessage">
+        <wsdl:part name="parameters" element="tns:QueryBasicDemographic"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryBasicDemographic_OutputMessage">
+        <wsdl:part name="parameters" element="tns:QueryBasicDemographicResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryFullDemographic_InputMessage">
+        <wsdl:part name="parameters" element="tns:QueryFullDemographic"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryFullDemographic_OutputMessage">
+        <wsdl:part name="parameters" element="tns:QueryFullDemographicResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryBiometrics_InputMessage">
+        <wsdl:part name="parameters" element="tns:QueryBiometrics"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryBiometrics_OutputMessage">
+        <wsdl:part name="parameters" element="tns:QueryBiometricsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryCardDetails_InputMessage">
+        <wsdl:part name="parameters" element="tns:QueryCardDetails"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryCardDetails_OutputMessage">
+        <wsdl:part name="parameters" element="tns:QueryCardDetailsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryFingerprintRequest_InputMessage">
+        <wsdl:part name="parameters" element="tns:QueryFingerprintRequest"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryFingerprintRequest_OutputMessage">
+        <wsdl:part name="parameters" element="tns:QueryFingerprintRequestResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryFingerprintResponse_InputMessage">
+        <wsdl:part name="parameters" element="tns:QueryFingerprintResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_QueryFingerprintResponse_OutputMessage">
+        <wsdl:part name="parameters" element="tns:QueryFingerprintResponseResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_UpdateCitizenStatus_InputMessage">
+        <wsdl:part name="parameters" element="tns:UpdateCitizenStatus"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_UpdateCitizenStatus_OutputMessage">
+        <wsdl:part name="parameters" element="tns:UpdateCitizenStatusResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_UpdateExtendedInfo_InputMessage">
+        <wsdl:part name="parameters" element="tns:UpdateExtendedInfo"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_UpdateExtendedInfo_OutputMessage">
+        <wsdl:part name="parameters" element="tns:UpdateExtendedInfoResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_UpdateAddress_InputMessage">
+        <wsdl:part name="parameters" element="tns:UpdateAddress"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_UpdateAddress_OutputMessage">
+        <wsdl:part name="parameters" element="tns:UpdateAddressResponse"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_UpdateBlacklist_InputMessage">
+        <wsdl:part name="parameters" element="tns:UpdateBlacklist"/>
+    </wsdl:message>
+    <wsdl:message name="IGatewayService_UpdateBlacklist_OutputMessage">
+        <wsdl:part name="parameters" element="tns:UpdateBlacklistResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="IGatewayService">
+        <wsdl:operation name="QueryBasicDemographic">
+            <wsdl:input wsaw:Action="http://tempuri.org/IGatewayService/QueryBasicDemographic" message="tns:IGatewayService_QueryBasicDemographic_InputMessage"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IGatewayService/QueryBasicDemographicResponse" message="tns:IGatewayService_QueryBasicDemographic_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="QueryFullDemographic">
+            <wsdl:input wsaw:Action="http://tempuri.org/IGatewayService/QueryFullDemographic" message="tns:IGatewayService_QueryFullDemographic_InputMessage"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IGatewayService/QueryFullDemographicResponse" message="tns:IGatewayService_QueryFullDemographic_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="QueryBiometrics">
+            <wsdl:input wsaw:Action="http://tempuri.org/IGatewayService/QueryBiometrics" message="tns:IGatewayService_QueryBiometrics_InputMessage"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IGatewayService/QueryBiometricsResponse" message="tns:IGatewayService_QueryBiometrics_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="QueryCardDetails">
+            <wsdl:input wsaw:Action="http://tempuri.org/IGatewayService/QueryCardDetails" message="tns:IGatewayService_QueryCardDetails_InputMessage"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IGatewayService/QueryCardDetailsResponse" message="tns:IGatewayService_QueryCardDetails_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="QueryFingerprintRequest">
+            <wsdl:input wsaw:Action="http://tempuri.org/IGatewayService/QueryFingerprintRequest" message="tns:IGatewayService_QueryFingerprintRequest_InputMessage"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IGatewayService/QueryFingerprintRequestResponse" message="tns:IGatewayService_QueryFingerprintRequest_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="QueryFingerprintResponse">
+            <wsdl:input wsaw:Action="http://tempuri.org/IGatewayService/QueryFingerprintResponse" message="tns:IGatewayService_QueryFingerprintResponse_InputMessage"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IGatewayService/QueryFingerprintResponseResponse" message="tns:IGatewayService_QueryFingerprintResponse_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateCitizenStatus">
+            <wsdl:input wsaw:Action="http://tempuri.org/IGatewayService/UpdateCitizenStatus" message="tns:IGatewayService_UpdateCitizenStatus_InputMessage"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IGatewayService/UpdateCitizenStatusResponse" message="tns:IGatewayService_UpdateCitizenStatus_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateExtendedInfo">
+            <wsdl:input wsaw:Action="http://tempuri.org/IGatewayService/UpdateExtendedInfo" message="tns:IGatewayService_UpdateExtendedInfo_InputMessage"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IGatewayService/UpdateExtendedInfoResponse" message="tns:IGatewayService_UpdateExtendedInfo_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateAddress">
+            <wsdl:input wsaw:Action="http://tempuri.org/IGatewayService/UpdateAddress" message="tns:IGatewayService_UpdateAddress_InputMessage"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IGatewayService/UpdateAddressResponse" message="tns:IGatewayService_UpdateAddress_OutputMessage"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateBlacklist">
+            <wsdl:input wsaw:Action="http://tempuri.org/IGatewayService/UpdateBlacklist" message="tns:IGatewayService_UpdateBlacklist_InputMessage"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IGatewayService/UpdateBlacklistResponse" message="tns:IGatewayService_UpdateBlacklist_OutputMessage"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="CigTxnEndpoint" type="tns:IGatewayService">
+        <wsp:PolicyReference URI="#CigTxnEndpoint_policy"/>
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="QueryBasicDemographic">
+            <soap12:operation soapAction="http://tempuri.org/IGatewayService/QueryBasicDemographic" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="QueryFullDemographic">
+            <soap12:operation soapAction="http://tempuri.org/IGatewayService/QueryFullDemographic" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="QueryBiometrics">
+            <soap12:operation soapAction="http://tempuri.org/IGatewayService/QueryBiometrics" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="QueryCardDetails">
+            <soap12:operation soapAction="http://tempuri.org/IGatewayService/QueryCardDetails" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="QueryFingerprintRequest">
+            <soap12:operation soapAction="http://tempuri.org/IGatewayService/QueryFingerprintRequest" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="QueryFingerprintResponse">
+            <soap12:operation soapAction="http://tempuri.org/IGatewayService/QueryFingerprintResponse" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateCitizenStatus">
+            <soap12:operation soapAction="http://tempuri.org/IGatewayService/UpdateCitizenStatus" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateExtendedInfo">
+            <soap12:operation soapAction="http://tempuri.org/IGatewayService/UpdateExtendedInfo" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateAddress">
+            <soap12:operation soapAction="http://tempuri.org/IGatewayService/UpdateAddress" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateBlacklist">
+            <soap12:operation soapAction="http://tempuri.org/IGatewayService/UpdateBlacklist" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="GatewayService">
+        <wsdl:port name="CigTxnEndpoint" binding="tns:CigTxnEndpoint">
+            <soap12:address location="https://nacis01/CIG/GatewayService.svc"/>
+            <wsa10:EndpointReference>
+                <wsa10:Address>https://nacis01/CIG/GatewayService.svc</wsa10:Address>
+            </wsa10:EndpointReference>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

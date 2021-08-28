@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="LogCCAgentIntoQueues"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" xmlns:ns2="http://xml.smilecoms.com/schema/CTI" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/CTI"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed1="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CTI" location="../Partners/CTI/CTIServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="CTI" partnerLinkType="ns1:CTIServiceDefinition" partnerRole="CTI"/>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="CTILogCCAgentIntoQueuesOut" messageType="ns1:LogCCAgentIntoQueuesResponse"/>
+        <variable name="CTILogCCAgentIntoQueuesIn" messageType="ns1:LogCCAgentIntoQueuesRequest"/>
+        <variable name="SCALogCCAgentIntoQueuesOut" messageType="tns:LogCCAgentIntoQueuesResponse"/>
+        <variable name="SCALogCCAgentIntoQueuesIn" messageType="tns:LogCCAgentIntoQueuesRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="LogCCAgentIntoQueues" portType="tns:SCASoap" variable="SCALogCCAgentIntoQueuesIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('CTI')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CTI"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+       
+        <assign name="AssignCTI">
+            <copy>
+                <from>$SCALogCCAgentIntoQueuesIn.CCQueueLoginData/ns0:SCAContext/ns0:TxId</from>
+                <to>$CTILogCCAgentIntoQueuesIn.QueueLoginData/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCALogCCAgentIntoQueuesIn.CCQueueLoginData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$CTILogCCAgentIntoQueuesIn.QueueLoginData/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCALogCCAgentIntoQueuesIn.CCQueueLoginData/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$CTILogCCAgentIntoQueuesIn.QueueLoginData/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCALogCCAgentIntoQueuesIn.CCQueueLoginData/ns0:SCAContext/ns0:Tenant</from>
+                <to>$CTILogCCAgentIntoQueuesIn.QueueLoginData/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCALogCCAgentIntoQueuesIn.CCQueueLoginData/ns0:CCAgentExtension</from>
+                <to>$CTILogCCAgentIntoQueuesIn.QueueLoginData/ns2:CCAgentExtension</to>
+            </copy>
+            <copy>
+                <from>$SCALogCCAgentIntoQueuesIn.CCQueueLoginData/ns0:MemberQueues</from>
+                <to>$CTILogCCAgentIntoQueuesIn.QueueLoginData/ns2:MemberQueues</to>
+            </copy>
+            <copy>
+                <from>$SCALogCCAgentIntoQueuesIn.CCQueueLoginData/ns0:CCAgentName</from>
+                <to>$CTILogCCAgentIntoQueuesIn.QueueLoginData/ns2:CCAgentName</to>
+            </copy>
+        </assign>
+        <invoke name="CallCTI" partnerLink="CTI" operation="LogCCAgentIntoQueues" portType="ns1:CTISoap" inputVariable="CTILogCCAgentIntoQueuesIn" outputVariable="CTILogCCAgentIntoQueuesOut"/>
+        <assign name="AssignResult">
+            <copy>
+                <from>$CTILogCCAgentIntoQueuesOut.Done/ns2:Done</from>
+                <to>$SCALogCCAgentIntoQueuesOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="LogCCAgentIntoQueues" portType="tns:SCASoap" variable="SCALogCCAgentIntoQueuesOut"/>
+    </sequence>
+</process>
+

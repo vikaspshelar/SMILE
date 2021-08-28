@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetStickyNoteTypeList"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:ns1="http://xml.smilecoms.com/SN" xmlns:ns0="http://xml.smilecoms.com/schema/SN" xmlns:ns2="http://xml.smilecoms.com/schema/SCA" xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SN" location="../Partners/SN/SNServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="SN" partnerLinkType="ns1:SNServiceDefinition" partnerRole="SN"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="fieldCount" type="xsd:int"/>
+        <variable name="noteTypeCount" type="xsd:int"/>
+        <variable name="SNGetStickyNoteTypeListOut" messageType="ns1:GetStickyNoteTypeListResponse"/>
+        <variable name="SNGetStickyNoteTypeListIn" messageType="ns1:GetStickyNoteTypeListRequest"/>
+        <variable name="SCAGetStickyNoteTypeListOut" messageType="tns:GetStickyNoteTypeListResponse"/>
+        <variable name="SCAGetStickyNoteTypeListIn" messageType="tns:GetStickyNoteTypeListRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultVariable="snFault" faultMessageType="ns1:SNError">
+            <sequence name="Sequence1">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$snFault.SNError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns2:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$snFault.SNError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns2:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$snFault.SNError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns2:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetStickyNoteTypeList" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetStickyNoteTypeList" portType="tns:SCASoap" variable="SCAGetStickyNoteTypeListIn"/>
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('SN')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="SN"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAGetStickyNoteTypeListIn.EntityName/ns2:String</from>
+                <to>$SNGetStickyNoteTypeListIn.EntityName/ns0:String</to>
+            </copy>
+
+            <copy>
+                <from>$SCAGetStickyNoteTypeListIn.EntityName/ns2:SCAContext/ns2:TxId</from>
+                <to>$SNGetStickyNoteTypeListIn.EntityName/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetStickyNoteTypeListIn.EntityName/ns2:SCAContext/ns2:OriginatingIP</from>
+                <to>$SNGetStickyNoteTypeListIn.EntityName/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetStickyNoteTypeListIn.EntityName/ns2:SCAContext/ns2:Tenant</from>
+                <to>$SNGetStickyNoteTypeListIn.EntityName/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAGetStickyNoteTypeListIn.EntityName/ns2:SCAContext/ns2:OriginatingIdentity</from>
+                <to>$SNGetStickyNoteTypeListIn.EntityName/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+        </assign>
+        <invoke name="Call_SN" partnerLink="SN" operation="GetStickyNoteTypeList" portType="ns1:SNSoap" inputVariable="SNGetStickyNoteTypeListIn" outputVariable="SNGetStickyNoteTypeListOut"/>
+        <assign name="Assign_Note_Count">
+            <copy>
+                <from>count($SNGetStickyNoteTypeListOut.StickyNoteTypeList/ns0:StickyNoteTypes)</from>
+                <to variable="noteTypeCount"/>
+            </copy>
+            <copy>
+                <from>count($SNGetStickyNoteTypeListOut.StickyNoteTypeList/ns0:StickyNoteTypes)</from>
+                <to>$SCAGetStickyNoteTypeListOut.StickyNoteTypeList/ns2:NumberOfTypes</to>
+            </copy>
+        </assign>
+
+        <forEach name="ForEachNote" parallel="no" counterName="counter">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$noteTypeCount</finalCounterValue>
+            <scope name="Scope1">
+                <sequence name="Sequence1">
+                    <assign name="Assign_Type_Data">
+                        <copy>
+                            <from>$SNGetStickyNoteTypeListOut.StickyNoteTypeList/ns0:StickyNoteTypes[$counter]/ns0:TypeName</from>
+                            <to>$SCAGetStickyNoteTypeListOut.StickyNoteTypeList/ns2:StickyNoteTypes[$counter]/ns2:TypeName</to>
+                        </copy>
+                        <copy>
+                            <from>count($SNGetStickyNoteTypeListOut.StickyNoteTypeList/ns0:StickyNoteTypes[$counter]/ns0:FieldTypes)</from>
+                            <to>$SCAGetStickyNoteTypeListOut.StickyNoteTypeList/ns2:StickyNoteTypes[$counter]/ns2:NumberOfFields</to>
+                        </copy>
+                        <copy>
+                            <from>count($SNGetStickyNoteTypeListOut.StickyNoteTypeList/ns0:StickyNoteTypes[$counter]/ns0:FieldTypes)</from>
+                            <to variable="fieldCount"/>
+                        </copy>
+                        <copy>
+                            <from>$SNGetStickyNoteTypeListOut.StickyNoteTypeList/ns0:StickyNoteTypes[$counter]/ns0:DisplayPriority</from>
+                            <to>$SCAGetStickyNoteTypeListOut.StickyNoteTypeList/ns2:StickyNoteTypes[$counter]/ns2:DisplayPriority</to>
+                        </copy>
+                        <copy>
+                            <from>$SNGetStickyNoteTypeListOut.StickyNoteTypeList/ns0:StickyNoteTypes[$counter]/ns0:AllowedRoles</from>
+                            <to>$SCAGetStickyNoteTypeListOut.StickyNoteTypeList/ns2:StickyNoteTypes[$counter]/ns2:AllowedRoles</to>
+                        </copy>
+                    </assign>
+                    <forEach name="ForEachField" parallel="no" counterName="counter2">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>$fieldCount</finalCounterValue>
+                        <scope name="Scope2">
+                            <assign name="Assign_Field_Data">
+                                <copy>
+                                    <from>$SNGetStickyNoteTypeListOut.StickyNoteTypeList/ns0:StickyNoteTypes[$counter]/ns0:FieldTypes[$counter2]/ns0:FieldType</from>
+                                    <to>$SCAGetStickyNoteTypeListOut.StickyNoteTypeList/ns2:StickyNoteTypes[$counter]/ns2:FieldTypes[$counter2]/ns2:FieldType</to>
+                                </copy>
+                                <copy>
+                                    <from>$SNGetStickyNoteTypeListOut.StickyNoteTypeList/ns0:StickyNoteTypes[$counter]/ns0:FieldTypes[$counter2]/ns0:FieldName</from>
+                                    <to>$SCAGetStickyNoteTypeListOut.StickyNoteTypeList/ns2:StickyNoteTypes[$counter]/ns2:FieldTypes[$counter2]/ns2:FieldName</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                </sequence>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCA" operation="GetStickyNoteTypeList" portType="tns:SCASoap" variable="SCAGetStickyNoteTypeListOut"/>
+    </sequence>
+</process>
+

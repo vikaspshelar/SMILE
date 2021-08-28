@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="SendCustomerCommunication"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA"
+    xmlns:ns1="http://xml.smilecoms.com/schema/IM"
+    xmlns:IM="http://xml.smilecoms.com/IM" xmlns:ns2="http://xml.smilecoms.com/schema/MM" 
+    xmlns:ns3="http://xml.smilecoms.com/schema/CM" xmlns:ns4="http://www.w3.org/2001/XMLSchema">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/MM" location="../Partners/MM/MMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="MM" xmlns:tns="http://xml.smilecoms.com/MM" partnerLinkType="tns:MMServiceDefinition" partnerRole="MM"/>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="BodyParamCount" type="ns4:int"/>
+        <variable name="CustomerId" type="ns4:int"/>
+        <variable name="CMGetServiceInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="CMGetServiceInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetServiceInstancesRequest"/>
+        <variable name="IMGetCustomersOut" messageType="IM:GetCustomersResponse"/>
+        <variable name="IMGetCustomersIn" messageType="IM:GetCustomersRequest"/>
+        <variable name="MMSendEmailOut" xmlns:tns="http://xml.smilecoms.com/MM" messageType="tns:Done"/>
+        <variable name="MMSendEmailIn" xmlns:tns="http://xml.smilecoms.com/MM" messageType="tns:SendEmailRequest"/>
+        <variable name="SCASendCustomerCommunicationOut" messageType="tns:Done"/>
+        <variable name="SCASendCustomerCommunicationIn" messageType="tns:CustomerCommunicationRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="SendCustomerCommunication" portType="tns:SCASoap" variable="SCASendCustomerCommunicationIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>      
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('MM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="MM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs3">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>  
+            </sequence>
+        </scope>
+        <if name="IfNotBlocking">
+            <condition>not($SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:Blocking)</condition>
+            <sequence name="Sequence3">
+                <assign name="Assign1">
+                    <copy>
+                        <from>'true'</from>
+                        <to>$SCASendCustomerCommunicationOut.Done/ns0:Done</to>
+                    </copy>
+                </assign>
+                <reply name="Reply4" partnerLink="SCA" operation="SendCustomerCommunication" portType="tns:SCASoap" variable="SCASendCustomerCommunicationOut"/>
+            </sequence>
+        </if>
+        <assign name="AssignCustIdFromSCAData">
+            <copy ignoreMissingFromData="yes">
+                <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:CustomerId</from>
+                <to variable="CustomerId"/>
+            </copy>
+        </assign>
+        <if name="IfLookupByAccount">
+            <condition>count($SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:AccountId) &gt; 0 and $SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:AccountId &gt; 0</condition>
+            <sequence name="Sequence2">
+                <assign name="AssignCM">
+                    <copy>
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:TxId</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:PlatformContext/ns3:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:PlatformContext/ns3:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:PlatformContext/ns3:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:AccountId</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:AccountId</to>
+                    </copy>
+                    <copy>
+                        <from>''</from>
+                        <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:Verbosity</to>
+                    </copy>
+                </assign>
+                <invoke name="GetAccountsSIs" partnerLink="CM" operation="GetServiceInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetServiceInstancesIn" outputVariable="CMGetServiceInstancesOut"/>
+                <assign name="AssignCustomerId">
+                    <copy>
+                        <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns3:ServiceInstances[1]/ns3:CustomerId</from>
+                        <to variable="CustomerId"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </if>
+        <assign name="AssignGetCustomer">
+            <copy>
+                <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:Tenant</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from variable="CustomerId"/>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:CustomerId</to>
+            </copy>
+            <copy>
+                <from>'CUSTOMER'</from>
+                <to>$IMGetCustomersIn.CustomerQuery/ns1:Verbosity</to>
+            </copy>
+        </assign>
+        <invoke name="GetCustomer" partnerLink="IM" operation="GetCustomers" portType="IM:IMSoap" inputVariable="IMGetCustomersIn" outputVariable="IMGetCustomersOut"/>
+        <if name="IfHasEmailAndOptedIn">
+            <!-- dont send communications is opt in level is below 5 -->
+            <condition>$IMGetCustomersOut.CustomerList/ns1:Customers[1]/ns1:EmailAddress != '' and $IMGetCustomersOut.CustomerList/ns1:Customers[1]/ns1:OptInLevel &gt; 0
+            </condition>
+            <sequence name="Sequence1">
+                <!-- For now we just pick out the first SI and get that Customer. In future can add more complexity and find all addresses if different customers own different SIs -->
+                <assign name="AssignEmail">
+                    <copy>
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:TxId</from>
+                        <to>$MMSendEmailIn.Email/ns2:PlatformContext/ns2:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                        <to>$MMSendEmailIn.Email/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$MMSendEmailIn.Email/ns2:PlatformContext/ns2:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$MMSendEmailIn.Email/ns2:PlatformContext/ns2:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SubjectResourceName</from>
+                        <to>$MMSendEmailIn.Email/ns2:SubjectResourceName</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:SubjectParameters</from>
+                        <to>$MMSendEmailIn.Email/ns2:SubjectParameters</to>
+                    </copy>
+                    <copy>
+                        <from>BPELUtils:getProperty('env.smtp.customercomms.from')</from>
+                        <to>$MMSendEmailIn.Email/ns2:FromAddress</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[1]/ns1:EmailAddress</from>
+                        <to>$MMSendEmailIn.Email/ns2:ToAddress</to>
+                    </copy>
+                    <copy>
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:BodyResourceName</from>
+                        <to>$MMSendEmailIn.Email/ns2:BodyResourceName</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:BodyParameters</from>
+                        <to>$MMSendEmailIn.Email/ns2:BodyParameters</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[1]/ns1:Language
+                        </from>
+                        <to>$MMSendEmailIn.Email/ns2:Language</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:BodyXML</from>
+                        <to>$MMSendEmailIn.Email/ns2:BodyXML</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:CCAddress</from>
+                        <to>$MMSendEmailIn.Email/ns2:CCAddress</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:BCCAddress</from>
+                        <to>$MMSendEmailIn.Email/ns2:BCCAddress</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:AttachmentResourceName</from>
+                        <to>$MMSendEmailIn.Email/ns2:AttachmentResourceName</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:AttachmentXML</from>
+                        <to>$MMSendEmailIn.Email/ns2:AttachmentXML</to>
+                    </copy>
+                    <!-- Either provide the attachment resource name and xml (MM will generate the pdf), or the base64 encoded attachment -->
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:AttachmentBase64</from>
+                        <to>$MMSendEmailIn.Email/ns2:AttachmentBase64</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:AttachmentFileName</from>
+                        <to>$MMSendEmailIn.Email/ns2:AttachmentFileName</to>
+                    </copy>
+                    <!-- Where MM will copy the attachment to on the file system (optional) -->
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:AttachmentStorageLocation</from>
+                        <to>$MMSendEmailIn.Email/ns2:AttachmentStorageLocation</to>
+                    </copy>
+                    
+                </assign>
+                <assign name="AssignParamCount">
+                    <copy>
+                        <from>count($MMSendEmailIn.Email/ns2:BodyParameters)</from>
+                        <to variable="BodyParamCount"/>
+                    </copy>
+                </assign>
+                <assign name="AssignAdditionalCustomerData">
+                    <copy>
+                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[1]/ns1:FirstName</from>
+                        <to>$MMSendEmailIn.Email/ns2:BodyParameters[$BodyParamCount + 1]</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[1]/ns1:LastName</from>
+                        <to>$MMSendEmailIn.Email/ns2:BodyParameters[$BodyParamCount + 2]</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[1]/ns1:SSOIdentity</from>
+                        <to>$MMSendEmailIn.Email/ns2:BodyParameters[$BodyParamCount + 3]</to>
+                    </copy>
+                    <copy>
+                        <from>$IMGetCustomersOut.CustomerList/ns1:Customers[1]/ns1:AlternativeContact1</from>
+                        <to>$MMSendEmailIn.Email/ns2:BodyParameters[$BodyParamCount + 4]</to>
+                    </copy>
+                </assign>
+                <invoke name="SendEmail" partnerLink="MM" operation="SendEmail" xmlns:tns="http://xml.smilecoms.com/MM" portType="tns:MMSoap" inputVariable="MMSendEmailIn" outputVariable="MMSendEmailOut"/>
+            </sequence>
+        </if>
+        <if name="IfBlocking">
+            <condition>$SCASendCustomerCommunicationIn.CustomerCommunicationData/ns0:Blocking</condition>
+            <sequence name="Sequence4">
+                <assign name="AssignDone">
+                    <copy>
+                        <from>'true'</from>
+                        <to>$SCASendCustomerCommunicationOut.Done/ns0:Done</to>
+                    </copy>
+                </assign>
+                <reply name="Reply3" partnerLink="SCA" operation="SendCustomerCommunication" portType="tns:SCASoap" variable="SCASendCustomerCommunicationOut"/>
+            </sequence>
+        </if>
+    </sequence>
+</process>
+
+
+
+

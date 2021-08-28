@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="PMServiceDefinition" targetNamespace="http://xml.smilecoms.com/PM"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns:ns="http://xml.smilecoms.com/schema/PM" 
+    xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+    xmlns:tns="http://xml.smilecoms.com/PM">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/PM" xmlns:ns="http://xml.smilecoms.com/schema/PM">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/PM" schemaLocation="PMSchema.xsd"/>           
+        </xsd:schema>
+    </types>
+    <message name="GetPropertyRequest">
+        <part name="PropertyRequest" element="ns:PropertyRequest"/>
+    </message>
+    <message name="GetPropertyResponse">
+        <part name="PropertyResponse" element="ns:PropertyResponse"/>
+    </message>
+    <message name="PMError">
+        <part name="PMError" element="ns:PMError"/>
+    </message>
+    <message name="IsStaleRequest">
+        <part name="StaleTest" element="ns:StaleTest"/>
+    </message>
+    <message name="IsStaleResponse">
+        <part name="StaleResponse" element="ns:StaleResponse"/>
+    </message>
+    <message name="GetPropertyListRequest">
+        <part name="PropertyListRequest" element="ns:PropertyListRequest"/>
+    </message>
+    <message name="GetPropertyListResponse">
+        <part name="PropertyListResponse" element="ns:PropertyListResponse"/>
+    </message>
+    <message name="GetResourceListRequest">
+        <part name="Locale" element="ns:ResourceListRequest"/>
+    </message>
+    <message name="GetResourceListResponse">
+        <part name="ResourceList" element="ns:ResourceList"/>
+    </message>
+    <message name="AddResourceRequest">
+        <part name="NewResource" element="ns:NewResource"/>
+    </message>
+    <message name="AddResourceResponse">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="ReplaceWithPropertiesRequest">
+        <part name="ReplaceWithProperties" element="ns:ReplaceWithPropertiesRequest"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="FlushCacheRequest">
+        <part name="FlushCacheRequest" element="ns:FlushCacheRequest"/>
+    </message>
+    <message name="UpdatePropertyRequest">
+        <part name="UpdatePropertyRequest" element="ns:UpdatePropertyRequest"/>
+    </message>
+    <message name="UpdatePropertyResponse">
+        <part name="UpdatePropertyResponse" element="ns:Done"/>
+    </message>
+    <message name="GeneralQueryRequest">
+        <part name="GeneralQueryRequest" element="ns:GeneralQueryRequest"/>
+    </message>
+    <message name="GeneralQueryResponse">
+        <part name="GeneralQueryResponse" element="ns:GeneralQueryResponse"/>
+    </message>
+    <portType name="PMSoap">
+        <operation name="GetProperty">
+            <input name="input1" message="tns:GetPropertyRequest"/>
+            <output name="output1" message="tns:GetPropertyResponse"/>
+            <fault name="fault1" message="tns:PMError"/>
+        </operation>
+        <operation name="IsStale">
+            <input name="input2" message="tns:IsStaleRequest"/>
+            <output name="output2" message="tns:IsStaleResponse"/>
+            <fault name="fault1" message="tns:PMError"/>
+        </operation>
+        <operation name="GetPropertyList">
+            <input name="input3" message="tns:GetPropertyListRequest"/>
+            <output name="output3" message="tns:GetPropertyListResponse"/>
+            <fault name="fault1" message="tns:PMError"/>
+        </operation>
+        <operation name="GetResourceList">
+            <input name="input4" message="tns:GetResourceListRequest"/>
+            <output name="output4" message="tns:GetResourceListResponse"/>
+            <fault name="fault1" message="tns:PMError"/>
+        </operation>
+        <operation name="AddResource">
+            <input name="input5" message="tns:AddResourceRequest"/>
+            <output name="output5" message="tns:AddResourceResponse"/>
+            <fault name="fault1" message="tns:PMError"/>
+        </operation>
+        <operation name="ReplaceWithProperties">
+            <input name="input6" message="tns:ReplaceWithPropertiesRequest"/>
+            <output name="output6" message="tns:GetPropertyResponse"/>
+            <fault name="fault1" message="tns:PMError"/>
+        </operation>
+        <operation name="IsUp">
+            <input name="input7" message="tns:IsUpRequest"/>
+            <output name="output7" message="tns:Done"/>
+            <fault name="fault1" message="tns:PMError"/>
+        </operation>
+        <operation name="FlushCache">
+            <input name="input8" message="tns:FlushCacheRequest"/>
+            <output name="output8" message="tns:Done"/>
+            <fault name="fault1" message="tns:PMError"/>
+        </operation>
+        <operation name="UpdateProperty">
+            <input name="input9" message="tns:UpdatePropertyRequest"/>
+            <output name="output9" message="tns:UpdatePropertyResponse"/>
+            <fault name="fault1" message="tns:PMError"/>
+        </operation>
+        <operation name="RunGeneralQuery">
+            <input name="input10" message="tns:GeneralQueryRequest"/>
+            <output name="output10" message="tns:GeneralQueryResponse"/>
+            <fault name="fault1" message="tns:PMError"/>
+        </operation>
+    </portType>
+
+
+
+    <binding name="PMBinding" type="tns:PMSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="GetProperty">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsStale">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetPropertyList">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetResourceList">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="AddResource">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ReplaceWithProperties">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsUp">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="FlushCache">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="UpdateProperty">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="RunGeneralQuery">
+            <input name="input10">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output10">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="PM">
+        <port name="PMSoap" binding="tns:PMBinding">
+            <soap:address location="http://dummyhost:${HttpDefaultPort}/PM/PMSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="PMServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes. 
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="PM" portType="tns:PMSoap"/>
+    </plnk:partnerLinkType>
+</definitions>

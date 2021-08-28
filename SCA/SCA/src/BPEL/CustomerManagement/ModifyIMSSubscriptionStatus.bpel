@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ModifyIMSSubscriptionStatus"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA"
+    xmlns:ns1="http://xml.smilecoms.com/schema/IM"
+    xmlns:ns2="http://xml.smilecoms.com/IM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="SCAModifyIMSSubscriptionStatusOut" messageType="tns:ModifyIMSSubscriptionStatusResponse"/>
+        <variable name="SCAModifyIMSSubscriptionStatusIn" messageType="tns:ModifyIMSSubscriptionStatusRequest"/>
+        <variable name="IMModifyIMSSubscriptionStatusOut" messageType="ns2:Done"/>
+        <variable name="loops" type="xs:int"/>
+        <variable name="IMModifyIMSSubscriptionStatusIn" messageType="ns2:ModifyIMSSubscriptionStatusRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="IMError" faultMessageType="ns2:IMError">
+            <sequence name="Sequence4">
+                <assign name="AssignErr">
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErr" partnerLink="SCA" operation="ModifyIMSSubscriptionStatus" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ModifyIMSSubscriptionStatus" portType="tns:SCASoap" variable="SCAModifyIMSSubscriptionStatusIn"/>
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>                
+            </sequence>
+        </scope>
+
+
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:SCAContext/ns0:TxId</from>
+                <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:SCAContext/ns0:Tenant</from>
+                <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:IMSSubscriptionId</from>
+                <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:IMSSubscriptionId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:NewSCSCFName</from>
+                <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:NewSCSCFName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:NewDiameterName</from>
+                <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:NewDiameterName</to>
+            </copy>
+            <copy>
+                <from>count($SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:IMSIdentityChanges)</from>
+                <to variable="loops"/>
+            </copy>
+            <copy>
+                <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:Version</from>
+                <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:Version</to>
+            </copy>
+        </assign>
+        <forEach name="ForEach1" parallel="no" counterName="counter">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$loops</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="Assign3">
+                    <copy>
+                        <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:IMSIdentityChanges[$counter]/ns0:IdentityType</from>
+                        <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:IMSIdentityChanges[$counter]/ns1:IdentityType</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:IMSIdentityChanges[$counter]/ns0:IdentityId</from>
+                        <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:IMSIdentityChanges[$counter]/ns1:IdentityId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:IMSIdentityChanges[$counter]/ns0:IdentityField</from>
+                        <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:IMSIdentityChanges[$counter]/ns1:IdentityField</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns0:IMSIdentityChanges[$counter]/ns0:NewValue</from>
+                        <to>$IMModifyIMSSubscriptionStatusIn.IMSSubscriptionStatusUpdateData/ns1:IMSIdentityChanges[$counter]/ns1:NewValue</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <invoke name="Call_IM" partnerLink="IM" operation="ModifyIMSSubscriptionStatus" portType="ns2:IMSoap" inputVariable="IMModifyIMSSubscriptionStatusIn" outputVariable="IMModifyIMSSubscriptionStatusOut"/>
+        <assign name="Assign4">
+            <copy>
+                <from>$IMModifyIMSSubscriptionStatusOut.Done/ns1:Done</from>
+                <to>$SCAModifyIMSSubscriptionStatusOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="ModifyIMSSubscriptionStatus" portType="tns:SCASoap" variable="SCAModifyIMSSubscriptionStatusOut"/>
+    </sequence>
+</process>
+
+
+
+
+
+
+
+
+
+
+

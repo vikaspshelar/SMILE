@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="OSCommandBatch"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" xmlns:ns0="http://xml.smilecoms.com/schema/BS" xmlns:ns1="http://xml.smilecoms.com/schema/PM" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BS" location="../Partners/BS/BSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/PM" location="../Partners/PM/PMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="PM" xmlns:tns="http://xml.smilecoms.com/PM" partnerLinkType="tns:PMServiceDefinition" partnerRole="PM"/>
+        <partnerLink name="BS" xmlns:tns="http://xml.smilecoms.com/BS" partnerLinkType="tns:BSServiceDefinition" partnerRole="BS"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="PMReplaceWithPropertiesOut" xmlns:tns="http://xml.smilecoms.com/PM" messageType="tns:GetPropertyResponse"/>
+        <variable name="PMReplaceWithPropertiesIn" xmlns:tns="http://xml.smilecoms.com/PM" messageType="tns:ReplaceWithPropertiesRequest"/>
+        <variable name="BSRunUnixCommandOut" xmlns:tns="http://xml.smilecoms.com/BS" messageType="tns:RunUnixCommandResponse"/>
+        <variable name="BSRunUnixCommandIn" xmlns:tns="http://xml.smilecoms.com/BS" messageType="tns:RunUnixCommandRequest"/>
+        <variable name="RunOSCommandBatchOut" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" messageType="tns:Done"/>
+        <variable name="RunOSCommandBatchIn" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" messageType="tns:RunOSCommandBatchRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="RunOSCommandBatch" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="RunOSCommandBatchIn"/>
+
+         <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('BS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign3">
+
+            <copy>
+                <from>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/TxId</from>
+                <to>$PMReplaceWithPropertiesIn.ReplaceWithProperties/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/OriginatingIP</from>
+                <to>$PMReplaceWithPropertiesIn.ReplaceWithProperties/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/Tenant</from>
+                <to>$PMReplaceWithPropertiesIn.ReplaceWithProperties/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$RunOSCommandBatchIn.OSCommandBatchRequest/SeedData</from>
+                <to>$PMReplaceWithPropertiesIn.ReplaceWithProperties/ns1:PropertyString</to>
+            </copy>
+            <copy>
+                <from>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/OriginatingIdentity</from>
+                <to>$PMReplaceWithPropertiesIn.ReplaceWithProperties/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+        </assign>
+        <invoke name="Replace_Properties_In_Seed_Data" partnerLink="PM" operation="ReplaceWithProperties" xmlns:tns="http://xml.smilecoms.com/PM" portType="tns:PMSoap" inputVariable="PMReplaceWithPropertiesIn" outputVariable="PMReplaceWithPropertiesOut"/>
+        <assign name="Assign1">
+
+            <copy>
+                <from>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/TxId</from>
+                <to>$BSRunUnixCommandIn.UnixCommand/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/OriginatingIP</from>
+                <to>$BSRunUnixCommandIn.UnixCommand/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/Tenant</from>
+                <to>$BSRunUnixCommandIn.UnixCommand/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>substring-before(substring-after($PMReplaceWithPropertiesOut.PropertyResponse/ns1:PropertyValue, 'Host:'), ' ')</from>
+                <to>$BSRunUnixCommandIn.UnixCommand/ns0:Host</to>
+            </copy>
+            <copy>
+                <from>substring-before(substring-after($PMReplaceWithPropertiesOut.PropertyResponse/ns1:PropertyValue, 'User:'), ' ')</from>
+                <to>$BSRunUnixCommandIn.UnixCommand/ns0:User</to>
+            </copy>
+            <copy>
+                <from>substring-before(substring-after($PMReplaceWithPropertiesOut.PropertyResponse/ns1:PropertyValue, 'Pass:'), ' ')</from>
+                <to>$BSRunUnixCommandIn.UnixCommand/ns0:Password</to>
+            </copy>
+            <copy>
+                <from>substring-after($PMReplaceWithPropertiesOut.PropertyResponse/ns1:PropertyValue, 'Command:')</from>
+                <to>$BSRunUnixCommandIn.UnixCommand/ns0:CommandText</to>
+            </copy>
+            <copy>
+                <from>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/OriginatingIdentity</from>
+                <to>$BSRunUnixCommandIn.UnixCommand/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+        </assign>
+        <invoke name="Run_OS_Command" partnerLink="BS" operation="RunUnixCommand" xmlns:tns="http://xml.smilecoms.com/BS" portType="tns:BSSoap" inputVariable="BSRunUnixCommandIn" outputVariable="BSRunUnixCommandOut"/>
+        <assign name="Assign2">
+            <copy>
+                <from>true()</from>
+                <to variable="RunOSCommandBatchOut" part="Done"/>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="RunOSCommandBatch" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="RunOSCommandBatchOut"/>
+    </sequence>
+</process>
+
+

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetUpSizeInventory"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:POS="http://xml.smilecoms.com/POS"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/POS" >
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="SCAGetUpSizeInventoryOut" messageType="tns:GetUpSizeInventoryResponse"/>
+        <variable name="POSGetUpSizeInventoryOut" messageType="POS:GetUpSizeInventoryResponse"/>
+        <variable name="POSGetUpSizeInventoryIn" messageType="POS:GetUpSizeInventoryRequest"/>
+        <variable name="SCAGetUpSizeInventoryIn" messageType="tns:GetUpSizeInventoryRequest"/>
+        <variable name="itemline" type="xsd:int"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="POS:POSError" faultVariable="POSError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetInventory" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetUpSizeInventory" portType="tns:SCASoap" variable="SCAGetUpSizeInventoryIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignPOS">
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:MainBundleItemNumber</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:MainBundleItemNumber</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:SCAContext/ns1:TxId</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:SCAContext/ns1:Tenant</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:SalesPersonCustomerId</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:SalesPersonCustomerId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:RecipientCustomerId</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:RecipientCustomerId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:RecipientOrganisationId</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:RecipientOrganisationId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:RecipientAccountId</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:RecipientAccountId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:WarehouseId</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:WarehouseId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:Currency</from>
+                <to>$POSGetUpSizeInventoryIn.UpSizeInventoryQuery/ns2:Currency</to>
+            </copy>
+        </assign>
+        <invoke name="CallPOS" partnerLink="POS" operation="GetUpSizeInventory" xmlns:tns="http://xml.smilecoms.com/POS" portType="tns:POSSoap" inputVariable="POSGetUpSizeInventoryIn" outputVariable="POSGetUpSizeInventoryOut"/>
+        <assign name="AssignDefaults">
+            <copy>
+                <from>0</from>
+                <to variable="itemline"/>
+            </copy>
+        </assign>
+        <assign name="AssignResult">
+            <copy>
+                <from>$POSGetUpSizeInventoryOut.InventoryList/ns2:NumberOfInventoryItems</from>
+                <to>$SCAGetUpSizeInventoryOut.InventoryList/ns1:NumberOfInventoryItems</to>
+            </copy>
+        </assign>
+        <forEach name="ForEach1" parallel="no" counterName="item">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems)</finalCounterValue>
+            <scope name="Scope1">
+                <sequence name="assignline">
+                    <scope name="Scope2">
+                        <faultHandlers>
+                            <catchAll>
+                                <empty name="Empty1"/>
+                            </catchAll>
+                        </faultHandlers>
+                        <sequence name="Sequence4">
+                            <if name="IfBundle">
+                                <condition>starts-with($POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems[$item]/ns2:ItemNumber, 'BUN')</condition>
+                                <sequence name="Sequence3">
+                                    <assign name="CheckPermissionsUC">
+                                        <!-- Check rules to sell this bundle -->
+                                        <copy>
+                                            <from>BPELUtils:checkPermissions($SCAGetUpSizeInventoryIn.UpSizeInventoryQuery/ns1:SCAContext, 'UnitCreditSpecification', $POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems[$item]/ns2:ItemNumber)</from>
+                                            <to>$SCAGetUpSizeInventoryOut.InventoryList/ns1:SCAContext/ns1:Obviscated</to>
+                                        </copy>
+                                    </assign>
+                                </sequence>
+                            </if>
+                            <assign name="AssignCnt">
+                                <copy>
+                                    <from>$itemline + 1</from>
+                                    <to variable="itemline"/>
+                                </copy>
+                            </assign>
+                            <assign name="AssignItem">
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems[$item]/ns2:SerialNumber</from>
+                                    <to>$SCAGetUpSizeInventoryOut.InventoryList/ns1:InventoryItems[$itemline]/ns1:SerialNumber</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems[$item]/ns2:Description</from>
+                                    <to>$SCAGetUpSizeInventoryOut.InventoryList/ns1:InventoryItems[$itemline]/ns1:Description</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems[$item]/ns2:PriceInCentsExcl</from>
+                                    <to>$SCAGetUpSizeInventoryOut.InventoryList/ns1:InventoryItems[$itemline]/ns1:PriceInCentsExcl</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems[$item]/ns2:PriceInCentsIncl</from>
+                                    <to>$SCAGetUpSizeInventoryOut.InventoryList/ns1:InventoryItems[$itemline]/ns1:PriceInCentsIncl</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems[$item]/ns2:ItemNumber</from>
+                                    <to>$SCAGetUpSizeInventoryOut.InventoryList/ns1:InventoryItems[$itemline]/ns1:ItemNumber</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems[$item]/ns2:WarehouseId</from>
+                                    <to>$SCAGetUpSizeInventoryOut.InventoryList/ns1:InventoryItems[$itemline]/ns1:WarehouseId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems[$item]/ns2:StockLevel</from>
+                                    <to>$SCAGetUpSizeInventoryOut.InventoryList/ns1:InventoryItems[$itemline]/ns1:StockLevel</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$POSGetUpSizeInventoryOut.InventoryList/ns2:InventoryItems[$item]/ns2:Currency</from>
+                                    <to>$SCAGetUpSizeInventoryOut.InventoryList/ns1:InventoryItems[$itemline]/ns1:Currency</to>
+                                </copy>
+                            </assign>
+                        </sequence>
+                    </scope>
+                </sequence>
+            </scope>
+        </forEach>
+        <reply name="Reply3" partnerLink="SCA" operation="GetUpSizeInventory" portType="tns:SCASoap" variable="SCAGetUpSizeInventoryOut"/>
+    </sequence>
+</process>

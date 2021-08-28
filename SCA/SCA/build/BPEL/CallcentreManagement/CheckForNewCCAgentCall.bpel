@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CheckForNewCCAgentCall"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" xmlns:ns2="http://xml.smilecoms.com/schema/CTI" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/CTI"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed1="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    
+    
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CTI" location="../Partners/CTI/CTIServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="CTI" partnerLinkType="ns1:CTIServiceDefinition" partnerRole="CTI"/>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="CTICheckForNewCCAgentCallOut" messageType="ns1:CheckForNewCCAgentCallResponse"/>
+        <variable name="CTICheckForNewCCAgentCallIn" messageType="ns1:CheckForNewCCAgentCallRequest"/>
+        <variable name="SCACheckForNewCCAgentCallOut" messageType="tns:CheckForNewCCAgentCallResponse"/>
+        <variable name="SCACheckForNewCCAgentCallIn" messageType="tns:CheckForNewCCAgentCallRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="CheckForNewCCAgentCall" portType="tns:SCASoap" variable="SCACheckForNewCCAgentCallIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('CTI')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CTI"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignCTI">
+            <copy>
+                <from>$SCACheckForNewCCAgentCallIn.NewCCCallQueryData/ns0:SCAContext/ns0:TxId</from>
+                <to>$CTICheckForNewCCAgentCallIn.NewCallQueryData/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCACheckForNewCCAgentCallIn.NewCCCallQueryData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$CTICheckForNewCCAgentCallIn.NewCallQueryData/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCACheckForNewCCAgentCallIn.NewCCCallQueryData/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$CTICheckForNewCCAgentCallIn.NewCallQueryData/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACheckForNewCCAgentCallIn.NewCCCallQueryData/ns0:SCAContext/ns0:Tenant</from>
+                <to>$CTICheckForNewCCAgentCallIn.NewCallQueryData/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCACheckForNewCCAgentCallIn.NewCCCallQueryData/ns0:CCAgentExtension</from>
+                <to>$CTICheckForNewCCAgentCallIn.NewCallQueryData/ns2:CCAgentExtension</to>
+            </copy>
+        </assign>
+        <invoke name="CallCTI" partnerLink="CTI" operation="CheckForNewCCAgentCall" portType="ns1:CTISoap" inputVariable="CTICheckForNewCCAgentCallIn" outputVariable="CTICheckForNewCCAgentCallOut"/>
+        <assign name="AssignResult">
+            <copy>
+                <from>$CTICheckForNewCCAgentCallOut.IncomingCallData/ns2:Number</from>
+                <to>$SCACheckForNewCCAgentCallOut.IncomingCCAgentCallData/ns0:Number</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="CheckForNewCCAgentCall" portType="tns:SCASoap" variable="SCACheckForNewCCAgentCallOut"/>
+    </sequence>
+</process>

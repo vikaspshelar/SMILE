@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="PerformSIMSwap"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/IM" xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/CM" xmlns:ns3="http://xml.smilecoms.com/schema/BM"
+    xmlns:ns4="http://xml.smilecoms.com/schema/POS">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="BM" xmlns:tns="http://xml.smilecoms.com/BM" partnerLinkType="tns:BMServiceDefinition" partnerRole="BM"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="CMUpdateProductInstanceOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:Done"/>
+        <variable name="CMUpdateProductInstanceIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:UpdateProductInstanceRequest"/>
+        <variable name="Counter" type="xsd:int"/>
+        <variable name="CMGetServiceInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="CMGetServiceInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetServiceInstancesRequest"/>
+        <variable name="CMGetProductInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductInstancesResponse"/>
+        <variable name="CMGetProductInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetProductInstancesRequest"/>
+        <variable name="CMGetProductSpecificationsOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductSpecificationsResponse"/>
+        <variable name="CMGetProductSpecificationsIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetProductSpecificationsRequest"/>
+        <variable name="POSGetSalesOut" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:GetSalesResponse"/>
+        <variable name="POSGetSalesIn" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:GetSalesRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="IMGetIMSPrivateIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPrivateIdentityResponse"/>
+        <variable name="IMGetIMSPrivateIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPrivateIdentityRequest"/>
+        <variable name="BMReplaceServiceInstanceMappingsOut" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:Done"/>
+        <variable name="BMReplaceServiceInstanceMappingsIn" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:ReplaceServiceInstanceMappingsRequest"/>
+        <variable name="SCAPerformSIMSwapOut" messageType="tns:SIMSwapResponse"/>
+        <variable name="IMPerformSIMSwapOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:SIMSwapResponse"/>
+        <variable name="IMPerformSIMSwapIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:SIMSwapRequest"/>
+        <variable name="SCAPerformSIMSwapIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:SIMSwapRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:IM="http://xml.smilecoms.com/IM" faultMessageType="IM:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="PerformSIMSwap" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch faultVariable="CMError" xmlns:CM="http://xml.smilecoms.com/CM" faultMessageType="CM:CMError">
+            <sequence name="Sequence2">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$CMError.CMError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply3" partnerLink="SCA" operation="PerformSIMSwap" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch faultVariable="POSError" xmlns:POS="http://xml.smilecoms.com/POS" faultMessageType="POS:POSError">
+            <sequence name="Sequence21">
+                <assign name="Assign21">
+                    <copy>
+                        <from>$POSError.POSError/ns4:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns4:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns4:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply4" partnerLink="SCA" operation="PerformSIMSwap" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="PerformSIMSwap" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAPerformSIMSwapIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('BM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs3">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs4">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        
+        
+        
+        
+        <assign name="AssignGetIMPI-old">
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:TxId</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:Tenant</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:OldIntegratedCircuitCardIdentifier</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:IntegratedCircuitCardIdentifier</to>
+            </copy>
+        </assign>
+        <invoke name="GetIMPIIdentity-old" partnerLink="IM" operation="GetIMSPrivateIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSPrivateIdentityIn" outputVariable="IMGetIMSPrivateIdentityOut"/>
+        
+        
+        
+        
+        
+        
+        <assign name="AssignGetSI">
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:TxId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:Tenant</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:Identity</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:Identifier</to>
+            </copy>
+            <copy>
+                <from>'END_USER_PRIVATE'</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:IdentifierType</to>
+            </copy>
+            <copy>
+                <from>'MAIN'</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns2:Verbosity</to>
+            </copy>
+        </assign>
+        <invoke name="GetServiceInstance" partnerLink="CM" operation="GetServiceInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetServiceInstancesIn" outputVariable="CMGetServiceInstancesOut"/>
+        <if name="IfNoServiceExists">
+            <condition>$CMGetServiceInstancesOut.ServiceInstanceList/ns2:NumberOfServiceInstances = 0</condition>
+            <sequence name="SequenceNoSvc">
+                <assign name="AssignNoSvcForSIM">
+                    <copy>
+                        <from>'SIM is Unused'</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'business'</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0013'</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyNoSvc" partnerLink="SCA" operation="PerformSIMSwap" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                <exit name="ExitWithErrNoSvc"/>
+            </sequence>
+        </if>
+        <assign name="AssignGetPI">
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:TxId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:Tenant</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns2:ServiceInstances/ns2:ProductInstanceId</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:ProductInstanceId</to>
+            </copy>
+            <copy>
+                <from>'MAIN'</from>
+                <to>$CMGetProductInstancesIn.ProductInstanceQuery/ns2:Verbosity</to>
+            </copy>
+        </assign>
+        <invoke name="GetProductForOldSIM" partnerLink="CM" operation="GetProductInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetProductInstancesIn" outputVariable="CMGetProductInstancesOut"/>
+        <assign name="AssignGetProdSpec">
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:TxId</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:Tenant</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>'MAIN_PRODAVP'</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns2:Verbosity</to>
+            </copy>
+            <copy>
+                <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances/ns2:ProductSpecificationId</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns2:ProductSpecificationId</to>
+            </copy>
+        </assign>
+        <invoke name="GetProductSpec" partnerLink="CM" operation="GetProductSpecifications" portType="tns:CMSoap" inputVariable="CMGetProductSpecificationsIn" outputVariable="CMGetProductSpecificationsOut" xmlns:tns="http://xml.smilecoms.com/CM"/>
+        <if name="ProductMustHaveSoldSIM">
+            <condition>BPELUtils:getAVPValueAsStringEmptyIfMissing($CMGetProductSpecificationsOut.ProductSpecificationList/ns2:ProductSpecifications, 'AllowedSIMSaleStatuses') != ''</condition>
+            <sequence name="ProductMustHaveSoldSIMSeq">
+                <assign name="AssignGetSale">
+                    <copy>
+                        <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:TxId</from>
+                        <to>$POSGetSalesIn.SalesQuery/ns4:PlatformContext/ns4:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                        <to>$POSGetSalesIn.SalesQuery/ns4:PlatformContext/ns4:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIP</from>
+                        <to>$POSGetSalesIn.SalesQuery/ns4:PlatformContext/ns4:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:Tenant</from>
+                        <to>$POSGetSalesIn.SalesQuery/ns4:PlatformContext/ns4:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:NewIntegratedCircuitCardIdentifier</from>
+                        <to>$POSGetSalesIn.SalesQuery/ns4:SerialNumber</to>
+                    </copy>
+                </assign>
+                <invoke name="GetSaleForICCID" partnerLink="POS" operation="GetSales" xmlns:tns="http://xml.smilecoms.com/POS" portType="tns:POSSoap" inputVariable="POSGetSalesIn" outputVariable="POSGetSalesOut"/>
+                <assign name="AssignSalesCount">
+                    <sxt:trace>
+                        <sxt:log level="finest" location="onComplete">
+                            <from>concat('Number of sales is ', $Counter, ' and the last sale has status ', $POSGetSalesOut.SalesList/ns4:Sales[$Counter]/ns4:Status, ' and recipient customer id ', $POSGetSalesOut.SalesList/ns4:Sales[$Counter]/ns4:RecipientCustomerId)</from>
+                        </sxt:log>
+                    </sxt:trace>
+                    <copy>
+                        <from>$POSGetSalesOut.SalesList/ns4:NumberOfSales</from>
+                        <to>$Counter</to>
+                    </copy>     
+                </assign>
+                <if name="IfNoPaidSale">
+                    <!-- we look at the status of the last sale the SIM was in -->
+                    <condition>$Counter = 0 or not(contains(BPELUtils:getAVPValueAsString($CMGetProductSpecificationsOut.ProductSpecificationList/ns2:ProductSpecifications, 'AllowedSIMSaleStatuses'), $POSGetSalesOut.SalesList/ns4:Sales[$Counter]/ns4:Status))</condition>
+                    <sequence name="SequenceNoSale">
+                        <assign name="AssignNoSaleForSIM">
+                            <copy>
+                                <from>'A SIM Cannot be provisioned with this product unless it has been through the sales process'</from>
+                                <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                            </copy>
+                            <copy>
+                                <from>'business'</from>
+                                <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                            </copy>
+                            <copy>
+                                <from>'SCA-0011'</from>
+                                <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                            </copy>
+                        </assign>
+                        <reply name="ReplySIMNotSold" partnerLink="SCA" operation="PerformSIMSwap" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                        <exit name="ExitWithErrNoSaleForSIM"/>
+                    </sequence>
+                </if>
+                <if name="IfAStockTransferThenItMustBeToThisCustomer">
+                    <!-- we look at the status of the last sale the SIM was in -->
+                    <condition>$Counter &gt; 0 and $POSGetSalesOut.SalesList/ns4:Sales[$Counter]/ns4:Status = 'ST' and $POSGetSalesOut.SalesList/ns4:Sales[$Counter]/ns4:RecipientCustomerId != $CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances/ns2:CustomerId and $CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances/ns2:OrganisationId != 1
+                        <sxed:editor>
+                            <sxed:predicate path="$POSGetSalesOut.SalesList/ns4:Sales[$Counter]" source="from"/>
+                        </sxed:editor>
+                    </condition>
+                    <sequence name="SequenceSIMNotTransferedToThisCustomer">
+                        <assign name="AssignSIMNotTransferedToThisCustomer">
+                            <copy>
+                                <from>'A SIM thats part of a stock transfer must be provisioned against the customer who got the transfer'</from>
+                                <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                            </copy>
+                            <copy>
+                                <from>'business'</from>
+                                <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                            </copy>
+                            <copy>
+                                <from>'SCA-0012'</from>
+                                <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                            </copy>
+                        </assign>
+                        <reply name="ReplySIMNotTransferedToThisCustomer" partnerLink="SCA" operation="PerformSIMSwap" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                        <exit name="ExitWithErrSIMNotTransferedToThisCustomer"/>
+                    </sequence>
+                </if>
+            </sequence>
+        </if>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <assign name="AssignReplacementMappings-old">
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:TxId</from>
+                <to>$BMReplaceServiceInstanceMappingsIn.ServiceInstanceMappingsReplacementData/ns3:PlatformContext/ns3:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$BMReplaceServiceInstanceMappingsIn.ServiceInstanceMappingsReplacementData/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$BMReplaceServiceInstanceMappingsIn.ServiceInstanceMappingsReplacementData/ns3:PlatformContext/ns3:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:SCAContext/ns1:Tenant</from>
+                <to>$BMReplaceServiceInstanceMappingsIn.ServiceInstanceMappingsReplacementData/ns3:PlatformContext/ns3:Tenant</to>
+            </copy>
+            <copy>
+                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:Identity</from>
+                <to>$BMReplaceServiceInstanceMappingsIn.ServiceInstanceMappingsReplacementData/ns3:OldServiceInstanceMapping/ns3:Identifier</to>
+            </copy>
+            <copy>
+                <from>'END_USER_PRIVATE'</from>
+                <to>$BMReplaceServiceInstanceMappingsIn.ServiceInstanceMappingsReplacementData/ns3:OldServiceInstanceMapping/ns3:IdentifierType</to>
+            </copy>
+        </assign>
+        <assign name="AssignGetIMPI-new">
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:NewIntegratedCircuitCardIdentifier</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:IntegratedCircuitCardIdentifier</to>
+            </copy>
+        </assign>
+        <invoke name="GetIMPIIdentity-new" partnerLink="IM" operation="GetIMSPrivateIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSPrivateIdentityIn" outputVariable="IMGetIMSPrivateIdentityOut"/>
+        <assign name="AssignReplacementMappings-new">
+            <copy>
+                <from>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:Identity</from>
+                <to>$BMReplaceServiceInstanceMappingsIn.ServiceInstanceMappingsReplacementData/ns3:NewServiceInstanceMapping/ns3:Identifier</to>
+            </copy>
+            <copy>
+                <from>'END_USER_PRIVATE'</from>
+                <to>$BMReplaceServiceInstanceMappingsIn.ServiceInstanceMappingsReplacementData/ns3:NewServiceInstanceMapping/ns3:IdentifierType</to>
+            </copy>
+        </assign>
+        
+        <assign name="AssignIM">
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:OldIntegratedCircuitCardIdentifier</from>
+                <to>$IMPerformSIMSwapIn.SIMSwapRequest/ns0:OldIntegratedCircuitCardIdentifier</to>
+            </copy>
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:NewIntegratedCircuitCardIdentifier</from>
+                <to>$IMPerformSIMSwapIn.SIMSwapRequest/ns0:NewIntegratedCircuitCardIdentifier</to>
+            </copy>
+        </assign>
+        <assign name="AssignCurrentData">
+            <copy>
+                <from>$CMGetProductInstancesOut.ProductInstanceList/ns2:ProductInstances</from>
+                <to variable="CMUpdateProductInstanceIn" part="ProductInstance"/>
+            </copy>
+        </assign>
+        <assign name="AssignNewICCID">
+            <copy>
+                <from>$SCAPerformSIMSwapIn.SIMSwapRequest/ns1:NewIntegratedCircuitCardIdentifier</from>
+                <to>$CMUpdateProductInstanceIn.ProductInstance/ns2:PhysicalId</to>
+            </copy>
+        </assign>
+        <invoke name="UpdatePI" partnerLink="CM" operation="UpdateProductInstance" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMUpdateProductInstanceIn" outputVariable="CMUpdateProductInstanceOut"/>
+        <invoke name="CallPerformSIMSwap" partnerLink="IM" operation="PerformSIMSwap" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMPerformSIMSwapIn" outputVariable="IMPerformSIMSwapOut"/>
+        <invoke name="ReplaceMappings" partnerLink="BM" operation="ReplaceServiceInstanceMappings" xmlns:tns="http://xml.smilecoms.com/BM" portType="tns:BMSoap" inputVariable="BMReplaceServiceInstanceMappingsIn" outputVariable="BMReplaceServiceInstanceMappingsOut"/>
+        <assign name="AssignDone">
+            <copy>
+                <from>$IMPerformSIMSwapOut.Done/ns0:Done</from>
+                <to>$SCAPerformSIMSwapOut.Done/ns1:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="PerformSIMSwap" portType="tns:SCASoap" variable="SCAPerformSIMSwapOut"/>
+    </sequence>
+</process>

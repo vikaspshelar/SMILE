@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ProcessCashIn"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:POS="http://xml.smilecoms.com/POS"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:CM="http://xml.smilecoms.com/CM"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/POS" xmlns:ns3="http://xml.smilecoms.com/schema/BM" xmlns:ns4="http://xml.smilecoms.com/schema/CM" >
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="POSProcessCashInOut" messageType="POS:ProcessCashInResponse"/>
+        <variable name="POSProcessCashInIn" messageType="POS:ProcessCashInRequest"/>
+        <variable name="SCAProcessCashInOut" messageType="tns:ProcessCashInResponse"/>
+        <variable name="SCAProcessCashInIn" messageType="tns:ProcessCashInRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="POS:POSError" faultVariable="POSError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ProcessCashIn" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ProcessCashIn" portType="tns:SCASoap" variable="SCAProcessCashInIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        
+        
+        <assign name="AssignCashIn">
+            <copy>
+                <from>$SCAProcessCashInIn.CashInData/ns1:SCAContext/ns1:TxId</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessCashInIn.CashInData/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessCashInIn.CashInData/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAProcessCashInIn.CashInData/ns1:SCAContext/ns1:Tenant</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessCashInIn.CashInData/ns1:CashReceiptedInCents</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:CashReceiptedInCents</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessCashInIn.CashInData/ns1:CashRequiredInCents</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:CashRequiredInCents</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessCashInIn.CashInData/ns1:SalesPersonCustomerId</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:SalesPersonCustomerId</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessCashInIn.CashInData/ns1:SalesAdministratorCustomerId</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:SalesAdministratorCustomerId</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessCashInIn.CashInData/ns1:SalesIds</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:SalesIds</to>
+            </copy>
+            <copy>
+                <from>$SCAProcessCashInIn.CashInData/ns1:CashInType</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:CashInType</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAProcessCashInIn.CashInData/ns1:CashInId</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:CashInId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAProcessCashInIn.CashInData/ns1:Status</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:Status</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAProcessCashInIn.CashInData/ns1:BankName</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:BankName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAProcessCashInIn.CashInData/ns1:ExtTxId</from>
+                <to>$POSProcessCashInIn.CashInData/ns2:ExtTxId</to>
+            </copy>
+        </assign>
+        <invoke name="CallPOS" partnerLink="POS" operation="ProcessCashIn" portType="POS:POSSoap" inputVariable="POSProcessCashInIn" outputVariable="POSProcessCashInOut"/>
+        
+            
+        <assign name="AssignResult">
+            <copy>
+                <from>$POSProcessCashInOut.CashedInData/ns2:CashInId</from>
+                <to>$SCAProcessCashInOut.CashedInData/ns1:CashInId</to>
+            </copy>
+            <copy>
+                <from>$POSProcessCashInOut.CashedInData/ns2:SalesIds</from>
+                <to>$SCAProcessCashInOut.CashedInData/ns1:SalesIds</to>
+            </copy>
+            <copy>
+                <from>$POSProcessCashInOut.CashedInData/ns2:CashReceiptedInCents</from>
+                <to>$SCAProcessCashInOut.CashedInData/ns1:CashReceiptedInCents</to>
+            </copy>
+            <copy>
+                <from>$POSProcessCashInOut.CashedInData/ns2:CashRequiredInCents</from>
+                <to>$SCAProcessCashInOut.CashedInData/ns1:CashRequiredInCents</to>
+            </copy>
+            <copy>
+                <from>$POSProcessCashInOut.CashedInData/ns2:SalesPersonCustomerId</from>
+                <to>$SCAProcessCashInOut.CashedInData/ns1:SalesPersonCustomerId</to>
+            </copy>
+            <copy>
+                <from>$POSProcessCashInOut.CashedInData/ns2:SalesAdministratorCustomerId</from>
+                <to>$SCAProcessCashInOut.CashedInData/ns1:SalesAdministratorCustomerId</to>
+            </copy>
+            <copy>
+                <from>$POSProcessCashInOut.CashedInData/ns2:Status</from>
+                <to>$SCAProcessCashInOut.CashedInData/ns1:Status</to>
+            </copy>
+            <copy>
+                <from>$POSProcessCashInOut.CashedInData/ns2:CashInType</from>
+                <to>$SCAProcessCashInOut.CashedInData/ns1:CashInType</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="ProcessCashIn" portType="tns:SCASoap" variable="SCAProcessCashInOut"/>
+    </sequence>
+</process>

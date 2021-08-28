@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process
+    name="GetCashIns"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/POS">
+   <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+   <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+   <partnerLinks>
+      <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+      <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+   </partnerLinks>
+   <variables>
+      <variable name="SCAGetCashInsOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:CashInsQueryResponse">
+         <sxed:editor>
+            <sxed:predicate path="$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]" source="to"/>
+         </sxed:editor>
+      </variable>
+      <variable name="POSGetCashInsOut" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:CashInsQueryResponse">
+         <sxed:editor>
+            <sxed:predicate path="$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]" source="from"/>
+         </sxed:editor>
+      </variable>
+      <variable name="POSGetCashInsIn" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:CashInsQueryRequest"/>
+      <variable name="SCAGetCashInsIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:CashInsQueryRequest"/>
+   </variables>
+   <sequence>
+      <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetCashIns" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAGetCashInsIn"/>
+      
+      <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+      <assign name="Assign1">
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetCashInsIn.CashInQuery/ns0:SalesAdministratorCustomerId</from>
+            <to>$POSGetCashInsIn.CashInQuery/ns1:SalesAdministratorCustomerId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetCashInsIn.CashInQuery/ns0:Status</from>
+            <to>$POSGetCashInsIn.CashInQuery/ns1:Status</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetCashInsIn.CashInQuery/ns0:CashInType</from>
+            <to>$POSGetCashInsIn.CashInQuery/ns1:CashInType</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetCashInsIn.CashInQuery/ns0:CashInId</from>
+            <to>$POSGetCashInsIn.CashInQuery/ns1:CashInId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetCashInsIn.CashInQuery/ns0:SCAContext/ns0:TxId</from>
+            <to>$POSGetCashInsIn.CashInQuery/ns1:PlatformContext/ns1:TxId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetCashInsIn.CashInQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+            <to>$POSGetCashInsIn.CashInQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetCashInsIn.CashInQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+            <to>$POSGetCashInsIn.CashInQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetCashInsIn.CashInQuery/ns0:SCAContext/ns0:Tenant</from>
+            <to>$POSGetCashInsIn.CashInQuery/ns1:PlatformContext/ns1:Tenant</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetCashInsIn.CashInQuery/ns0:SCAContext/ns0:Comment</from>
+            <to>$POSGetCashInsIn.CashInQuery/ns1:PlatformContext/ns1:Comment</to>
+         </copy>
+      </assign>
+      <invoke name="Invoke1" partnerLink="POS" operation="GetCashIns" xmlns:tns="http://xml.smilecoms.com/POS" portType="tns:POSSoap" inputVariable="POSGetCashInsIn" outputVariable="POSGetCashInsOut"/>
+      <forEach name="ForEachCashInData" parallel="no" counterName="cashinIndex">
+         <startCounterValue>1</startCounterValue>
+         <finalCounterValue>$POSGetCashInsOut.CashInList/ns1:NumberOfCashIns</finalCounterValue>
+         <scope name="Scope1">
+            <assign name="Assign4">
+               <copy>
+                  <from>$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]/ns1:CashInId
+                     <sxed:editor>
+                        <sxed:predicate path="$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]" source="from"/>
+                     </sxed:editor>
+                  </from>
+                  <to>$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]/ns0:CashInId
+                     <sxed:editor>
+                        <sxed:predicate path="$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]" source="to"/>
+                     </sxed:editor>
+                  </to>
+               </copy>
+               <copy>
+                  <from>$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]/ns1:SalesIds
+                     <sxed:editor>
+                        <sxed:predicate path="$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]" source="from"/>
+                     </sxed:editor>
+                  </from>
+                  <to>$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]/ns0:SalesIds
+                     <sxed:editor>
+                        <sxed:predicate path="$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]" source="to"/>
+                     </sxed:editor>
+                  </to>
+               </copy>
+               <copy>
+                  <from>$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]/ns1:CashReceiptedInCents
+                     <sxed:editor>
+                        <sxed:predicate path="$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]" source="from"/>
+                     </sxed:editor>
+                  </from>
+                  <to>$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]/ns0:CashReceiptedInCents
+                     <sxed:editor>
+                        <sxed:predicate path="$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]" source="to"/>
+                     </sxed:editor>
+                  </to>
+               </copy>
+               <copy>
+                  <from>$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]/ns1:CashRequiredInCents
+                     <sxed:editor>
+                        <sxed:predicate path="$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]" source="from"/>
+                     </sxed:editor>
+                  </from>
+                  <to>$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]/ns0:CashRequiredInCents
+                     <sxed:editor>
+                        <sxed:predicate path="$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]" source="to"/>
+                     </sxed:editor>
+                  </to>
+               </copy>
+               <copy>
+                  <from>$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]/ns1:SalesPersonCustomerId
+                     <sxed:editor>
+                        <sxed:predicate path="$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]" source="from"/>
+                     </sxed:editor>
+                  </from>
+                  <to>$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]/ns0:SalesPersonCustomerId
+                     <sxed:editor>
+                        <sxed:predicate path="$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]" source="to"/>
+                     </sxed:editor>
+                  </to>
+               </copy>
+               <copy>
+                  <from>$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]/ns1:SalesAdministratorCustomerId
+                     <sxed:editor>
+                        <sxed:predicate path="$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]" source="from"/>
+                     </sxed:editor>
+                  </from>
+                  <to>$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]/ns0:SalesAdministratorCustomerId
+                     <sxed:editor>
+                        <sxed:predicate path="$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]" source="to"/>
+                     </sxed:editor>
+                  </to>
+               </copy>
+               <copy>
+                  <from>$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]/ns1:Status
+                     <sxed:editor>
+                        <sxed:predicate path="$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]" source="from"/>
+                     </sxed:editor>
+                  </from>
+                  <to>$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]/ns0:Status
+                     <sxed:editor>
+                        <sxed:predicate path="$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]" source="to"/>
+                     </sxed:editor>
+                  </to>
+               </copy>
+               <copy>
+                  <from>$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]/ns1:CashInType
+                     <sxed:editor>
+                        <sxed:predicate path="$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]" source="from"/>
+                     </sxed:editor>
+                  </from>
+                  <to>$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]/ns0:CashInType
+                     <sxed:editor>
+                        <sxed:predicate path="$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]" source="to"/>
+                     </sxed:editor>
+                  </to>
+               </copy>
+               <copy ignoreMissingFromData="yes">
+                  <from>$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]/ns1:CashInDate
+                     <sxed:editor>
+                        <sxed:predicate path="$POSGetCashInsOut.CashInList/ns1:CashInDataList[$cashinIndex]" source="from"/>
+                     </sxed:editor>
+                  </from>
+                  <to>$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]/ns0:CashInDate
+                     <sxed:editor>
+                        <sxed:predicate path="$SCAGetCashInsOut.CashInList/ns0:CashInDataList[$cashinIndex]" source="to"/>
+                     </sxed:editor>
+                  </to>
+               </copy>
+            </assign>
+         </scope>
+      </forEach>
+      <assign name="Assign3">
+         <copy>
+            <from>$POSGetCashInsOut.CashInList/ns1:NumberOfCashIns</from>
+            <to>$SCAGetCashInsOut.CashInList/ns0:NumberOfCashIns</to>
+         </copy>
+      </assign>
+      <reply name="Reply1" partnerLink="SCA" operation="GetCashIns" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAGetCashInsOut"/>
+   </sequence>
+</process>

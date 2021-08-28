@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="SCASubFlows" targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+             xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" 
+             xmlns:SCASchema="http://xml.smilecoms.com/schema/SCA" 
+             xmlns:tns="http://xml.smilecoms.com/SCASubFlows" 
+             xmlns:BM="http://xml.smilecoms.com/BM" 
+             xmlns:SCA="http://xml.smilecoms.com/SCA" 
+             xmlns:IM="http://xml.smilecoms.com/IM" 
+             xmlns:POS="http://xml.smilecoms.com/POS"
+             xmlns:MM="http://xml.smilecoms.com/MM" 
+             xmlns:CM="http://xml.smilecoms.com/CM"
+             xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing">
+    <import location="SCAServiceDefinition.wsdl" namespace="http://xml.smilecoms.com/SCA"/>
+    <import location="../BPEL/Partners/IM/IMServiceDefinition.wsdl" namespace="http://xml.smilecoms.com/IM"/>
+    <import location="../BPEL/Partners/CM/CMServiceDefinition.wsdl" namespace="http://xml.smilecoms.com/CM"/>
+    <import location="../BPEL/Partners/BM/BMServiceDefinition.wsdl" namespace="http://xml.smilecoms.com/BM"/>
+    
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/SCASubFlows">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/SCA" schemaLocation="SCASchema.xsd"/>
+            <xsd:complexType name="BatchRequest">
+                <xsd:complexContent>
+                    <xsd:extension base="tns:SubFlowObject">
+                        <xsd:sequence>
+                            <xsd:element name="BatchId" type="xsd:int">
+                            </xsd:element>
+                            <xsd:element name="BatchMethod" type="xsd:string">
+                            </xsd:element>
+                            <xsd:element name="SeedData" type="xsd:string">
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+            <xsd:complexType name="SubFlowContext">
+                <xsd:sequence>
+                    <xsd:element name="TxId" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="OriginatingIdentity" type="xsd:string">
+                    </xsd:element>
+                    <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+                    <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+                    <xsd:element name="Comment" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="SubFlowObject">
+                <xsd:sequence>
+                    <xsd:element name="SubFlowContext" type="tns:SubFlowContext">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="SubFlowError">
+                <xsd:sequence>
+                    <xsd:element name="ErrorDesc" type="xsd:string" />
+                    <xsd:element name="ErrorType" type="xsd:string"/>
+                    <xsd:element name="ErrorCode" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ChargingIdentifierList">
+                <xsd:sequence>
+                    <xsd:element name="ChargingIdentifiers" type="tns:ChargingIdentifier" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="Done" type="tns:Done"></xsd:element>
+            <xsd:simpleType name="stDone">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="true"/>
+                    <xsd:enumeration value="false"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:element name="SubFlowError" type="tns:SubFlowError">
+            </xsd:element>
+            <xsd:element name="OSCommandBatchRequest" type="tns:BatchRequest"></xsd:element>
+            
+            <xsd:complexType name="ServiceProvisioningData">
+                <xsd:complexContent>
+                    <xsd:extension base="tns:SubFlowObject">
+                        <xsd:sequence>
+                            <xsd:element name="ServiceAVPs" type="SCASchema:AVP" maxOccurs="unbounded"/>
+                        </xsd:sequence>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+            <xsd:element name="LTEServiceData" type="tns:ServiceProvisioningData"/>
+            <xsd:element name="ModifiedLTEServiceData" type="tns:ServiceProvisioningData"/>
+            <xsd:element name="ModifiedVoiceServiceData" type="tns:ServiceProvisioningData"/>
+            <xsd:element name="VoiceServiceData" type="tns:ServiceProvisioningData"/>
+            
+            
+            <xsd:complexType name="RemoteServiceLookupInfo">
+                <xsd:complexContent>
+                    <xsd:extension base="tns:SubFlowObject">
+                        <xsd:sequence>
+                            <xsd:element name="RemoteResourceId" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+            <xsd:element name="RemoteServiceLookupInfo" type="tns:RemoteServiceLookupInfo"/>
+            <xsd:element name="LTEServiceLookupInfo" type="tns:RemoteServiceLookupInfo"/>
+            <xsd:element name="VoiceServiceLookupInfo" type="tns:RemoteServiceLookupInfo"/>
+            <xsd:element name="LTEServiceDeletionInfo" type="tns:RemoteServiceLookupInfo"/>
+            <xsd:element name="VoiceServiceDeletionInfo" type="tns:RemoteServiceLookupInfo"/>
+            
+            <xsd:complexType name="ServiceAVPList">
+                <xsd:sequence>
+                    <xsd:element name="ServiceAVPs" type="SCASchema:AVP" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="ServiceAVPList" type="tns:ServiceAVPList"/>
+            <xsd:complexType name="ProvisionedServiceData">
+                <xsd:sequence>
+                    <xsd:element name="ResourceId" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="ChargingIdentifier">
+                <xsd:sequence>
+                    <xsd:element name="Identifier" type="xsd:string" />
+                    <xsd:element name="IdentifierType" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="ProvisionedServiceData" type="tns:ProvisionedServiceData"/>
+            
+            <xsd:complexType name="Done">
+                <xsd:sequence>
+                    <xsd:element name="Done" type="tns:stDone"></xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+    
+        </xsd:schema>
+    </types>
+    <message name="Done">
+        <part name="Done" element="tns:Done"/>
+    </message>
+    <message name="SubFlowError">
+        <part name="SubFlowError" element="tns:SubFlowError"/>
+    </message>
+    <message name="RunOSCommandBatchRequest">
+        <part name="OSCommandBatchRequest" element="tns:OSCommandBatchRequest"/>
+    </message>
+    <message name="ProvisionLTEServiceRequest">
+        <part name="LTEServiceData" element="tns:LTEServiceData"/>
+    </message>
+    <message name="ModifyLTEServiceRequest">
+        <part name="ModifiedLTEServiceData" element="tns:ModifiedLTEServiceData"/>
+    </message>
+    <message name="ModifyVoiceServiceRequest">
+        <part name="ModifiedVoiceServiceData" element="tns:ModifiedVoiceServiceData"/>
+    </message>
+    <message name="ProvisionVoiceServiceRequest">
+        <part name="VoiceServiceData" element="tns:VoiceServiceData"/>
+    </message>
+    <message name="DeleteLTEServiceRequest">
+        <part name="LTEServiceDeletionInfo" element="tns:LTEServiceDeletionInfo"/>
+    </message>
+    <message name="DeleteVoiceServiceRequest">
+        <part name="VoiceServiceDeletionInfo" element="tns:VoiceServiceDeletionInfo"/>
+    </message>
+    <message name="ProvisionServiceResponse">
+        <part name="ProvisionedServiceData" element="tns:ProvisionedServiceData"/>
+    </message>
+    <message name="GetLTEServiceAVPsRequest">
+        <part name="LTEServiceLookupInfo" element="tns:LTEServiceLookupInfo"/>
+    </message>
+    <message name="GetVoiceServiceAVPsRequest">
+        <part name="VoiceServiceLookupInfo" element="tns:VoiceServiceLookupInfo"/>
+    </message>
+    <message name="ServiceAVPsResponse">
+        <part name="ServiceAVPList" element="tns:ServiceAVPList"/>
+    </message>
+     
+    
+    <portType name="SCASubFlowsSoap">
+        <operation name="RunOSCommandBatch">
+            <input name="input1" message="tns:RunOSCommandBatchRequest"/>
+            <output name="output1" message="tns:Done"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="CopyCMProdSpecsToSCAProdSpecs">
+            <input name="input3" message="CM:ProductSpecificationsResponse"/>
+            <output name="output3" message="SCA:ProductSpecificationsResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="ProvisionLTEService">
+            <input name="input4" message="tns:ProvisionLTEServiceRequest"/>
+            <output name="output4" message="tns:ProvisionServiceResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="ModifyLTEService">
+            <input name="input18" message="tns:ModifyLTEServiceRequest"/>
+            <output name="output18" message="tns:ProvisionServiceResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="ModifyVoiceService">
+            <input name="input17" message="tns:ModifyVoiceServiceRequest"/>
+            <output name="output17" message="tns:ProvisionServiceResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="DeleteLTEService">
+            <input name="input13" message="tns:DeleteLTEServiceRequest"/>
+            <output name="output13" message="tns:Done"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="GetLTEServiceAVPs">
+            <input name="input12" message="tns:GetLTEServiceAVPsRequest"/>
+            <output name="output12" message="tns:ServiceAVPsResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="DeleteVoiceService">
+            <input name="input16" message="tns:DeleteVoiceServiceRequest"/>
+            <output name="output16" message="tns:Done"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="GetVoiceServiceAVPs">
+            <input name="input15" message="tns:GetVoiceServiceAVPsRequest"/>
+            <output name="output15" message="tns:ServiceAVPsResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="ProvisionVoiceService">
+            <input name="input14" message="tns:ProvisionVoiceServiceRequest"/>
+            <output name="output14" message="tns:ProvisionServiceResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="CopyCMSvcSpecToSCASvcSpec">
+            <input name="input6" message="CM:ServiceSpecificationResponse"/>
+            <output name="output6" message="SCA:ServiceSpecificationResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        <operation name="CopyCMProdInstancesToSCAProdInstances">
+            <input name="input7" message="CM:ProductInstancesResponse"/>
+            <output name="output7" message="SCA:ProductInstancesResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        
+        <operation name="CopyCMSvcInstancesToSCASvcInstances">
+            <input name="input8" message="CM:ServiceInstancesResponse"/>
+            <output name="output8" message="SCA:ServiceInstancesResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        
+        <operation name="CopyBMRatePlanToSCARatePlan">
+            <input name="input9" message="BM:RatePlanResponse"/>
+            <output name="output9" message="SCA:RatePlanResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        
+        <operation name="CopyCMUnitCreditSpecsToSCAUnitCreditSpecs">
+            <input name="input10" message="CM:UnitCreditSpecificationsResponse"/>
+            <output name="output10" message="SCA:UnitCreditSpecificationsResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+        
+        <operation name="CopyIMTpAuthRulesToSCATpAuthRules">
+            <input name="input11" message="IM:GetThirdPartyAuthorisationRulesResponse"/>
+            <output name="output11" message="SCA:GetThirdPartyAuthorisationRulesResponse"/>
+            <fault name="fault1" message="tns:SubFlowError"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="SCASubFlows">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes. 
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="SCASubFlows" portType="tns:SCASubFlowsSoap"/>
+    </plnk:partnerLinkType>
+</definitions>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetJiraUsers"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA"
+    xmlns:ns2="http://xml.smilecoms.com/TT"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns1="http://xml.smilecoms.com/schema/TT">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/schema/SCA" location="../../wsdl/SCASchema.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
+    <import namespace="http://xml.smilecoms.com/TT" location="../Partners/TT/TTServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+        <partnerLink name="TT" xmlns:tns="http://xml.smilecoms.com/TT" partnerLinkType="tns:TTServiceDefinition" partnerRole="TT"/> 
+    </partnerLinks>
+    <variables>
+        <variable name="TTGetJiraUserOut" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:GetJiraUserResponse">
+            <sxed:editor>
+                <sxed:predicate path="$TTGetJiraUserOut.JiraUserList/ns1:JiraUsers[$ifieldsCount]" source="from"/>
+            </sxed:editor>
+        </variable>
+        <variable name="TTGetJiraUserIn" xmlns:tns="http://xml.smilecoms.com/TT" messageType="tns:GetJiraUserRequest"/>
+        <variable name="GetJiraUserOut" messageType="tns:GetJiraUserResponse">
+            <sxed:editor>
+                <sxed:predicate path="$GetJiraUserOut.TTJiraUserList/ns0:JiraUsers[$ifieldsCount]" source="to"/>
+            </sxed:editor>
+        </variable>
+        <variable name="GetJiraUserIn" messageType="tns:GetJiraUserRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="fieldsCount" type="xsd:int"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="TTError" faultMessageType="ns2:TTError">
+            <sequence name="Sequence1">
+                <assign name="Assign_TTError_SCAError">
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$TTError.TTError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply_TTFault" partnerLink="SCA" operation="GetJiraUsers" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive" createInstance="yes" partnerLink="SCA" operation="GetJiraUsers" portType="tns:SCASoap" variable="GetJiraUserIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('TT')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="TT"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign_SCA_TT">
+            <copy>
+                <from>$GetJiraUserIn.TTJiraUserQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$TTGetJiraUserIn.JiraUserQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$GetJiraUserIn.TTJiraUserQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$TTGetJiraUserIn.JiraUserQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$GetJiraUserIn.TTJiraUserQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$TTGetJiraUserIn.JiraUserQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$GetJiraUserIn.TTJiraUserQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$TTGetJiraUserIn.JiraUserQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$GetJiraUserIn.TTJiraUserQuery/ns0:Username</from>
+                <to>$TTGetJiraUserIn.JiraUserQuery/ns1:Username</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$GetJiraUserIn.TTJiraUserQuery/ns0:LastName</from>
+                <to>$TTGetJiraUserIn.JiraUserQuery/ns1:LastName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$GetJiraUserIn.TTJiraUserQuery/ns0:FirstName</from>
+                <to>$TTGetJiraUserIn.JiraUserQuery/ns1:FirstName</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$GetJiraUserIn.TTJiraUserQuery/ns0:IdentityNumber</from>
+                <to>$TTGetJiraUserIn.JiraUserQuery/ns1:IdentityNumber</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$GetJiraUserIn.TTJiraUserQuery/ns0:emailAddress</from>
+                <to>$TTGetJiraUserIn.JiraUserQuery/ns1:emailAddress</to>
+            </copy>
+            <copy>
+                <from>$GetJiraUserIn.TTJiraUserQuery/ns0:ResultLimit</from>
+                <to>$TTGetJiraUserIn.JiraUserQuery/ns1:ResultLimit</to>
+            </copy>
+        </assign>
+        
+        <invoke name="Call_TT" partnerLink="TT" operation="GetJiraUsers" xmlns:tns="http://xml.smilecoms.com/TT" portType="tns:TTSoap" inputVariable="TTGetJiraUserIn" outputVariable="TTGetJiraUserOut"/>
+        
+        <assign name="Assign_TT_SCA">
+            <copy>
+                <from>$TTGetJiraUserOut.JiraUserList/ns1:NumberOfUsers</from>
+                <to variable="fieldsCount"/>
+            </copy>
+            <copy>
+                <from>$TTGetJiraUserOut.JiraUserList/ns1:NumberOfUsers</from>
+                <to>$GetJiraUserOut.TTJiraUserList/ns0:NumberOfUsers</to>
+            </copy>
+        </assign>
+        <forEach name="ForEach_Fields" parallel="no" counterName="ifieldsCount">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$fieldsCount</finalCounterValue>
+            <scope name="Scope1F">
+                <assign name="Assign_TT_SCA_Fields">
+                    <copy>
+                        <from>$TTGetJiraUserOut.JiraUserList/ns1:JiraUsers[$ifieldsCount]/ns1:UserID
+                            <sxed:editor>
+                                <sxed:predicate path="$TTGetJiraUserOut.JiraUserList/ns1:JiraUsers[$ifieldsCount]" source="from"/>
+                            </sxed:editor>
+                        </from>
+                        <to>$GetJiraUserOut.TTJiraUserList/ns0:JiraUsers[$ifieldsCount]/ns0:UserID
+                            <sxed:editor>
+                                <sxed:predicate path="$GetJiraUserOut.TTJiraUserList/ns0:JiraUsers[$ifieldsCount]" source="to"/>
+                            </sxed:editor>
+                        </to>
+                    </copy>
+                    <copy>
+                        <from>$TTGetJiraUserOut.JiraUserList/ns1:JiraUsers[$ifieldsCount]/ns1:FullName
+                            <sxed:editor>
+                                <sxed:predicate path="$TTGetJiraUserOut.JiraUserList/ns1:JiraUsers[$ifieldsCount]" source="from"/>
+                            </sxed:editor>
+                        </from>
+                        <to>$GetJiraUserOut.TTJiraUserList/ns0:JiraUsers[$ifieldsCount]/ns0:FullName
+                            <sxed:editor>
+                                <sxed:predicate path="$GetJiraUserOut.TTJiraUserList/ns0:JiraUsers[$ifieldsCount]" source="to"/>
+                            </sxed:editor>
+                        </to>
+                    </copy>
+                    <copy>
+                        <from>$TTGetJiraUserOut.JiraUserList/ns1:JiraUsers[$ifieldsCount]/ns1:Email
+                            <sxed:editor>
+                                <sxed:predicate path="$TTGetJiraUserOut.JiraUserList/ns1:JiraUsers[$ifieldsCount]" source="from"/>
+                            </sxed:editor>
+                        </from>
+                        <to>$GetJiraUserOut.TTJiraUserList/ns0:JiraUsers[$ifieldsCount]/ns0:Email
+                            <sxed:editor>
+                                <sxed:predicate path="$GetJiraUserOut.TTJiraUserList/ns0:JiraUsers[$ifieldsCount]" source="to"/>
+                            </sxed:editor>
+                        </to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <reply name="Reply" partnerLink="SCA" operation="GetJiraUsers" portType="tns:SCASoap" variable="GetJiraUserOut"/>
+    
+    </sequence>
+</process>

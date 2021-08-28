@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ProvisionLTEService"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/IM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/AM">
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/AM" location="../Partners/AM/AMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="AM" xmlns:tns="http://xml.smilecoms.com/AM" partnerLinkType="tns:AMServiceDefinition" partnerRole="AM"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+    </partnerLinks>
+    <variables>
+        <variable name="AMIssueIPOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:Done"/>
+        <variable name="AMIssueIPIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:IssueIPRequest"/>
+        <variable name="IMGetIMSPrivateIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPrivateIdentityResponse"/>
+        <variable name="IMGetIMSPrivateIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPrivateIdentityRequest"/>
+        <variable name="IMModifyIMSPrivateIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyIMSPrivateIdentityResponse"/>
+        <variable name="IMModifyIMSPrivateIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyIMSPrivateIdentityRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SubFlowError"/>
+        <variable name="ProvisionLTEServiceOut" messageType="tns:ProvisionServiceResponse"/>
+        <variable name="ProvisionLTEServiceIn" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" messageType="tns:ProvisionLTEServiceRequest"/>
+        <variable name="IMCreateIMSSubscriptionOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:CreateIMSSubscriptionResponse"/>
+        <variable name="IMCreateIMSSubscriptionIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:CreateIMSSubscriptionRequest"/>
+        <variable name="AMGetAvailableIPsOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:GetAvailableIPsResponse"/>
+        <variable name="AMGetAvailableIPsIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:GetAvailableIPsRequest"/>
+        <variable name="APNList" type="xs:string"/>
+        <variable name="IPv4Address" type="xs:string"/>
+        
+    </variables>
+    <faultHandlers>
+        <catch xmlns:im="http://xml.smilecoms.com/IM" faultMessageType="im:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="AssignErr">
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErr1" partnerLink="SCASubFlows" operation="ProvisionLTEService" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch xmlns:am="http://xml.smilecoms.com/AM" faultMessageType="am:AMError" faultVariable="AMError">
+            <sequence name="Sequence11">
+                <assign name="AssignErr2">
+                    <copy>
+                        <from>$AMError.AMError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$AMError.AMError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$AMError.AMError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErr2" partnerLink="SCASubFlows" operation="ProvisionLTEService" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="ProvisionLTEService" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="ProvisionLTEServiceIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('AM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="AM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        
+        <assign>
+            <copy>
+                <from>BPELUtils:getAVPValueAsStringEmptyIfMissing($ProvisionLTEServiceIn.LTEServiceData, 'IPv4Address')</from>
+                <to variable="IPv4Address"/>
+            </copy>
+        </assign> 
+        
+        
+        
+        <assign name="AssignGetIMPI">
+            <copy>
+                <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/TxId</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/OriginatingIP</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/Tenant</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>BPELUtils:getAVPValueAsString($ProvisionLTEServiceIn.LTEServiceData, 'IntegratedCircuitCardIdentifier')</from>
+                <to>$IMGetIMSPrivateIdentityIn.IMSPrivateIdentityQuery/ns0:IntegratedCircuitCardIdentifier</to>
+            </copy>
+        </assign>
+
+        <invoke name="GetIMSPrivateIdentityForSIM" partnerLink="IM" operation="GetIMSPrivateIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSPrivateIdentityIn" outputVariable="IMGetIMSPrivateIdentityOut"/>
+        
+        
+        <!-- TODO - If the IMPI has a IMSSubscription, then we must use the existing one  -->
+        <if name="IfSIMUnusable">
+            <condition>starts-with($IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:OSSBSSReferenceId, 'LOCKED')</condition>
+            <sequence name="Sequence5">
+                <assign name="Assign1">
+                    <copy>
+                        <from>'Cannot provision on a locked SIM'</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>'business'</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>'SCA-0017'</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCASubFlows" operation="ProvisionLTEService" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                <exit name="Exit1"/>
+            </sequence>
+        </if>
+        <if name="IfHasNoIMSSubscription">
+            <condition>$IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:IMSSubscriptionId = 0</condition>
+            <sequence name="Sequence3">
+                <assign name="AssignIMSPrivateIdDataFromOrig">
+                    <copy>
+                        <from variable="IMGetIMSPrivateIdentityOut" part="IMSPrivateIdentity"/>
+                        <to variable="IMModifyIMSPrivateIdentityIn" part="ModifiedIMSPrivateIdentity"/>
+                    </copy>
+                </assign>
+
+                <assign name="AssignAPNList">
+                    <copy>
+                        <from>BPELUtils:getAVPValueAsStringEmptyIfMissing($ProvisionLTEServiceIn.LTEServiceData, 'APNList')</from>
+                        <to variable="APNList"/>
+                    </copy>
+                </assign>
+                
+                
+                <assign name="AssignSIMLockedIMEIList">
+                    <copy ignoreMissingFromData="yes">
+                        <from>BPELUtils:getAVPValueAsStringEmptyIfMissing($ProvisionLTEServiceIn.LTEServiceData, 'SIMLockedIMEIList')</from>
+                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:SIMLockedIMEIList</to>
+                    </copy>
+                </assign>
+                
+                <assign name="AssignRegionalSubscriptionZoneCodes">
+                    <copy ignoreMissingFromData="yes">
+                        <from>BPELUtils:getAVPValueAsStringEmptyIfMissing($ProvisionLTEServiceIn.LTEServiceData, 'RegionalSubscriptionZoneCodes')</from>
+                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:RegionalSubscriptionZoneCodes</to>
+                    </copy>
+                </assign>
+                
+                <assign name="AssignInfo">
+                    <copy ignoreMissingFromData="yes">
+                        <from>BPELUtils:getAVPValueAsStringEmptyIfMissing($ProvisionLTEServiceIn.LTEServiceData, 'Info')</from>
+                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:Info</to>
+                    </copy>
+                </assign>
+                
+                <!-- in the for each loop check if the apn name is the static APN from props if so then add the static IPv4 and static IPv6 address-->
+                <forEach name="ForEachAPN" parallel="no" counterName="apnCounter">
+                    <sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>concat('Going to loop through APNs in APNlist from 1 to ',BPELUtils:getStringSplitArraySize($APNList, ','))</from>
+                        </sxt:log>
+                    </sxt:trace>
+                    <startCounterValue>1</startCounterValue>
+                    <finalCounterValue>BPELUtils:getStringSplitArraySize($APNList, ',')</finalCounterValue>
+                    <scope name="APNLoop_Scope">
+                        <sequence>
+                            <assign name="AssignAPNList">
+                                <copy ignoreMissingFromData="yes">
+                                    <from>BPELUtils:getStringSplitArrayAtIndex($APNList,',',($apnCounter)-1)</from>
+                                    <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:APNName</to>
+                                </copy>
+                            </assign>
+                            <if name="IfAPNIsStaticAPN">
+                                <condition>BPELUtils:getStringSplitArrayAtIndex($APNList,',',($apnCounter)-1) = BPELUtils:getProperty('env.staticip.apnname','internet')</condition>
+                                <sequence>
+                                    <assign name="AssignStaticIP">
+                                        <copy>
+                                            <from>$IPv4Address</from>
+                                            <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv4Address</to>
+                                        </copy>
+                                        <copy>
+                                            <from>BPELUtils:getAVPValueAsStringEmptyIfMissing($ProvisionLTEServiceIn.LTEServiceData, 'IPv6Address')</from>
+                                            <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv6Address</to>
+                                        </copy>
+                                    </assign>   
+                                </sequence>
+                                <else>
+                                    <sequence>
+                                        <assign name="AssignStaticIPToBlank">
+                                            <copy>
+                                                <from>''</from>
+                                                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv4Address</to>
+                                            </copy>
+                                            <copy>
+                                                <from>''</from>
+                                                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:IPv6Address</to>
+                                            </copy>
+                                        </assign>   
+                                    </sequence>
+                                </else>
+                            </if>
+
+                            <if name="IfAPNIsDefault">
+                                <condition>$apnCounter = 1</condition>
+                                <sequence>
+                                    <assign name="AssignAPNAsDefault">
+                                        <copy>
+                                            <from>1</from>
+                                            <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:Type</to>
+                                        </copy>
+                                    </assign>   
+                                </sequence>
+                                <else>
+                                    <sequence>
+                                        <assign name="AssignAPNAsNonDefault">
+                                            <copy>
+                                                <from>0</from>
+                                                <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:APNList[$apnCounter]/ns0:Type</to>
+                                            </copy>
+                                        </assign>   
+                                    </sequence>
+                                </else>
+                            </if>
+                        </sequence>
+                    </scope>
+                </forEach>
+            
+            
+            
+                <assign name="AssignIMSSubscriptionData">
+                    <copy>
+                        <from>BPELUtils:getAVPValueAsNumber($ProvisionLTEServiceIn.LTEServiceData, 'CapabilitiesSetId')</from>
+                        <to>$IMCreateIMSSubscriptionIn.NewIMSSubscription/ns0:CapabilitiesSetId</to>
+                    </copy>
+                    <copy>
+                        <from>BPELUtils:getAVPValueAsNumber($ProvisionLTEServiceIn.LTEServiceData, 'PreferredSCSCFSetId')</from>
+                        <to>$IMCreateIMSSubscriptionIn.NewIMSSubscription/ns0:PreferredSCSCFSetId</to>
+                    </copy>
+                    <copy>
+                        <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/TxId</from>
+                        <to>$IMCreateIMSSubscriptionIn.NewIMSSubscription/ns0:PlatformContext/ns0:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/OriginatingIdentity</from>
+                        <to>$IMCreateIMSSubscriptionIn.NewIMSSubscription/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/OriginatingIP</from>
+                        <to>$IMCreateIMSSubscriptionIn.NewIMSSubscription/ns0:PlatformContext/ns0:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/Tenant</from>
+                        <to>$IMCreateIMSSubscriptionIn.NewIMSSubscription/ns0:PlatformContext/ns0:Tenant</to>
+                    </copy>
+                </assign>
+                <invoke name="CreateIMSSubscription" partnerLink="IM" operation="CreateIMSSubscription" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMCreateIMSSubscriptionIn" outputVariable="IMCreateIMSSubscriptionOut"></invoke>
+                <assign name="AssignIMSPrivateIdIMSUId">
+                    <copy>
+                        <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/TxId</from>
+                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:PlatformContext/ns0:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/OriginatingIdentity</from>
+                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/OriginatingIP</from>
+                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:PlatformContext/ns0:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$ProvisionLTEServiceIn.LTEServiceData/SubFlowContext/Tenant</from>
+                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:PlatformContext/ns0:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$IMCreateIMSSubscriptionOut.IMSSubscription/ns0:IMSSubscriptionId</from>
+                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:IMSSubscriptionId</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>BPELUtils:getAVPValueAsString($ProvisionLTEServiceIn.LTEServiceData, 'Status')</from>
+                        <to>$IMModifyIMSPrivateIdentityIn.ModifiedIMSPrivateIdentity/ns0:Status</to>
+                    </copy>
+                </assign>
+                <invoke name="ModifyIMSUIdForTheIMPI" partnerLink="IM" operation="ModifyIMSPrivateIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMModifyIMSPrivateIdentityIn" outputVariable="IMModifyIMSPrivateIdentityOut"/>
+            </sequence>
+        </if>
+        
+        <assign name="AssignResult">
+            <copy>
+                <from>concat('HSSOSSBSSID-', $IMGetIMSPrivateIdentityOut.IMSPrivateIdentity/ns0:OSSBSSReferenceId)</from>
+                <to>$ProvisionLTEServiceOut.ProvisionedServiceData/ResourceId</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="ProvisionLTEService" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="ProvisionLTEServiceOut"/>
+    </sequence>
+</process>

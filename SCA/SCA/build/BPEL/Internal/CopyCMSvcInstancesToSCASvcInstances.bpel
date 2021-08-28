@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CopyCMSvcInstancesToSCASvcInstances"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/CM" xmlns:ltns="http://xml.smilecoms.com/LT" xmlns:LT="java://com.smilecoms.lt.LT" xmlns:ns2="http://xml.smilecoms.com/CM">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        
+        <partnerLink name="SCASubFlowsInvoke" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="SCACalling" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" partnerRole="SCAImplementation"/>
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SubFlowError"/>
+        <variable name="nextAVPIndex" type="xs:int"/>
+        <variable name="SubFlowGetLTEServiceAVPsOut" messageType="tns:ServiceAVPsResponse"/>
+        <variable name="SubFlowGetLTEServiceAVPsIn" messageType="tns:GetLTEServiceAVPsRequest"/>
+        <variable name="SubFlowGetVoiceServiceAVPsOut" messageType="tns:ServiceAVPsResponse"/>
+        <variable name="SubFlowGetVoiceServiceAVPsIn" messageType="tns:GetVoiceServiceAVPsRequest"/>
+        <variable name="CopyCMSvcInstancesToSCASvcInstancesOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="CopyCMSvcInstancesToSCASvcInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="SCACallingGetServiceInstancesOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="SCACallingGetServiceInstancesIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:GetServiceInstancesRequest"/>
+        <variable name="CMGetServiceInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="CMGetServiceInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetServiceInstancesRequest"/>
+        <variable name="SubFlowGetUICCDetailsAVPsOut" messageType="tns:ServiceAVPsResponse"/>
+        <variable name="SubFlowGetUICCDetailsAVPsIn" messageType="tns:GetUICCDetailsAVPsRequest"/>    
+        <variable name="SubFlowGetWlanServiceAVPsOut" messageType="tns:ServiceAVPsResponse"/>
+        <variable name="SubFlowGetWlanServiceAVPsIn" messageType="tns:GetWlanServiceAVPsRequest"/>
+        <variable name="nextUICCAVPIndex" type="xs:int"/>
+    </variables>
+    <faultHandlers>
+        <catch faultMessageType="tns:SubFlowError" faultVariable="SubFlowError">
+            <sequence name="Sequence4">
+                <assign name="Assign5">
+                    <copy>
+                        <from>$SubFlowError.SubFlowError/ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowError.SubFlowError/ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowError.SubFlowError/ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCASubFlows" operation="CopyCMSvcInstancesToSCASvcInstances" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar">
+                    <sxt:trace>
+                        <sxt:log level="severe" location="onStart">
+                            <from>concat('CopyCMSvcInstancesToSCASvcInstances got SubFlow Error. Returning with error desc:', $Fault1FaultVar.SubFlowError/ErrorDesc)</from>
+                        </sxt:log>
+                        <sxt:log level="severe" location="onComplete">
+                            <from>'Sent error reply in CopyCMSvcInstancesToSCASvcInstances'</from>
+                        </sxt:log>
+                    </sxt:trace>
+                </reply>
+            </sequence>
+        </catch>
+        <catch xmlns:CM="http://xml.smilecoms.com/CM" faultMessageType="CM:CMError" faultVariable="CMError">
+            <sequence name="Sequence5">
+                <assign name="Assign6">
+                    <copy>
+                        <from>$CMError.CMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply3" partnerLink="SCASubFlows" operation="CopyCMSvcInstancesToSCASvcInstances" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+        <catch xmlns:SCA="http://xml.smilecoms.com/SCA" faultMessageType="SCA:SCAError" faultVariable="SCAError">
+            <sequence name="Sequence6">
+                <assign name="Assign7">
+                    <copy>
+                        <from>$SCAError.SCAError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAError.SCAError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$SCAError.SCAError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply4" partnerLink="SCASubFlows" operation="CopyCMSvcInstancesToSCASvcInstances" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="CopyCMSvcInstancesToSCASvcInstances" portType="tns:SCASubFlowsSoap" variable="CopyCMSvcInstancesToSCASvcInstancesIn"/>
+        <scope name="Dynamic_EPR" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Defaults">
+            <copy>
+                <from>0</from>
+                <to>$SCACallingGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances/ns0:ProductInstanceId</to>
+            </copy>
+            <copy>
+                <from>0</from>
+                <to>$SCACallingGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances/ns0:ServiceSpecificationId</to>
+            </copy>
+            <copy>
+                <from>'MAIN_AVP'</from>
+                <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:Verbosity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances/ns1:PlatformContext/ns1:TxId</from>
+                <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances/ns1:PlatformContext/ns1:OriginatingIP</from>
+                <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances/ns1:PlatformContext/ns1:Tenant</from>
+                <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>'getServiceInstances'</from>
+                <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:Method</to>
+            </copy>
+            <copy>
+                <from>'MAIN_AVP'</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:Verbosity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances/ns1:PlatformContext/ns1:TxId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances/ns1:PlatformContext/ns1:OriginatingIdentity</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances/ns1:PlatformContext/ns1:OriginatingIP</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances/ns1:PlatformContext/ns1:Tenant</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>'Administrator'</from>
+                <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:Roles</to>
+            </copy>
+            <copy>
+                <from>'admin'</from>
+                <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:OriginatingIdentity</to>
+            </copy>
+        </assign>
+        <forEach name="ForEachSI" parallel="no" counterName="si">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances)</finalCounterValue>
+            <scope name="Scope11">
+                <sequence name="Sequence1">
+                    <!--sxt:trace>
+                        <sxt:log level="finest" location="onStart">
+                            <from>concat('In Copy CMSIs to SCASIs and copying SIId ', $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ServiceInstanceId)</from>
+                        </sxt:log>
+                        <sxt:log level="finest" location="onComplete">
+                            <from>concat('In Copy CMSIs to SCASIs and finished copying SIId ', $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ServiceInstanceId)</from>
+                        </sxt:log>
+                    </sxt:trace-->
+                    <assign name="AssignMainData">
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ServiceInstanceId</from>
+                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:ServiceInstanceId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ServiceSpecificationId</from>
+                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:ServiceSpecificationId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ProductInstanceId</from>
+                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:ProductInstanceId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:CustomerId</from>
+                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:CustomerId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AccountId</from>
+                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AccountId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:RatePlanId</from>
+                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:RatePlanId</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:Status</from>
+                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:Status</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:CreatedDateTime</from>
+                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:CreatedDateTime</to>
+                        </copy>
+                    </assign>
+                    <if name="IfMustAddAVPs" xmlns:tns="http://xml.smilecoms.com/SCA">
+                        <condition>count($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs) &gt; 0</condition>
+                        <sequence name="ADD_AVPs">
+                            <if name="IfServiceType">
+                                <condition>starts-with($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:RemoteResourceId, 'HSSOSSBSSID-')</condition>
+                                <sequence name="LTE">
+                                    <assign name="AssignGetLTEAVPs">
+                                        <copy>
+                                            <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:RemoteResourceId</from>
+                                            <to>$SubFlowGetLTEServiceAVPsIn.LTEServiceLookupInfo/RemoteResourceId</to>
+                                        </copy>
+                                    </assign>
+                                    <invoke name="GetLTEServiceAVPs" partnerLink="SCASubFlowsInvoke" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" operation="GetLTEServiceAVPs" portType="tns:SCASubFlowsSoap" inputVariable="SubFlowGetLTEServiceAVPsIn" outputVariable="SubFlowGetLTEServiceAVPsOut">
+                                        <!--sxt:trace>
+                                            <sxt:log level="finest" location="onStart">
+                                                <from>'In Copy CMSIs to SCASIs and Calling get LTE AVPs'</from>
+                                            </sxt:log>
+                                            <sxt:log level="finest" location="onComplete">
+                                                <from>'In Copy CMSIs to SCASIs and Called get LTE AVPs'</from>
+                                            </sxt:log>
+                                        </sxt:trace-->
+                                    </invoke>
+                                    <forEach name="ForEachLTEAVP" parallel="no" counterName="avpCount">
+                                        <startCounterValue>1</startCounterValue>
+                                        <finalCounterValue>count($SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs)</finalCounterValue>
+                                        <scope name="Scope1">
+                                            <assign name="Assign3">
+                                                <copy ignoreMissingFromData="yes">
+                                                    <from>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[$avpCount]/ns0:Attribute</from>
+                                                    <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$avpCount]/ns0:Attribute</to>
+                                                </copy>
+                                                <copy ignoreMissingFromData="yes">
+                                                    <from>$SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs[$avpCount]/ns0:Value</from>
+                                                    <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$avpCount]/ns0:Value</to>
+                                                </copy>
+                                            </assign>
+                                        </scope>
+                                    </forEach>
+                                    
+                                    <if name="IfMustAddUiccDetails">
+                                        <condition>1 = 1</condition>
+                                        <sequence name="UICC">
+                                            <assign name="AssignGetUICCDetailsAVPs">
+                                                <copy>
+                                                    <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:RemoteResourceId</from>
+                                                    <to>$SubFlowGetUICCDetailsAVPsIn.UICCDetailsLookupInfo/RemoteResourceId</to>
+                                                </copy>
+                                            </assign>
+                                            <invoke name="GetUICCDetailsAVPs" partnerLink="SCASubFlowsInvoke" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" operation="GetUICCDetailsAVPs" portType="tns:SCASubFlowsSoap" inputVariable="SubFlowGetUICCDetailsAVPsIn" outputVariable="SubFlowGetUICCDetailsAVPsOut">
+                                                <!--sxt:trace>
+                                                    <sxt:log level="finest" location="onStart">
+                                                        <from>'In Copy CMSIs to SCASIs and Calling get UICC AVPs'</from>
+                                                    </sxt:log>
+                                                    <sxt:log level="finest" location="onComplete">
+                                                        <from>'In Copy CMSIs to SCASIs and Called get UICC AVPs'</from>
+                                                    </sxt:log>
+                                                </sxt:trace-->
+                                            </invoke>
+                                            <assign name="AssignUICCAVPsAdded">
+                                                <copy>
+                                                    <from>count($SubFlowGetLTEServiceAVPsOut.ServiceAVPList/ServiceAVPs) + 1</from>
+                                                    <to variable="nextUICCAVPIndex"/>
+                                                </copy>
+                                            </assign>
+                                            <forEach name="ForEachUICCVP" parallel="no" counterName="avpCount">
+                                                <startCounterValue>1</startCounterValue>
+                                                <finalCounterValue>count($SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs)</finalCounterValue>
+                                                <scope name="UICCScope">
+                                                    <assign name="UICCAssign">
+                                                        <copy ignoreMissingFromData="yes">
+                                                            <from>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[$avpCount]/ns0:Attribute</from>
+                                                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$nextUICCAVPIndex]/ns0:Attribute</to>
+                                                        </copy>
+                                                        <copy ignoreMissingFromData="yes">
+                                                            <from>$SubFlowGetUICCDetailsAVPsOut.ServiceAVPList/ServiceAVPs[$avpCount]/ns0:Value</from>
+                                                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$nextUICCAVPIndex]/ns0:Value</to>
+                                                        </copy>
+                                                        <copy>
+                                                        <from>$nextUICCAVPIndex + 1</from>
+                                                        <to>$nextUICCAVPIndex</to>
+                                                    </copy>
+                                                    </assign>
+                                                </scope>
+                                            </forEach>
+                                        </sequence>
+                                    </if>
+                                    
+                                </sequence>
+                                <elseif>
+                                    <condition>starts-with($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:RemoteResourceId, 'HSSIMPU-')</condition>
+                                    <sequence name="Voice">
+                                        <assign name="AssignGetVoiceAVPs">
+                                            <copy>
+                                                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:RemoteResourceId</from>
+                                                <to>$SubFlowGetVoiceServiceAVPsIn.VoiceServiceLookupInfo/RemoteResourceId</to>
+                                            </copy>
+                                        </assign>
+                                        <invoke name="GetVoiceServiceAVPs" partnerLink="SCASubFlowsInvoke" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" operation="GetVoiceServiceAVPs" portType="tns:SCASubFlowsSoap" inputVariable="SubFlowGetVoiceServiceAVPsIn" outputVariable="SubFlowGetVoiceServiceAVPsOut">
+                                            <!--sxt:trace>
+                                                <sxt:log level="finest" location="onStart">
+                                                    <from>'In Copy CMSIs to SCASIs and Calling get Voice AVPs'</from>
+                                                </sxt:log>
+                                                <sxt:log level="finest" location="onComplete">
+                                                    <from>'In Copy CMSIs to SCASIs and Called get Voice AVPs'</from>
+                                                </sxt:log>
+                                            </sxt:trace-->
+                                        </invoke>
+                                        <forEach name="ForEachVoiceAVP" parallel="no" counterName="avpCount">
+                                            <startCounterValue>1</startCounterValue>
+                                            <finalCounterValue>count($SubFlowGetVoiceServiceAVPsOut.ServiceAVPList/ServiceAVPs)</finalCounterValue>
+                                            <scope name="Scope10">
+                                                <assign name="Assign3">
+                                                    <copy ignoreMissingFromData="yes">
+                                                        <from>$SubFlowGetVoiceServiceAVPsOut.ServiceAVPList/ServiceAVPs[$avpCount]/ns0:Attribute</from>
+                                                        <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$avpCount]/ns0:Attribute</to>
+                                                    </copy>
+                                                    <copy ignoreMissingFromData="yes">
+                                                        <from>$SubFlowGetVoiceServiceAVPsOut.ServiceAVPList/ServiceAVPs[$avpCount]/ns0:Value</from>
+                                                        <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$avpCount]/ns0:Value</to>
+                                                    </copy>                                                    
+                                                </assign>
+                                            </scope>
+                                        </forEach>
+                                    </sequence>
+                                </elseif>
+                                <elseif>
+                                    <condition>starts-with($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:RemoteResourceId, 'NAIOSSBSSID-')</condition>
+                                    <sequence name="Wlan">
+                                        <assign name="AssignGetWlanAVPs">
+                                            <copy>
+                                                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:RemoteResourceId</from>
+                                                <to>$SubFlowGetWlanServiceAVPsIn.WlanServiceLookupInfo/RemoteResourceId</to>
+                                            </copy>
+                                        </assign>
+                                        <invoke name="GetWlanServiceAVPs" partnerLink="SCASubFlowsInvoke" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" operation="GetWlanServiceAVPs" portType="tns:SCASubFlowsSoap" inputVariable="SubFlowGetWlanServiceAVPsIn" outputVariable="SubFlowGetWlanServiceAVPsOut">
+                                            <!--sxt:trace>
+                                                <sxt:log level="finest" location="onStart">
+                                                    <from>concat('Need to get NAI for this wifi svc: ', $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:RemoteResourceId)</from>
+                                                </sxt:log>
+                                                <sxt:log level="finest" location="onComplete">
+                                                    <from>'In Copy CMSIs to SCASIs and Called get Wlan AVPs'</from>
+                                                </sxt:log>
+                                            </sxt:trace-->
+                                        </invoke>
+                                        <forEach name="ForEachWlanAVP" parallel="no" counterName="avpCount">
+                                            <startCounterValue>1</startCounterValue>
+                                            <finalCounterValue>count($SubFlowGetWlanServiceAVPsOut.ServiceAVPList/ServiceAVPs)</finalCounterValue>
+                                            <scope name="ScopeWlanAVP">
+                                                <assign name="AssignWlanAVP">
+                                                    <copy ignoreMissingFromData="yes">
+                                                        <from>$SubFlowGetWlanServiceAVPsOut.ServiceAVPList/ServiceAVPs[$avpCount]/ns0:Attribute</from>
+                                                        <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$avpCount]/ns0:Attribute</to>
+                                                    </copy>
+                                                    <copy ignoreMissingFromData="yes">
+                                                        <from>$SubFlowGetWlanServiceAVPsOut.ServiceAVPList/ServiceAVPs[$avpCount]/ns0:Value</from>
+                                                        <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$avpCount]/ns0:Value</to>
+                                                    </copy>                                                    
+                                                </assign>
+                                            </scope>
+                                        </forEach>
+                                    </sequence>
+                                </elseif>
+                            </if>
+                            <assign name="AssignAVPsAdded">
+                                <copy>
+                                    <from>count($CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs) + 1</from>
+                                    <to variable="nextAVPIndex"/>
+                                </copy>
+                            </assign>
+                            <forEach name="ForEachSIAVP" parallel="no" counterName="avpCount">
+                                <startCounterValue>1</startCounterValue>
+                                <finalCounterValue>count($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs)</finalCounterValue>
+                                <scope name="Other">
+                                    <sequence name="Sequence1">
+                                        <if name="IfNotUserDefinedOrItsInfo">
+                                            <condition>not($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:UserDefined) or $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:InputType = 'info' or $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:InputType = 'photo'
+                                            </condition>
+                                            <sequence name="Sequence2">
+                                                <if name="IfInherited">
+                                                    <condition>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:InputType = 'inherited'</condition>
+                                                    <sequence name="Inherited">
+                                                        <if name="IfParentIsPreviousSI">
+                                                            <condition>
+                                                                $si &gt; 0 and $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si - 1]/ns1:ProductInstanceId = $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ProductInstanceId and $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si - 1]/ns1:ServiceSpecificationId = substring-before($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Value, ':')
+                                                            </condition>
+                                                            <assign name="AssignParentAVPFromPreviousSI">
+                                                                <!--sxt:trace>
+                                                                    <sxt:log level="finest" location="onStart">
+                                                                        <from>'Saved getting parent as its the previous SI'</from>
+                                                                    </sxt:log>
+                                                                </sxt:trace-->
+                                                                <copy ignoreMissingFromData="yes">
+                                                                    <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Attribute</from>
+                                                                    <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$nextAVPIndex]/ns0:Attribute</to>
+                                                                </copy>
+                                                                <copy ignoreMissingFromData="yes">
+                                                                    <from>BPELUtils:getAVPValueAsString($CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si - 1], $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Attribute)</from>
+                                                                    <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$nextAVPIndex]/ns0:Value</to>
+                                                                </copy>
+                                                                <copy>
+                                                                    <from>$nextAVPIndex + 1</from>
+                                                                    <to>$nextAVPIndex</to>
+                                                                </copy>
+                                                            </assign>
+                                                            <elseif>
+                                                                <condition>
+                                                                    $si &gt; 1 and $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si - 2]/ns1:ProductInstanceId = $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ProductInstanceId and $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si - 2]/ns1:ServiceSpecificationId = substring-before($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Value, ':')
+                                                                </condition>
+                                                                <assign name="AssignParentAVPFrom2PreviousSI">
+                                                                    <!--sxt:trace>
+                                                                        <sxt:log level="finest" location="onStart">
+                                                                            <from>'Saved getting parent as its the 2 previous SI'</from>
+                                                                        </sxt:log>
+                                                                    </sxt:trace-->
+                                                                    <copy ignoreMissingFromData="yes">
+                                                                        <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Attribute</from>
+                                                                        <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$nextAVPIndex]/ns0:Attribute</to>
+                                                                    </copy>
+                                                                    <copy ignoreMissingFromData="yes">
+                                                                        <from>BPELUtils:getAVPValueAsString($CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si - 2], $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Attribute)</from>
+                                                                        <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$nextAVPIndex]/ns0:Value</to>
+                                                                    </copy>
+                                                                    <copy>
+                                                                        <from>$nextAVPIndex + 1</from>
+                                                                        <to>$nextAVPIndex</to>
+                                                                    </copy>
+                                                                </assign>
+                                                            </elseif>
+                                                            <else>
+                                                                <sequence name="Sequence8">
+                                                                    <if name="IfNotSameParentAsLastLoop">
+                                                                        <condition>not($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ProductInstanceId = $SCACallingGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[1]/ns0:ProductInstanceId and substring-before($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Value, ':') = $SCACallingGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[1]/ns0:ServiceSpecificationId)
+                                                                        </condition>
+                                                                        <sequence name="Sequence7">
+                                                                            <assign name="AssignGetParentSI">
+                                                                                <copy>
+                                                                                    <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ProductInstanceId</from>
+                                                                                    <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:ProductInstanceId</to>
+                                                                                </copy>
+                                                                                <copy>
+                                                                                    <from>substring-before($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Value, ':')</from>
+                                                                                    <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:ServiceSpecificationId</to>
+                                                                                </copy>
+                                                                            </assign>
+                                                                            <invoke name="GetParentSIData" partnerLink="CM" operation="GetServiceInstances" portType="ns2:CMSoap" inputVariable="CMGetServiceInstancesIn" outputVariable="CMGetServiceInstancesOut">
+                                                                                <!--sxt:trace>
+                                                                                    <sxt:log level="finest" location="onStart">
+                                                                                        <from>concat('Getting Parent SI with product instance id ', $CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:ProductInstanceId, ' and service spec id ', $CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:ServiceSpecificationId)</from>
+                                                                                    </sxt:log>
+                                                                                </sxt:trace-->
+                                                                            </invoke>
+                                                                            <assign name="AssignSCACall">
+                                                                                <copy>
+                                                                                    <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[1]/ns1:ServiceInstanceId</from>
+                                                                                    <to>$SCACallingGetServiceInstancesIn.ServiceInstanceQuery/ns0:ServiceInstanceId</to>
+                                                                                </copy>
+                                                                            </assign>
+                                                                            <invoke name="GetParentAVPs" partnerLink="SCACalling" operation="GetServiceInstances"  inputVariable="SCACallingGetServiceInstancesIn" outputVariable="SCACallingGetServiceInstancesOut" portType="tns:SCASoap">
+                                                                                <!--sxt:trace>
+                                                                                    <sxt:log level="finest" location="onStart">
+                                                                                        <from>'In Copy CMSIs to SCASIs and Calling get Parent SI on SCA'</from>
+                                                                                    </sxt:log>
+                                                                                    <sxt:log level="finest" location="onComplete">
+                                                                                        <from>'In Copy CMSIs to SCASIs and Called get Parent SI on SCA'</from>
+                                                                                    </sxt:log>
+                                                                                </sxt:trace-->
+                                                                            </invoke>
+                                                                        </sequence>
+                                                                        <else>
+                                                                            <empty name="Empty1">
+                                                                                <!--sxt:trace>
+                                                                                    <sxt:log level="finest" location="onStart">
+                                                                                        <from>'Saved some time by using last loops Parent SI'</from>
+                                                                                    </sxt:log>
+                                                                                </sxt:trace-->
+                                                                            </empty>
+                                                                        </else>
+                                                                    </if>
+                                                                    <assign name="AssignAVPFromParent">
+                                                                        <copy ignoreMissingFromData="yes">
+                                                                            <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Attribute</from>
+                                                                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$nextAVPIndex]/ns0:Attribute</to>
+                                                                        </copy>
+                                                                        <copy ignoreMissingFromData="yes">
+                                                                            <from>BPELUtils:getAVPValueAsString($SCACallingGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[1], $CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Attribute)</from>
+                                                                            <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$nextAVPIndex]/ns0:Value</to>
+                                                                        </copy>
+                                                                        <copy>
+                                                                            <from>$nextAVPIndex + 1</from>
+                                                                            <to>$nextAVPIndex</to>
+                                                                        </copy>
+                                                                    </assign>
+                                                                </sequence>
+                                                            </else>
+                                                        </if>
+                                                    </sequence>
+                                                    <else>
+                                                        <assign name="AssignAVP">
+                                                            <copy ignoreMissingFromData="yes">
+                                                                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Attribute</from>
+                                                                <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$nextAVPIndex]/ns0:Attribute</to>
+                                                            </copy>
+                                                            <copy ignoreMissingFromData="yes">
+                                                                <from>$CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avpCount]/ns1:Value</from>
+                                                                <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$nextAVPIndex]/ns0:Value</to>
+                                                            </copy>
+                                                            <copy>
+                                                                <from>$nextAVPIndex + 1</from>
+                                                                <to>$nextAVPIndex</to>
+                                                            </copy>
+                                                        </assign>
+                                                    </else>
+                                                </if>
+                                            </sequence>
+                                        </if>
+                                    </sequence>
+                                </scope>
+                            </forEach>
+                        </sequence>
+                    </if>
+                </sequence>
+            </scope>
+        </forEach>
+        <assign name="AssignCount">
+            <copy>
+                <from>count($CopyCMSvcInstancesToSCASvcInstancesIn.ServiceInstanceList/ns1:ServiceInstances)</from>
+                <to>$CopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns0:NumberOfServiceInstances</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="CopyCMSvcInstancesToSCASvcInstances" portType="tns:SCASubFlowsSoap" variable="CopyCMSvcInstancesToSCASvcInstancesOut"/>
+    </sequence>
+</process>

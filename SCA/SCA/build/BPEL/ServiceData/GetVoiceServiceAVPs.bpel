@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetVoiceServiceAVPs"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/IM" xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="IMGetIMSPublicIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPublicIdentityResponse"/>
+        <variable name="IMGetIMSPublicIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPublicIdentityRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SubFlowError"/>
+        <variable name="SubFlowGetVoiceServiceAVPsOut" messageType="tns:ServiceAVPsResponse"/>
+        <variable name="SubFlowGetVoiceServiceAVPsIn" messageType="tns:GetVoiceServiceAVPsRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:IM="http://xml.smilecoms.com/IM" faultMessageType="IM:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCASubFlows" operation="GetVoiceServiceAVPs" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="GetVoiceServiceAVPs" portType="tns:SCASubFlowsSoap" variable="SubFlowGetVoiceServiceAVPsIn"/>
+        
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+        <!-- For now we will only return the AVPs of the SIP URI IMPU. TEL URI AVPs are basically the same -->
+        <assign name="AssignIM">
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetVoiceServiceAVPsIn.VoiceServiceLookupInfo/SubFlowContext/TxId</from>
+                <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetVoiceServiceAVPsIn.VoiceServiceLookupInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetVoiceServiceAVPsIn.VoiceServiceLookupInfo/SubFlowContext/OriginatingIP</from>
+                <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowGetVoiceServiceAVPsIn.VoiceServiceLookupInfo/SubFlowContext/Tenant</from>
+                <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>substring-before(substring-after($SubFlowGetVoiceServiceAVPsIn.VoiceServiceLookupInfo/RemoteResourceId, '-'), ',')</from>
+                <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:IMSPublicIdentityId</to>
+            </copy>
+        </assign>
+        <invoke name="GetIMPU" partnerLink="IM" operation="GetIMSPublicIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSPublicIdentityIn" outputVariable="IMGetIMSPublicIdentityOut"/>
+        <assign name="AssignAVPs">
+            <copy>
+                <from>'PublicIdentity'</from>
+                <to>$SubFlowGetVoiceServiceAVPsOut.ServiceAVPList/ServiceAVPs[1]/ns1:Attribute</to>
+            </copy>
+            <copy>
+                <from>$IMGetIMSPublicIdentityOut.IMSPublicIdentity/ns0:Identity</from>
+                <to>$SubFlowGetVoiceServiceAVPsOut.ServiceAVPList/ServiceAVPs[1]/ns1:Value</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="GetVoiceServiceAVPs" portType="tns:SCASubFlowsSoap" variable="SubFlowGetVoiceServiceAVPsOut"/>
+    </sequence>
+</process>

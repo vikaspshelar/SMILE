@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetBatchSchedules"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" xmlns:ns0="http://xml.smilecoms.com/schema/BS" xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2" xmlns:ns2="http://docs.oasis-open.org/wsbpel/2.0/process/executable">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BS" location="../Partners/BS/BSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="BS" xmlns:tns="http://xml.smilecoms.com/BS" partnerLinkType="tns:BSServiceDefinition" partnerRole="BS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="BatchCount" type="xsd:int"/>
+        <variable name="SCAGetBatchSchedulesOut" messageType="tns:GetBatchSchedulesResponse"/>
+        <variable name="SCAGetBatchSchedulesIn" messageType="tns:GetBatchSchedulesRequest"/>
+        <variable name="BSGetBatchSchedulesOut" xmlns:tns="http://xml.smilecoms.com/BS" messageType="tns:GetBatchSchedulesResponse"/>
+        <variable name="BSGetBatchSchedulesIn" xmlns:tns="http://xml.smilecoms.com/BS" messageType="tns:GetBatchSchedulesRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetBatchSchedules" portType="tns:SCASoap" variable="SCAGetBatchSchedulesIn"/>
+
+
+
+         <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('BS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign_Ctx">
+            <copy>
+                <from>$SCAGetBatchSchedulesIn.BatchScheduleListRequest/ns1:SCAContext/ns1:TxId</from>
+                <to>$BSGetBatchSchedulesIn.Nothing/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetBatchSchedulesIn.BatchScheduleListRequest/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$BSGetBatchSchedulesIn.Nothing/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetBatchSchedulesIn.BatchScheduleListRequest/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$BSGetBatchSchedulesIn.Nothing/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetBatchSchedulesIn.BatchScheduleListRequest/ns1:SCAContext/ns1:Tenant</from>
+                <to>$BSGetBatchSchedulesIn.Nothing/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAGetBatchSchedulesIn.BatchScheduleListRequest/ns1:Integer</from>
+                <to>$BSGetBatchSchedulesIn.Nothing/ns0:Integer</to>
+            </copy>
+        </assign>
+        <invoke name="Call_BS" partnerLink="BS" operation="GetBatchSchedules" xmlns:tns="http://xml.smilecoms.com/BS" portType="tns:BSSoap" inputVariable="BSGetBatchSchedulesIn" outputVariable="BSGetBatchSchedulesOut"/>
+        <assign name="Assign_Cnt">
+            <copy>
+                <from>count($BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules/ns0:BatchId)</from>
+                <to variable="BatchCount"/>
+            </copy>
+        </assign>
+        <forEach name="ForEach_Batch" parallel="no" counterName="counter">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$BatchCount</finalCounterValue>
+            <scope name="Scope1">
+                <assign name="Assign_Batch">
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:BatchId</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:BatchId</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:LastStatus</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:LastStatus</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:Status</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:Status</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:LastFinished</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:LastFinished</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:LastError</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:LastError</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:BatchMethod</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:BatchMethod</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:ClientId</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:ClientId</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:Description</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:Description</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:LastRan</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:LastRan</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:SCAEndpoint</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:SCAEndpoint</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:Schedule</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:Schedule</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:LastRunHost</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:LastRunHost</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:LastRuntimeSecs</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:LastRuntimeSecs</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:CurrentLockingHost</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:CurrentLockingHost</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:Version</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:Version</to>
+                    </copy>
+                    <copy>
+                        <from>$BSGetBatchSchedulesOut.BatchScheduleList/ns0:BatchSchedules[$counter]/ns0:SeedData</from>
+                        <to>$SCAGetBatchSchedulesOut.BatchScheduleList/ns1:BatchSchedules[$counter]/ns1:SeedData</to>
+                    </copy>
+                </assign>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCA" operation="GetBatchSchedules" portType="tns:SCASoap" variable="SCAGetBatchSchedulesOut"/>
+    </sequence>
+</process>
+
+
+

@@ -1,0 +1,124 @@
+/* links
+*************************/
+
+a:link, a:visited, a:hover, a:active
+{
+	text-decoration: none;
+}
+
+
+
+/* dropdowns
+*************************/
+
+ul.dropdown
+{
+	margin: 0;
+	padding: 0;
+	display: block;
+	position: absolute;
+	z-index: 999;
+	display: none;
+	left: 0;
+}
+
+ul.dropdown ul.dropdown
+{
+	top: 0;
+
+}
+
+ul.dropdown li
+{
+
+	background:none !important;
+}
+
+
+
+
+
+
+/* menu-specifc
+*************************/
+
+
+#menu ul li.hasmore li
+{
+	background:none !important;
+	padding:0px !important;
+}
+
+ul.dropdown li {
+    padding:0px !important;
+    display:block !important;
+    float:left !important;
+    /*min-width:120px; OR*/
+    min-width:210px;
+    top:0px !important;
+}
+
+#menu ul li h4
+{
+	margin: 0;
+}
+
+
+#menu ul li a
+{
+        background:none;
+	font-size:14px !important;
+	height:auto;
+	color:#86919A !important;
+	padding-left:0px;
+	padding-top:4px;
+	padding-bottom:4px;
+}
+
+#menu ul li a img
+{
+	vertical-align: middle;
+}
+
+#menu ul li a:hover
+{
+    height:auto;
+	color:#8ECB32 !important;
+	padding-left:5px;
+}
+
+
+
+#menu ul.dropdown
+{
+        position:absolute;
+	display:none; 
+	top:50px;
+	left:-2px; 
+	/*width:155px; OR*/
+        width:220px;
+	background:url(../images/proboxGradient.png) top left repeat-x #FFF;
+	border:solid 1px #c6c6c6;
+	border-radius: 7px;
+	margin-top: 5px;
+	padding: 7px;
+	box-shadow:rgba(00,00,0,0.5) 0px 0px 7px ;
+	border:4px solid #FFF;
+	color:#86919A;
+	text-transform:none !important;
+
+
+}
+
+#menu ul.dropdown li a
+{
+	border-bottom: 1px solid #000;
+	line-height: 30px;
+	overflow: hidden;
+	height: 30px;
+	background:none !important;
+	font-size:14px;
+	
+}
+
+

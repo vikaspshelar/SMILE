@@ -1,0 +1,328 @@
+<?xml version="1.0"?>
+<process
+    name="GetServiceInstances"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/CM" xmlns:ns2="http://xml.smilecoms.com/schema/BM" xmlns:ns3="http://xml.smilecoms.com/CM" xmlns:ns4="http://xml.smilecoms.com/SCASubFlows">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="BM" xmlns:tns="http://xml.smilecoms.com/BM" partnerLinkType="tns:BMServiceDefinition" partnerRole="BM"/>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="CMGetServiceInstancesOut" messageType="ns3:ServiceInstancesResponse"/>
+        <variable name="CMGetServiceInstancesIn" messageType="ns3:GetServiceInstancesRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="SCAGetServiceInstancesIn" messageType="tns:GetServiceInstancesRequest"/>
+        <variable name="SCAGetServiceInstancesOut" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="SFCopyCMSvcInstancesToSCASvcInstancesOut" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="SFCopyCMSvcInstancesToSCASvcInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:SF="http://xml.smilecoms.com/SCASubFlows" faultMessageType="SF:SubFlowError" faultVariable="SubFlowError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$SubFlowError.SubFlowError/ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowError.SubFlowError/ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$SubFlowError.SubFlowError/ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetServiceInstances" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar">
+                    <sxt:trace>
+                        <sxt:log level="severe" location="onStart">
+                            <from>concat('GetServiceInstances got SubFlow Error. Returning with error desc:', $Fault1FaultVar.SCAError/ns0:ErrorDesc)</from>
+                        </sxt:log>
+                        <sxt:log level="severe" location="onComplete">
+                            <from>'Sent error reply in GetServiceInstances'</from>
+                        </sxt:log>
+                    </sxt:trace>
+                </reply>
+            </sequence>
+        </catch>
+        <catch faultVariable="CMError" faultMessageType="ns3:CMError">
+            <sequence name="Sequence4">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$CMError.CMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply3" partnerLink="SCA" operation="GetServiceInstances" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetServiceInstances" portType="tns:SCASoap" variable="SCAGetServiceInstancesIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('BM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignCM">
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:ServiceInstanceId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:ServiceInstanceId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:Identifier</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:Identifier</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:IdentifierType</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:IdentifierType</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:ProductInstanceId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:ProductInstanceId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:ServiceSpecificationId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:ServiceSpecificationId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:Verbosity</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:Verbosity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:AccountId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:AccountId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:IPAddress</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:IPAddress</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:CustomerId</from>
+                <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns1:CustomerId</to>
+            </copy>
+        </assign>
+        <invoke name="GetSIs" partnerLink="CM" operation="GetServiceInstances" portType="ns3:CMSoap" inputVariable="CMGetServiceInstancesIn" outputVariable="CMGetServiceInstancesOut"/>
+        <assign name="AssignCnt">
+            <copy>
+                <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:NumberOfServiceInstances</from>
+                <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:NumberOfServiceInstances</to>
+            </copy>
+        </assign>
+        
+        <forEach name="CheckPerms" parallel="no" counterName="si" >
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:NumberOfServiceInstances</finalCounterValue>
+            <scope name="ScopePerm">
+                <sequence name="SequencePerms">
+                    <assign name="CheckPermissions">
+                        <copy>
+                            <from>BPELUtils:checkPermissions($SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext, 'ServiceInstance', $CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ServiceInstanceId)</from>
+                            <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:SCAContext/ns0:Obviscated</to>
+                        </copy>
+                    </assign>
+                </sequence>
+            </scope>
+        </forEach>
+        
+        <if name="If_Include_Non_Static">
+            <condition>contains($SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:Verbosity, 'STATIC_ONLY') = false()</condition>
+            <sequence name="Sequence5">
+                <assign name="AssignSF">
+                    <copy>
+                        <from variable="CMGetServiceInstancesOut" part="ServiceInstanceList"/>
+                        <to variable="SFCopyCMSvcInstancesToSCASvcInstancesIn" part="ServiceInstanceList"/>
+                    </copy>
+                </assign>
+                <invoke name="CopyCMtoSCA" partnerLink="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" operation="CopyCMSvcInstancesToSCASvcInstances" portType="tns:SCASubFlowsSoap" inputVariable="SFCopyCMSvcInstancesToSCASvcInstancesIn" outputVariable="SFCopyCMSvcInstancesToSCASvcInstancesOut"/>
+                <assign name="AssignSI">
+                    <copy>
+                        <from variable="SFCopyCMSvcInstancesToSCASvcInstancesOut" part="ServiceInstanceList"/>
+                        <to variable="SCAGetServiceInstancesOut" part="ServiceInstanceList"/>
+                    </copy>
+                </assign>
+            
+                <if name="If_Include_Mappings">
+                    <condition>contains($SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:Verbosity, 'MAPPINGS')</condition>
+                    <forEach name="DoMappingsForEachSI" parallel="no" counterName="siCounter" >
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>count($CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances)</finalCounterValue>
+                        <scope name="Scope4">
+                            <variables>
+                                <variable name="BMGetServiceInstanceMappingsOut" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:GetServiceInstanceMappingsResponse"/>
+                                <variable name="BMGetServiceInstanceMappingsIn" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:GetServiceInstanceMappingsRequest"/>
+                            </variables>
+                            <sequence name="Sequence3">
+                                <assign name="AssignBM">
+                                    <copy>
+                                        <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:TxId</from>
+                                        <to>$BMGetServiceInstanceMappingsIn.ServiceInstanceId/ns2:PlatformContext/ns2:TxId</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                                        <to>$BMGetServiceInstanceMappingsIn.ServiceInstanceId/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                                        <to>$BMGetServiceInstanceMappingsIn.ServiceInstanceId/ns2:PlatformContext/ns2:OriginatingIP</to>
+                                    </copy>
+                                    <copy ignoreMissingFromData="yes"> 
+                                        <from>$SCAGetServiceInstancesIn.ServiceInstanceQuery/ns0:SCAContext/ns0:Tenant</from>
+                                        <to>$BMGetServiceInstanceMappingsIn.ServiceInstanceId/ns2:PlatformContext/ns2:Tenant</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$siCounter]/ns1:ServiceInstanceId</from>
+                                        <to>$BMGetServiceInstanceMappingsIn.ServiceInstanceId/ns2:Integer</to>
+                                    </copy>
+                                </assign>
+                                <invoke name="GetMappings" partnerLink="BM" operation="GetServiceInstanceMappings" xmlns:tns="http://xml.smilecoms.com/BM" portType="tns:BMSoap" inputVariable="BMGetServiceInstanceMappingsIn" outputVariable="BMGetServiceInstanceMappingsOut"/>
+                                <forEach name="ForEachMapping" parallel="no" counterName="mapping">
+                                    <startCounterValue>1</startCounterValue>
+                                    <finalCounterValue>count($BMGetServiceInstanceMappingsOut.ServiceInstanceMappingList/ns2:ServiceInstanceMappings)</finalCounterValue>
+                                    <scope name="Scope5">
+                                        <assign name="AssignMapping">
+                                            <copy>
+                                                <from>$BMGetServiceInstanceMappingsOut.ServiceInstanceMappingList/ns2:ServiceInstanceMappings[$mapping]/ns2:Identifier</from>
+                                                <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$siCounter]/ns0:ServiceInstanceMappings[$mapping]/ns0:Identifier</to>
+                                            </copy>
+                                            <copy>
+                                                <from>$BMGetServiceInstanceMappingsOut.ServiceInstanceMappingList/ns2:ServiceInstanceMappings[$mapping]/ns2:IdentifierType</from>
+                                                <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$siCounter]/ns0:ServiceInstanceMappings[$mapping]/ns0:IdentifierType</to>
+                                            </copy>
+                                        </assign>
+                                    </scope>
+                                </forEach>
+                            </sequence>
+                        </scope>
+                    </forEach>
+                </if>
+            </sequence>
+            <else>
+                <forEach name="DoStaticAssignForEachSI" parallel="no" counterName="si" >
+                    <startCounterValue>1</startCounterValue>
+                    <finalCounterValue>count($CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances)</finalCounterValue>
+                    <scope name="Scope6">
+                        <sequence name="Sequence4">
+                            <assign name="AssignStaticSI">
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ServiceInstanceId</from>
+                                    <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:ServiceInstanceId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ServiceSpecificationId</from>
+                                    <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:ServiceSpecificationId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:ProductInstanceId</from>
+                                    <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:ProductInstanceId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:CustomerId</from>
+                                    <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:CustomerId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:RatePlanId</from>
+                                    <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:RatePlanId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AccountId</from>
+                                    <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AccountId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:Status</from>
+                                    <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:Status</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:CreatedDateTime</from>
+                                    <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:CreatedDateTime</to>
+                                </copy>
+                            </assign> 
+                            <forEach name="ForEachSIAVP" parallel="no" counterName="avp" >
+                                <startCounterValue>1</startCounterValue>
+                                <finalCounterValue>count($CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs)</finalCounterValue>
+                                <scope name="Scope7">
+                                    <assign name="AssignStaticAVP">
+                                        <copy ignoreMissingFromData="yes">
+                                            <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avp]/ns1:Attribute</from>
+                                            <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$avp]/ns0:Attribute</to>
+                                        </copy>
+                                        <copy ignoreMissingFromData="yes">
+                                            <from>$CMGetServiceInstancesOut.ServiceInstanceList/ns1:ServiceInstances[$si]/ns1:AVPs[$avp]/ns1:Value</from>
+                                            <to>$SCAGetServiceInstancesOut.ServiceInstanceList/ns0:ServiceInstances[$si]/ns0:AVPs[$avp]/ns0:Value</to>
+                                        </copy>
+                                    </assign>
+                                </scope>
+                            </forEach>
+                        </sequence>
+                    </scope>
+                </forEach>
+            </else>
+        </if> 
+        <reply name="Reply1" partnerLink="SCA" operation="GetServiceInstances" portType="tns:SCASoap" variable="SCAGetServiceInstancesOut"/>
+    </sequence>
+</process>

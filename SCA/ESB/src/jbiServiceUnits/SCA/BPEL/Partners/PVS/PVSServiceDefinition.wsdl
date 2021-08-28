@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="PVSServiceDefinition" targetNamespace="http://xml.smilecoms.com/PVS"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xml.smilecoms.com/PVS" xmlns:ns="http://xml.smilecoms.com/schema/PVS" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/PVS">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/PVS" schemaLocation="PVSSchema.xsd"/>
+        </xsd:schema>
+    </types> 
+    <message name="PVSError">
+        <part name="PVSError" element="ns:PVSError"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="PrepaidStrips">
+        <part name="PrepaidStrips" element="ns:PrepaidStrips"/>
+    </message>
+    <message name="CreatePrepaidStripsRequest">
+        <part name="NewPrepaidStripsData" element="ns:NewPrepaidStripsData"/>
+    </message>
+    
+    <message name="PrepaidStripResponse">
+        <part name="PrepaidStrip" element="ns:PrepaidStrip"/>
+    </message>
+    
+    <message name="RedeemPrepaidStripRequest">
+        <part name="PrepaidStripRedemptionData" element="ns:PrepaidStripRedemptionData"/>
+    </message>
+    
+    <message name="GetPrepaidStripRequest">
+        <part name="PrepaidStripQuery" element="ns:PrepaidStripQuery"/>
+    </message>
+    
+    <message name="GetPrepaidStripCountRequest">
+        <part name="PrepaidStripCountQuery" element="ns:PrepaidStripCountQuery"/>
+    </message>
+    
+    <message name="GetPrepaidStripCountResponse">
+        <part name="StripCount" element="ns:StripCount"/>
+    </message>
+    
+    <message name="BatchUpdatePrepaidStripsRequest">
+        <part name="PrepaidStripBatchData" element="ns:PrepaidStripBatchData"/>
+    </message>
+    
+    <message name="UpdatePrepaidStripRequest">
+        <part name="UpdatedPrepaidStrip" element="ns:UpdatedPrepaidStrip"/>
+    </message>
+   
+    <message name="GetVoucherLockForAccountRequest">
+        <part name="VoucherLockForAccountQuery" element="ns:VoucherLockForAccountQuery"/>
+    </message>
+     
+   <message name="GetVoucherLockForAccountResponse">
+        <part name="VoucherLockForAccount" element="ns:VoucherLockForAccount"/>
+    </message>
+    
+    <message name="ResetAccountVoucherLockRequest">
+        <part name="ResetAccountVoucherLock" element="ns:ResetAccountVoucherLock"/>
+    </message>
+     
+    <portType name="PVSSoap">
+        
+        <operation name="IsUp">
+            <input name="input1" message="tns:IsUpRequest"/>
+            <output name="output1" message="tns:Done"/>
+            <fault name="fault1" message="tns:PVSError"/>
+        </operation>
+        
+        <operation name="CreatePrepaidStrips">
+            <input name="input2" message="tns:CreatePrepaidStripsRequest"/>
+            <output name="output2" message="tns:PrepaidStrips"/>
+            <fault name="fault1" message="tns:PVSError"/>
+        </operation>
+        
+        <operation name="BatchUpdatePrepaidStrips">
+            <input name="input5" message="tns:BatchUpdatePrepaidStripsRequest"/>
+            <output name="output5" message="tns:Done"/>
+            <fault name="fault1" message="tns:PVSError"/>
+        </operation>
+        
+        <operation name="RedeemPrepaidStrip">
+            <input name="input3" message="tns:RedeemPrepaidStripRequest"/>
+            <output name="output3" message="tns:PrepaidStripResponse"/>
+            <fault name="fault1" message="tns:PVSError"/>
+        </operation>
+        
+        <operation name="UpdatePrepaidStrip">
+            <input name="input4" message="tns:UpdatePrepaidStripRequest"/>
+            <output name="output4" message="tns:PrepaidStripResponse"/>
+            <fault name="fault1" message="tns:PVSError"/>
+        </operation>
+        
+        <operation name="GetPrepaidStrip">
+            <input name="input6" message="tns:GetPrepaidStripRequest"/>
+            <output name="output6" message="tns:PrepaidStripResponse"/>
+            <fault name="fault1" message="tns:PVSError"/>
+        </operation>
+        
+        <operation name="GetPrepaidStripCount">
+            <input name="input7" message="tns:GetPrepaidStripCountRequest"/>
+            <output name="output7" message="tns:GetPrepaidStripCountResponse"/>
+            <fault name="fault1" message="tns:PVSError"/>
+        </operation>
+        
+        <operation name="GetVoucherLockForAccount">
+            <input name="input8" message="tns:GetVoucherLockForAccountRequest"/>
+            <output name="output8" message="tns:GetVoucherLockForAccountResponse"/>
+            <fault name="fault1" message="tns:PVSError"/>
+        </operation>
+        
+        <operation name="ResetVoucherLockForAccount">
+            <input name="input9" message="tns:ResetAccountVoucherLockRequest"/>
+            <output name="output9" message="tns:Done"/>
+            <fault name="fault1" message="tns:PVSError"/>
+        </operation>
+        
+    </portType>
+    
+    <binding name="PVSBinding" type="tns:PVSSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        
+        <operation name="IsUp">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="CreatePrepaidStrips">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="RedeemPrepaidStrip">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="UpdatePrepaidStrip">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="BatchUpdatePrepaidStrips">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetPrepaidStrip">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetPrepaidStripCount">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetPrepaidStripCount">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetVoucherLockForAccount">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="ResetVoucherLockForAccount">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        
+    </binding>
+    
+    <service name="PVS">
+        <port name="PVSSoap" binding="tns:PVSBinding">
+            <soap:address location="http://localhost:${HttpDefaultPort}/PVS/PVSSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="PVSServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="PVS" portType="tns:PVSSoap"/>
+    </plnk:partnerLinkType>
+</definitions>
+

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="DeleteWLANService"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/IM" xmlns:ns1="http://xml.smilecoms.com/schema/AM">
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="IMModifyNAIIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyNAIIdentityResponse"/>
+        <variable name="IMModifyNAIIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyNAIIdentityRequest"/>
+        <variable name="IMGetNAIIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetNAIIdentityResponse"/>
+        <variable name="IMGetNAIIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetNAIIdentityRequest"/>
+        <variable name="SubFlowDeleteWLANServiceOut" messageType="tns:Done"/>
+        <variable name="SubFlowDeleteWLANServiceIn" messageType="tns:DeleteWLANServiceRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="DeleteWLANService" portType="tns:SCASubFlowsSoap" variable="SubFlowDeleteWLANServiceIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        <assign name="AssignGetNAI">
+            <copy>
+                <from>$SubFlowDeleteWLANServiceIn.WLANServiceDeletionInfo/SubFlowContext/TxId</from>
+                <to>$IMGetNAIIdentityIn.NAIIdentityQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteWLANServiceIn.WLANServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMGetNAIIdentityIn.NAIIdentityQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteWLANServiceIn.WLANServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                <to>$IMGetNAIIdentityIn.NAIIdentityQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowDeleteWLANServiceIn.WLANServiceDeletionInfo/SubFlowContext/Tenant</from>
+                <to>$IMGetNAIIdentityIn.NAIIdentityQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>substring-after($SubFlowDeleteWLANServiceIn.WLANServiceDeletionInfo/RemoteResourceId, '-')</from>
+                <to>$IMGetNAIIdentityIn.NAIIdentityQuery/ns0:OSSBSSReferenceId</to>
+            </copy>
+        </assign>
+        <invoke name="GetNAI" partnerLink="IM" operation="GetNAIIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetNAIIdentityIn" outputVariable="IMGetNAIIdentityOut"/>
+        <assign name="AssignModifiedNAI">
+            <copy>
+                <from variable="IMGetNAIIdentityOut" part="NAIIdentity"/>
+                <to variable="IMModifyNAIIdentityIn" part="ModifiedNAIIdentity"/>
+            </copy>
+        </assign>
+        <assign name="AssignBlankToNAIEntry">
+            <copy>
+                <from>$SubFlowDeleteWLANServiceIn.WLANServiceDeletionInfo/SubFlowContext/TxId</from>
+                <to>$IMModifyNAIIdentityIn.ModifiedNAIIdentity/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteWLANServiceIn.WLANServiceDeletionInfo/SubFlowContext/OriginatingIdentity</from>
+                <to>$IMModifyNAIIdentityIn.ModifiedNAIIdentity/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SubFlowDeleteWLANServiceIn.WLANServiceDeletionInfo/SubFlowContext/OriginatingIP</from>
+                <to>$IMModifyNAIIdentityIn.ModifiedNAIIdentity/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SubFlowDeleteWLANServiceIn.WLANServiceDeletionInfo/SubFlowContext/Tenant</from>
+                <to>$IMModifyNAIIdentityIn.ModifiedNAIIdentity/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>concat('XXX', $IMGetNAIIdentityOut.NAIIdentity/ns0:NAIUsername)</from>
+                <to>$IMModifyNAIIdentityIn.ModifiedNAIIdentity/ns0:NAIUsername</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$IMModifyNAIIdentityIn.ModifiedNAIIdentity/ns0:NAIPassword</to>
+            </copy>
+            <copy>
+                <from>'DE'</from>
+                <to>$IMModifyNAIIdentityIn.ModifiedNAIIdentity/ns0:Status</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$IMModifyNAIIdentityIn.ModifiedNAIIdentity/ns0:Info</to>
+            </copy>
+        </assign>
+        <invoke name="SetNAIBlankToNAIEntry" partnerLink="IM" operation="ModifyNAIIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMModifyNAIIdentityIn" outputVariable="IMModifyNAIIdentityOut"/>
+        
+        <assign name="AssignResult">
+            <copy>
+                <from>'true'</from>
+                <to>$SubFlowDeleteWLANServiceOut.Done/Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="DeleteWLANService" portType="tns:SCASubFlowsSoap" variable="SubFlowDeleteWLANServiceOut"/>
+    </sequence>
+</process>

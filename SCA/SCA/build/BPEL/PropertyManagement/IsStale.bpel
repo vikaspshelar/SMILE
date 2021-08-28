@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="IsStale"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:ns1="http://xml.smilecoms.com/SCA" xmlns:ns2="http://xml.smilecoms.com/PM" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns3="http://xml.smilecoms.com/schema/PM" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2" >
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/PM" location="../Partners/PM/PMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        <partnerLink name="PM" partnerLinkType="ns2:PMServiceDefinition" partnerRole="PM"/>
+        <partnerLink name="SCA" partnerLinkType="ns1:SCA" myRole="SCAImplementation"/>
+        
+    </partnerLinks>
+    <variables>
+        <variable name="PMIsStaleOut" messageType="ns2:IsStaleResponse"/>
+        <variable name="PMIsStaleIn" messageType="ns2:IsStaleRequest"/>
+        <variable name="SCAIsStaleOut" messageType="ns1:IsStaleResponse"/>
+        <variable name="SCAIsStaleIn" messageType="ns1:IsStaleRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="IsStale" portType="ns1:SCASoap" variable="SCAIsStaleIn"/>
+
+
+
+         <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('PM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="PM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+
+
+
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAIsStaleIn.CacheLastRefreshed/ns0:DateTime</from>
+                <to>$PMIsStaleIn.StaleTest/ns3:DateTime</to>
+            </copy>
+
+            <copy>
+                <from>$SCAIsStaleIn.CacheLastRefreshed/ns0:SCAContext/ns0:TxId</from>
+                <to>$PMIsStaleIn.StaleTest/ns3:PlatformContext/ns3:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAIsStaleIn.CacheLastRefreshed/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$PMIsStaleIn.StaleTest/ns3:PlatformContext/ns3:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAIsStaleIn.CacheLastRefreshed/ns0:SCAContext/ns0:Tenant</from>
+                <to>$PMIsStaleIn.StaleTest/ns3:PlatformContext/ns3:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAIsStaleIn.CacheLastRefreshed/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$PMIsStaleIn.StaleTest/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+            </copy>
+        </assign>
+        <invoke name="Invoke1" partnerLink="PM" operation="IsStale" portType="ns2:PMSoap" inputVariable="PMIsStaleIn" outputVariable="PMIsStaleOut"/>
+        <assign name="Assign2">
+            <copy>
+                <from>string($PMIsStaleOut.StaleResponse/ns3:Boolean)</from>
+                <to variable="SCAIsStaleOut" part="MustRefresh"/>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="IsStale" portType="ns1:SCASoap" variable="SCAIsStaleOut"/>
+    </sequence>
+</process>
+

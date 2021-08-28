@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CreateStandardGL"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:POS="http://xml.smilecoms.com/POS"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/BM" xmlns:ns2="http://xml.smilecoms.com/schema/POS">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+       
+        <variable name="SCACreateStandardGLIn" messageType="tns:CreateStandardGLRequest"/>
+        <variable name="SCACreateStandardGLOut" messageType="tns:CreateStandardGLResponse"/>
+        
+        <variable name="POSCreateStandardGLOut" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:CreateStandardGLResponse"/>
+        <variable name="POSCreateStandardGLIn" xmlns:tns="http://xml.smilecoms.com/POS" messageType="tns:CreateStandardGLRequest"/>
+             
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="POS:POSError" faultVariable="POSError" >
+            <sequence name="Sequence1">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                    
+                </assign>
+                <reply name="Reply4" partnerLink="SCA" operation="CreateStandardGL" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="CreateStandardGL" portType="tns:SCASoap" variable="SCACreateStandardGLIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope> 
+        <assign name="AssignPOS">
+            <copy>
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:GlAmount</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:GlAmount</to>
+            </copy>
+            <copy>
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:PrimaryKey</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:PrimaryKey</to>
+            </copy>
+            <copy>
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:GlDescription</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:GlDescription</to>
+            </copy>
+            <copy>
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:TableName</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:TableName</to>
+            </copy>
+            <copy> 
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:X3GlTransactionCode</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:X3GlTransactionCode</to>
+            </copy>
+            <copy>
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:GlCreditAccount</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:GlCreditAccount</to>
+            </copy>
+            <copy>
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:GlDebitAccount</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:GlDebitAccount</to>
+            </copy>
+            <copy>
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:SCAContext/ns0:TxId</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy>
+                <from>$SCACreateStandardGLIn.CreateStandardGLData/ns0:SCAContext/ns0:Tenant</from>
+                <to>$POSCreateStandardGLIn.CreateStandardGLData/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+        </assign>
+        <invoke name="Call_POS" partnerLink="POS" operation="CreateStandardGL" portType="tns:POSSoap" inputVariable="POSCreateStandardGLIn" outputVariable="POSCreateStandardGLOut" xmlns:tns="http://xml.smilecoms.com/POS"/>
+        <assign name="AssignResult">
+            <copy>
+                <from>$POSCreateStandardGLOut.CreateStandardGLOut/ns2:Status</from>
+                <to>$SCACreateStandardGLOut.CreateStandardGLOut/ns0:Status</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="CreateStandardGL" portType="tns:SCASoap" variable="SCACreateStandardGLOut"/>
+    </sequence>
+</process>

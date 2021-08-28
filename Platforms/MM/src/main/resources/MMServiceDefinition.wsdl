@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="MMServiceDefinition" targetNamespace="http://xml.smilecoms.com/MM"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xml.smilecoms.com/MM" xmlns:ns="http://xml.smilecoms.com/schema/MM" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://xml.smilecoms.com/schema/MM">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/MM">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/MM" schemaLocation="MMSchema.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="ResendMessageRequest">
+        <part name="MessageResendData" element="ns:MessageResendData"/>
+    </message>
+    <message name="SendShortMessageRequest">
+        <part name="NewShortMessage" element="ns:NewShortMessage"/>
+    </message>
+    <message name="SubmitToCampaignEngineRequest">
+        <part name="CampaignEngineRequest" element="ns:CampaignEngineRequest"/>
+    </message>
+    <message name="MMError">
+        <part name="MMError" element="ns:MMError"/>
+    </message>
+    <message name="SendEmailRequest">
+        <part name="Email" element="ns:Email"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="SubmitToEngineRequest">
+        <part name="EngineMessage" element="ns:EngineMessage"/>
+    </message>
+    <portType name="MMSoap">
+        <operation name="ResendMessage">
+            <input name="input14" message="tns:ResendMessageRequest"/>
+            <output name="output14" message="tns:Done"/>
+            <fault name="fault1" message="tns:MMError"/>
+        </operation>
+        <operation name="SendShortMessage">
+            <input name="input10" message="tns:SendShortMessageRequest"/>
+            <output name="output10" message="tns:Done"/>
+            <fault name="fault1" message="tns:MMError"/>
+        </operation>
+        <operation name="IsUp">
+            <input name="input11" message="tns:IsUpRequest"/>
+            <output name="output11" message="tns:Done"/>
+            <fault name="fault1" message="tns:MMError"/>
+        </operation>
+        <operation name="SendEmail">
+            <input name="input3" message="tns:SendEmailRequest"/>
+            <output name="output3" message="tns:Done"/>
+            <fault name="fault1" message="tns:MMError"/>
+        </operation>
+        <operation name="SubmitToEngine">
+            <input name="input1" message="tns:SubmitToEngineRequest"/>
+            <output name="output1" message="tns:Done"/>
+            <fault name="fault1" message="tns:MMError"/>
+        </operation>
+        <operation name="SubmitToCampaignEngine">
+            <input name="input2" message="tns:SubmitToCampaignEngineRequest"/>
+            <output name="output2" message="tns:Done"/>
+            <fault name="fault1" message="tns:MMError"/>
+        </operation>
+    </portType>
+    <binding name="MMBinding" type="tns:MMSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="ResendMessage">
+            <input name="input14">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output14">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SendShortMessage">
+            <input name="input10">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output10">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsUp">
+            <input name="input11">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output11">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SendEmail">
+            <input name="input3">
+                <soap:body/>
+            </input>
+            <output name="output3">
+                <soap:body/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1"/>
+            </fault>
+        </operation>
+        <operation name="SubmitToEngine">
+            <input name="input1">
+                <soap:body/>
+            </input>
+            <output name="output1">
+                <soap:body/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1"/>
+            </fault>
+        </operation>
+        <operation name="SubmitToCampaignEngine">
+            <input name="input2">
+                <soap:body/>
+            </input>
+            <output name="output2">
+                <soap:body/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="MM">
+        <port name="MMSoap" binding="tns:MMBinding">
+            <soap:address location="http://localhost:${HttpDefaultPort}/MM/MMSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="MMServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="MM" portType="tns:MMSoap"/>
+    </plnk:partnerLinkType>
+</definitions>
+
+
+

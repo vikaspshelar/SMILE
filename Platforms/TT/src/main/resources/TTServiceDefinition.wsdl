@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="TTServiceDefinition" targetNamespace="http://xml.smilecoms.com/TT"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xml.smilecoms.com/TT" xmlns:ns="http://xml.smilecoms.com/schema/TT" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/TT">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/TT" schemaLocation="TTSchema.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="CreateUserRequest">
+        <part name="NewUser" element="ns:NewUser"/>
+    </message>
+    <message name="CreateUserResponse">
+        <part name="User" element="ns:User"/>
+    </message>
+    <message name="TTError">
+        <part name="TTError" element="ns:TTError"/>
+    </message>
+    <message name="GetProjectsRequest">
+        <part name="ProjectQuery" element="ns:ProjectQuery"/>
+    </message>
+    <message name="GetProjectsResponse">
+        <part name="ProjectList" element="ns:ProjectList"/>
+    </message>
+    <message name="GetIssueTypesRequest">
+        <part name="IssueTypeQuery" element="ns:IssueTypeQuery"/>
+    </message>
+    <message name="GetIssueTypesResponse">
+        <part name="IssueTypeList" element="ns:IssueTypeList"/>
+    </message>
+    <message name="GetPrioritiesRequest">
+        <part name="PriorityQuery" element="ns:PriorityQuery"/>
+    </message>
+    <message name="GetPrioritiesResponse">
+        <part name="PriorityList" element="ns:PriorityList"/>
+    </message>
+    <message name="CreateIssueRequest">
+        <part name="NewIssue" element="ns:NewIssue"/>
+    </message>
+    <message name="CreateIssueResponse">
+        <part name="Issue" element="ns:Issue"/>
+    </message>
+    <message name="GetIssuesRequest">
+        <part name="IssueQuery" element="ns:IssueQuery"/>
+    </message>
+    <message name="GetIssuesResponse">
+        <part name="IssueList" element="ns:IssueList"/>
+    </message>
+    <message name="GetResolutionsRequest">
+        <part name="ResolutionQuery" element="ns:ResolutionQuery"/>
+    </message>
+    <message name="GetResolutionsResponse">
+        <part name="ResolutionList" element="ns:ResolutionList"/>
+    </message>
+    <message name="GetStatusesRequest">
+        <part name="StatusQuery" element="ns:StatusQuery"/>
+    </message>
+    <message name="GetStatusesResponse">
+        <part name="StatusList" element="ns:StatusList"/>
+    </message>
+    <message name="GetMetaDataRequest">
+        <part name="MetaDataQuery" element="ns:MetaDataQuery"/>
+    </message>
+    <message name="GetMetaDataResponse">
+        <part name="MetaData" element="ns:MetaData"/>
+    </message>
+    <message name="ModifyIssueRequest">
+        <part name="ModifiedIssue" element="ns:ModifiedIssue"/>
+    </message>
+    <message name="ModifyIssueResponse">
+        <part name="Issue" element="ns:Issue"/>
+    </message>
+    <message name="IsUserRequest">
+        <part name="UserIDToCheck" element="ns:UserIDToCheck"/>
+    </message>
+    <message name="IsUserResponse">
+        <part name="Check" element="ns:Check"/>
+    </message>
+    <message name="CreateCommentRequest">
+        <part name="NewComment" element="ns:NewComment"/>
+    </message>
+    <message name="CreateCommentResponse">
+        <part name="Comment" element="ns:Comment"/>
+    </message>
+    <message name="ModifyCommentRequest">
+        <part name="ModifiedComment" element="ns:ModifiedComment"/>
+    </message>
+    <message name="ModifyCommentResponse">
+        <part name="Comment" element="ns:Comment"/>
+    </message>
+    <message name="GetCommentsRequest">
+        <part name="CommentQuery" element="ns:CommentQuery"/>
+    </message>
+    <message name="GetCommentsResponse">
+        <part name="CommentList" element="ns:CommentList"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="IssueWatcher">
+        <part name="IssueWatcher" element="ns:IssueWatcher"/>
+    </message>
+    <message name="GetIssueWatchersRequest">
+        <part name="IssueWatcherQuery" element="ns:IssueWatcherQuery"/>
+    </message>
+    <message name="CloseSalesLeadIssueRequest">
+        <part name="CloseSalesLeadIssueQuery" element="ns:CloseSalesLeadIssueQuery"/>
+    </message>
+    <message name="GetJiraUserRequest">
+        <part name="JiraUserQuery" element="ns:JiraUserQuery"/>
+    </message>
+    <message name="GetJiraUserResponse">
+        <part name="JiraUserList" element="ns:JiraUserList"/>
+    </message>
+    
+    <portType name="TTSoap">
+        <operation name="CreateUser">
+            <input name="input1" message="tns:CreateUserRequest"/>
+            <output name="output1" message="tns:CreateUserResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="GetProjects">
+            <input name="input2" message="tns:GetProjectsRequest"/>
+            <output name="output2" message="tns:GetProjectsResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="GetIssueTypes">
+            <input name="input3" message="tns:GetIssueTypesRequest"/>
+            <output name="output3" message="tns:GetIssueTypesResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="GetPriorities">
+            <input name="input4" message="tns:GetPrioritiesRequest"/>
+            <output name="output4" message="tns:GetPrioritiesResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="CreateIssue">
+            <input name="input6" message="tns:CreateIssueRequest"/>
+            <output name="output6" message="tns:CreateIssueResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="GetIssues">
+            <input name="input7" message="tns:GetIssuesRequest"/>
+            <output name="output7" message="tns:GetIssuesResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="GetResolutions">
+            <input name="input8" message="tns:GetResolutionsRequest"/>
+            <output name="output8" message="tns:GetResolutionsResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="GetStatuses">
+            <input name="input9" message="tns:GetStatusesRequest"/>
+            <output name="output9" message="tns:GetStatusesResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="GetMetaData">
+            <input name="input5" message="tns:GetMetaDataRequest"/>
+            <output name="output5" message="tns:GetMetaDataResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="ModifyIssue">
+            <input name="input10" message="tns:ModifyIssueRequest"/>
+            <output name="output10" message="tns:ModifyIssueResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="IsUser">
+            <input name="input11" message="tns:IsUserRequest"/>
+            <output name="output11" message="tns:IsUserResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="CreateComment">
+            <input name="input12" message="tns:CreateCommentRequest"/>
+            <output name="output12" message="tns:CreateCommentResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="ModifyComment">
+            <input name="input13" message="tns:ModifyCommentRequest"/>
+            <output name="output13" message="tns:ModifyCommentResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="GetComments">
+            <input name="input14" message="tns:GetCommentsRequest"/>
+            <output name="output14" message="tns:GetCommentsResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="IsUp">
+            <input name="input15" message="tns:IsUpRequest"/>
+            <output name="output15" message="tns:Done"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="ModifyIssueWatcher">
+            <input name="input16" message="tns:IssueWatcher"/>
+            <output name="output16" message="tns:Done"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="GetIssueWatchers">
+            <input name="input17" message="tns:GetIssueWatchersRequest"/>
+            <output name="output17" message="tns:IssueWatcher"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="CloseSalesLead">
+            <input name="input18" message="tns:CloseSalesLeadIssueRequest"/>
+            <output name="output18" message="tns:Done"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+        <operation name="GetJiraUsers">
+            <input name="input19"   message="tns:GetJiraUserRequest"/>
+            <output name="output19" message="tns:GetJiraUserResponse"/>
+            <fault name="fault1" message="tns:TTError"/>
+        </operation>
+    </portType>
+    <binding name="TTBinding" type="tns:TTSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="CreateUser">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetProjects">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetIssueTypes">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetPriorities">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateIssue">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetIssues">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetResolutions">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetStatuses">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetMetaData">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyIssue">
+            <input name="input10">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output10">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsUser">
+            <input name="input11">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output11">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CreateComment">
+            <input name="input12">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output12">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyComment">
+            <input name="input13">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output13">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetComments">
+            <input name="input14">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output14">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsUp">
+            <input name="input15">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output15">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyIssueWatcher">
+            <input name="input16">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output16">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetIssueWatchers">
+            <input name="input17">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output17">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="CloseSalesLead">
+            <input name="input18">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output18">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetJiraUsers">
+            <input name="input19">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output19">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="TT">
+        <port name="TTSoap" binding="tns:TTBinding">
+            <soap:address location="http://dummyhost:${HttpDefaultPort}/TT/TTSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="TTServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes. 
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="TT" portType="tns:TTSoap"/>
+    </plnk:partnerLinkType>
+</definitions>

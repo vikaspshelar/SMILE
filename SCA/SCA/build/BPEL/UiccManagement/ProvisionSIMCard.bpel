@@ -1,0 +1,258 @@
+<?xml version="1.0"?>
+<process
+    name="ProvisionSIMCard"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace"
+    xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2" xmlns:ns3="http://xml.smilecoms.com/schema/IM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <partnerLinks>
+        
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="EncryptedOp" type="xsd:string"/>
+        <variable name="Domain" type="xsd:string"/>
+        <variable name="IMCreateIdentityAssociationOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:CreateIdentityAssociationResponse"/>
+        <variable name="IMCreateIdentityAssociationIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:CreateIdentityAssociationRequest"/>
+        <variable name="IMCreateIMSPublicIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:CreateIMSPublicIdentityResponse"/>
+        <variable name="IMCreateIMSPublicIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:CreateIMSPublicIdentityRequest"/>
+        <variable name="IMCreateIMSPrivateIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:CreateIMSPrivateIdentityResponse"/>
+        <variable name="IMCreateIMSPrivateIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:CreateIMSPrivateIdentityRequest"/>
+        <variable name="SCAProvisionSIMCardOut" messageType="tns:Done"/>
+        <variable name="SCAProvisionSIMCardIn" messageType="tns:ProvisionSIMCardRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="IMError" xmlns:IM="http://xml.smilecoms.com/IM" faultMessageType="IM:IMError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$IMError.IMError/ns3:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns2:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns3:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns2:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns3:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns2:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ProvisionSIMCard" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ProvisionSIMCard" portType="tns:SCASoap" variable="SCAProvisionSIMCardIn"/>
+        
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <if name="IfOpProvided">
+            <condition>count($SCAProvisionSIMCardIn.NewSIMCardData/ns2:UnencryptedOperatorVariant) &gt; 0 and $SCAProvisionSIMCardIn.NewSIMCardData/ns2:UnencryptedOperatorVariant != ''</condition>
+            <assign name="AssignFromRequest">
+                <copy>
+                    <from>BPELUtils:hexStringToEncryptedHexString($SCAProvisionSIMCardIn.NewSIMCardData/ns2:UnencryptedOperatorVariant)</from>
+                    <to variable="EncryptedOp"/>
+                </copy>
+            </assign>
+            <else>
+                <assign name="AssignFromProp">
+                    <copy>
+                        <from>BPELUtils:getProperty('env.hss.newsim.encrypted.operator.variant')</from>
+                        <to variable="EncryptedOp"/>
+                    </copy>
+                </assign>
+            </else>
+        </if>
+        <assign name="AssignDomain">
+            <copy>
+                <from>BPELUtils:getProperty('env.sip.domain')</from>
+                <to variable="Domain"/>
+            </copy>
+        </assign>
+        <assign name="AssignData">
+            <copy>
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:TxId</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:PlatformContext/ns3:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:OriginatingIdentity</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:OriginatingIP</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:PlatformContext/ns3:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:Tenant</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:PlatformContext/ns3:Tenant</to>
+            </copy>
+            <copy>
+                <from>0</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:IMSSubscriptionId</to>
+            </copy>
+            <copy>
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:IntegratedCircuitCardIdentifier</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:IntegratedCircuitCardIdentifier</to>
+            </copy>
+            <copy>
+                <from>1</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:DefaultAuthScheme</to>
+            </copy>
+            <copy>
+                <from>'8000'</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:AuthenticationManagementField</to>
+            </copy>
+            <copy>
+                <from>BPELUtils:hexStringToEncryptedHexString($SCAProvisionSIMCardIn.NewSIMCardData/ns2:UnencryptedSecretKey)</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:EncryptedSecretKey</to>
+            </copy>
+            <copy>
+                <from>concat($SCAProvisionSIMCardIn.NewSIMCardData/ns2:IMSI, '@', 'private.', $Domain)</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:Identity</to>
+            </copy>
+            <copy>
+                <from variable="EncryptedOp"/>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:EncryptedOperatorVariant</to>
+            </copy>
+            <copy>
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:TxId</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:PlatformContext/ns3:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:OriginatingIdentity</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:OriginatingIP</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:PlatformContext/ns3:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:Tenant</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:PlatformContext/ns3:Tenant</to>
+            </copy>
+            <copy>
+                <from>concat('sip:', $SCAProvisionSIMCardIn.NewSIMCardData/ns2:IMSI, '@', $Domain)</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:Identity</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:DisplayName</to>
+            </copy>
+            <copy>
+                <from>1</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:Barring</to>
+            </copy>
+            <copy>
+                <from>1</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:CanRegister</to>
+            </copy>
+            <copy>
+                <from>1</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:IMSChargingInformation/ns3:IMSChargingInformationId</to>
+            </copy>
+            <copy>
+                <from>0</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:ImplicitSetId</to>
+            </copy>
+            <copy>
+                <from>1000</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:IMSServiceProfile/ns3:IMSServiceProfileId</to>
+            </copy>
+            <copy>
+                <from>0</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:Type</to>
+            </copy>
+            <copy>
+                <from>0</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:UserState</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:WildcardPSI</to>
+            </copy>
+            <copy>
+                <from>0</from>
+                <to>$IMCreateIMSPublicIdentityIn.NewIMSPublicIdentity/ns3:PSIActivation</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:SIMLockedIMEIList</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:RegionalSubscriptionZoneCodes</to>
+            </copy>
+            <copy>
+                <from>''</from>
+                <to>$IMCreateIMSPrivateIdentityIn.NewIMSPrivateIdentity/ns3:Info</to>
+            </copy>
+        </assign>
+        <invoke name="CreateIMPI" partnerLink="IM" operation="CreateIMSPrivateIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMCreateIMSPrivateIdentityIn" outputVariable="IMCreateIMSPrivateIdentityOut"/>
+        <invoke name="CreateIMPU" partnerLink="IM" operation="CreateIMSPublicIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMCreateIMSPublicIdentityIn" outputVariable="IMCreateIMSPublicIdentityOut"/>
+        <assign name="AssignMapping">
+            <copy>
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:TxId</from>
+                <to>$IMCreateIdentityAssociationIn.NewIdentityAssociation/ns3:PlatformContext/ns3:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:OriginatingIdentity</from>
+                <to>$IMCreateIdentityAssociationIn.NewIdentityAssociation/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:OriginatingIP</from>
+                <to>$IMCreateIdentityAssociationIn.NewIdentityAssociation/ns3:PlatformContext/ns3:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAProvisionSIMCardIn.NewSIMCardData/ns2:SCAContext/ns2:Tenant</from>
+                <to>$IMCreateIdentityAssociationIn.NewIdentityAssociation/ns3:PlatformContext/ns3:Tenant</to>
+            </copy>
+            <copy>
+                <from>$IMCreateIMSPrivateIdentityOut.IMSPrivateIdentity/ns3:IMSPrivateIdentityId</from>
+                <to>$IMCreateIdentityAssociationIn.NewIdentityAssociation/ns3:IMSPrivateIdentityId</to>
+            </copy>
+            <copy>
+                <from>$IMCreateIMSPublicIdentityOut.IMSPublicIdentity/ns3:IMSPublicIdentityId</from>
+                <to>$IMCreateIdentityAssociationIn.NewIdentityAssociation/ns3:IMSPublicIdentityId</to>
+            </copy>
+            <copy>
+                <from>0</from>
+                <to>$IMCreateIdentityAssociationIn.NewIdentityAssociation/ns3:UserState</to>
+            </copy>
+        </assign>
+        <invoke name="MapIMPIToIMPU" partnerLink="IM" operation="CreateIdentityAssociation" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMCreateIdentityAssociationIn" outputVariable="IMCreateIdentityAssociationOut"/>
+        <assign name="AssignDone">
+            <copy>
+                <from>'true'</from>
+                <to>$SCAProvisionSIMCardOut.Done/ns2:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="ProvisionSIMCard" portType="tns:SCASoap" variable="SCAProvisionSIMCardOut"/>
+    </sequence>
+</process>

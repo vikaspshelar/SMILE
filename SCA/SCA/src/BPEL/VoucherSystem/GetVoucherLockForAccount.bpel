@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetVoucherLockForAccount"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/PVS" xmlns:ns2="http://xml.smilecoms.com/schema/BM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/PVS" location="../Partners/PVS/PVSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="PVS" xmlns:tns="http://xml.smilecoms.com/PVS" partnerLinkType="tns:PVSServiceDefinition" partnerRole="PVS"/>
+        
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="SCAGetVoucherLockForAccountOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:GetVoucherLockForAccountResponse"/>
+        <variable name="PVSGetVoucherLockForAccountOut" xmlns:tns="http://xml.smilecoms.com/PVS" messageType="tns:GetVoucherLockForAccountResponse"/>
+        <variable name="PVSGetVoucherLockForAccountIn" xmlns:tns="http://xml.smilecoms.com/PVS" messageType="tns:GetVoucherLockForAccountRequest"/>
+        <variable name="SCAGetVoucherLockForAccountIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:GetVoucherLockForAccountRequest"/>
+        <variable name="Fault1FaultVar" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:PVS="http://xml.smilecoms.com/PVS" faultMessageType="PVS:PVSError" faultVariable="PVSError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetVoucherLockForAccount" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetVoucherLockForAccount" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAGetVoucherLockForAccountIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('PVS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="PVS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        
+
+        <assign name="AssignGetVoucherLockForAccount">
+            <copy>
+                <from>$SCAGetVoucherLockForAccountIn.VoucherLockForAccountQuery/ns0:AccountId</from>
+                <to>$PVSGetVoucherLockForAccountIn.VoucherLockForAccountQuery/ns1:AccountId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetVoucherLockForAccountIn.VoucherLockForAccountQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$PVSGetVoucherLockForAccountIn.VoucherLockForAccountQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAGetVoucherLockForAccountIn.VoucherLockForAccountQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$PVSGetVoucherLockForAccountIn.VoucherLockForAccountQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy>
+                <from>$SCAGetVoucherLockForAccountIn.VoucherLockForAccountQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$PVSGetVoucherLockForAccountIn.VoucherLockForAccountQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetVoucherLockForAccountIn.VoucherLockForAccountQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$PVSGetVoucherLockForAccountIn.VoucherLockForAccountQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+        </assign>
+        <invoke name="GetVoucherLockForAccount" partnerLink="PVS" operation="GetVoucherLockForAccount" xmlns:tns="http://xml.smilecoms.com/PVS" portType="tns:PVSSoap" inputVariable="PVSGetVoucherLockForAccountIn" outputVariable="PVSGetVoucherLockForAccountOut"/>
+        <assign name="AssignGetVoucherLockForAccountData">
+            <copy ignoreMissingFromData="yes">
+                <from>$PVSGetVoucherLockForAccountOut.VoucherLockForAccount/ns1:AccountId</from>
+                <to>$SCAGetVoucherLockForAccountOut.VoucherLockForAccount/ns0:AccountId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$PVSGetVoucherLockForAccountOut.VoucherLockForAccount/ns1:Attempts</from>
+                <to>$SCAGetVoucherLockForAccountOut.VoucherLockForAccount/ns0:Attempts</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$PVSGetVoucherLockForAccountOut.VoucherLockForAccount/ns1:LockUntilTimestamp</from>
+                <to>$SCAGetVoucherLockForAccountOut.VoucherLockForAccount/ns0:LockUntilTimestamp</to>
+            </copy>
+            <copy>
+                <from>$PVSGetVoucherLockForAccountOut.VoucherLockForAccount/ns1:Found</from>
+                <to>$SCAGetVoucherLockForAccountOut.VoucherLockForAccount/ns0:Found</to>
+            </copy>
+            <copy>
+                <from>$PVSGetVoucherLockForAccountOut.VoucherLockForAccount/ns1:AccountAttempts</from>
+                <to>$SCAGetVoucherLockForAccountOut.VoucherLockForAccount/ns0:AccountAttempts</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="GetVoucherLockForAccount" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAGetVoucherLockForAccountOut"/>
+    </sequence>
+</process>
+

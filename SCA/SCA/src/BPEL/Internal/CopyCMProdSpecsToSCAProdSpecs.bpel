@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="CopyCMProdSpecsToSCAProdSpecs"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/CM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="SCASubFlowsInvoke" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+    </partnerLinks>
+    <variables>
+        <variable name="prodSvcSpecMapCount" type="xs:int"/>
+        <variable name="svcSpecAVPCount"     type="xs:int"/>
+        <variable name="CopyCMProdSpecsToSCAProdSpecsOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:ProductSpecificationsResponse"/>           
+        <variable name="CopyCMProdSpecsToSCAProdSpecsIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductSpecificationsResponse"/>            
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="CopyCMProdSpecsToSCAProdSpecs" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="CopyCMProdSpecsToSCAProdSpecsIn"/>
+        <forEach name="ForEachSpec" parallel="no" counterName="spec">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>count($CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications)</finalCounterValue>
+            <scope name="Scope7">
+                <sequence name="Sequence1">
+                    <assign name="Assign8">
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductSpecificationId</from>
+                            <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductSpecificationId</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:Name</from>
+                            <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:Name</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:Description</from>
+                            <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:Description</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:AvailableFrom</from>
+                            <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:AvailableFrom</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:AvailableTo</from>
+                            <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:AvailableTo</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>count($CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings)</from>
+                            <to variable="prodSvcSpecMapCount"/>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProvisionRoles</from>
+                            <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProvisionRoles</to>
+                        </copy>
+                        <copy>
+                            <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:Segments
+                                <sxed:editor>
+                                    <sxed:predicate path="$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]" source="from"/>
+                                </sxed:editor>
+                            </from>
+                            <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:Segments
+                                <sxed:editor>
+                                    <sxed:predicate path="$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]" source="to"/>
+                                </sxed:editor>
+                            </to>
+                        </copy>
+                    </assign>
+                    <forEach name="ForEach_ProductServiceSpecificationMapping" parallel="no" counterName="idxProdSpecMapping">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>$prodSvcSpecMapCount</finalCounterValue>
+                        <scope name="Scope2">
+                            <sequence name="Sequence5">
+                                <assign name="Assign_ProductServiceMapping">
+                                    <copy ignoreMissingFromData="yes">
+                                        <from>count($CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:AVPs)                                            
+                                        </from>
+                                        <to variable="svcSpecAVPCount"/>
+                                    </copy>
+                                    <copy ignoreMissingFromData="yes">
+                                        <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:ServiceSpecificationId
+                                        </from>
+                                        <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ServiceSpecification/ns1:ServiceSpecificationId
+                                        </to>
+                                    </copy>
+                                    <copy ignoreMissingFromData="yes">
+                                        <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:Name
+                                        </from>
+                                        <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ServiceSpecification/ns1:Name
+                                        </to>
+                                    </copy>
+                                    <copy ignoreMissingFromData="yes">
+                                        <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:Description
+                                        </from>
+                                        <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ServiceSpecification/ns1:Description
+                                        </to>
+                                    </copy>
+                                    <copy ignoreMissingFromData="yes">
+                                        <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:MinServiceOccurences
+                                        </from>
+                                        <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:MinServiceOccurences
+                                        </to>
+                                    </copy>
+                                    <copy ignoreMissingFromData="yes">
+                                        <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:MaxServiceOccurences
+                                        </from>
+                                        <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:MaxServiceOccurences
+                                        </to>
+                                    </copy>
+                                    <copy ignoreMissingFromData="yes">
+                                        <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:RatePlanId</from>
+                                        <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:RatePlanId</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:GroupId</from>
+                                        <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:GroupId</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ProvisionRoles</from>
+                                        <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ProvisionRoles</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:AvailableFrom</from>
+                                        <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:AvailableFrom</to>
+                                    </copy>
+                                    <copy>
+                                        <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:AvailableTo</from>
+                                        <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:AvailableTo</to>
+                                    </copy>
+                                </assign>
+                                <forEach name="ForEach_SvcSpecAVP" parallel="no" counterName="idxSvcSpecAVP">
+                                    <startCounterValue>1</startCounterValue>
+                                    <finalCounterValue>$svcSpecAVPCount</finalCounterValue>
+                                    <scope name="Scope4">
+                                        <assign name="Assign3">
+                                            <copy ignoreMissingFromData="yes">
+                                                <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:Attribute</from>
+                                                <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:Attribute</to>
+                                            </copy>
+                                            <copy ignoreMissingFromData="yes">
+                                                <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:Value</from>
+                                                <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:Value</to>
+                                            </copy>
+                                            <copy ignoreMissingFromData="yes">
+                                                <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:UserDefined
+                                                </from>
+                                                <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:UserDefined
+                                                </to>
+                                            </copy>
+                                            <copy ignoreMissingFromData="yes">
+                                                <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:ValidationRule
+                                                </from>
+                                                <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:ValidationRule
+                                                </to>
+                                            </copy>
+                                            <copy ignoreMissingFromData="yes">
+                                                <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:InputType
+                                                </from>
+                                                <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:InputType
+                                                </to>
+                                            </copy>
+                                            <copy ignoreMissingFromData="yes">
+                                                <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:TechnicalDescription
+                                                </from>
+                                                <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:TechnicalDescription
+                                                </to>
+                                            </copy>
+                                            <copy ignoreMissingFromData="yes">
+                                                <from>$CopyCMProdSpecsToSCAProdSpecsIn.ProductSpecificationList/ns0:ProductSpecifications[$spec]/ns0:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns0:ServiceSpecification/ns0:AVPs[$idxSvcSpecAVP]/ns0:ProvisionRoles
+                                                </from>
+                                                <to>$CopyCMProdSpecsToSCAProdSpecsOut.ProductSpecificationList/ns1:ProductSpecifications[$spec]/ns1:ProductServiceSpecificationMappings[$idxProdSpecMapping]/ns1:ServiceSpecification/ns1:AVPs[$idxSvcSpecAVP]/ns1:ProvisionRoles
+                                                </to>
+                                            </copy>
+                                        </assign>
+                                    </scope>
+                                </forEach>
+                            </sequence>
+                        </scope>
+                    </forEach>
+                </sequence>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="CopyCMProdSpecsToSCAProdSpecs" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="CopyCMProdSpecsToSCAProdSpecsOut"/>
+    </sequence>
+</process>

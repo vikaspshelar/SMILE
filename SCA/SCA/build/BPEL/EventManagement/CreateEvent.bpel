@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<process
+    name="CreateEvent"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/ET" xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/ET" location="../Partners/ET/ETServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="ET" xmlns:tns="http://xml.smilecoms.com/ET" partnerLinkType="tns:ETServiceDefinition" partnerRole="ET"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="ETCreateEventOut" xmlns:tns="http://xml.smilecoms.com/ET" messageType="tns:CreateEventResponse"/>
+        <variable name="ETCreateEventIn" xmlns:tns="http://xml.smilecoms.com/ET" messageType="tns:CreateEventRequest"/>
+        <variable name="SCACreateEventOut" messageType="tns:CreateEventResponse"/>
+        <variable name="SCACreateEventIn" messageType="tns:CreateEventRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="CreateEvent" portType="tns:SCASoap" variable="SCACreateEventIn"/>
+        
+        <if name="IfAsync">
+            <condition>$SCACreateEventIn.NewEvent/ns1:SCAContext/ns1:Async</condition>
+            <sequence name="Sequence24">
+                <assign name="AssignReply">
+                    <copy>
+                        <from>'true'</from>
+                        <to>$SCACreateEventOut.Done/ns1:Done</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyAsync" partnerLink="SCA" operation="CreateEvent" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCACreateEventOut"/>
+            </sequence>
+        </if>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('ET')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="ET"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        
+        <assign name="Assign1">
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateEventIn.NewEvent/ns1:SCAContext/ns1:TxId</from>
+                <to>$ETCreateEventIn.NewEvent/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateEventIn.NewEvent/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$ETCreateEventIn.NewEvent/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateEventIn.NewEvent/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$ETCreateEventIn.NewEvent/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateEventIn.NewEvent/ns1:SCAContext/ns1:Tenant</from>
+                <to>$ETCreateEventIn.NewEvent/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateEventIn.NewEvent/ns1:EventType</from>
+                <to>$ETCreateEventIn.NewEvent/ns0:EventType</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateEventIn.NewEvent/ns1:EventSubType</from>
+                <to>$ETCreateEventIn.NewEvent/ns0:EventSubType</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateEventIn.NewEvent/ns1:EventKey</from>
+                <to>$ETCreateEventIn.NewEvent/ns0:EventKey</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateEventIn.NewEvent/ns1:EventData</from>
+                <to>$ETCreateEventIn.NewEvent/ns0:EventData</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateEventIn.NewEvent/ns1:UniqueKey</from>
+                <to>$ETCreateEventIn.NewEvent/ns0:UniqueKey</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCACreateEventIn.NewEvent/ns1:Date</from>
+                <to>$ETCreateEventIn.NewEvent/ns0:Date</to>
+            </copy>
+        </assign>
+        <invoke name="CallET" partnerLink="ET" operation="CreateEvent" xmlns:tns="http://xml.smilecoms.com/ET" portType="tns:ETSoap" inputVariable="ETCreateEventIn" outputVariable="ETCreateEventOut"/>
+        
+        <if name="IfNotAsyncRepl">
+            <condition>not($SCACreateEventIn.NewEvent/ns1:SCAContext/ns1:Async)</condition>
+            <sequence name="Sequence25">
+                <assign name="Assign2">
+                    <copy>
+                        <from>$ETCreateEventOut.Done/ns0:Done</from>
+                        <to>$SCACreateEventOut.Done/ns1:Done</to>
+                    </copy>
+                </assign>
+                <reply name="Reply1" partnerLink="SCA" operation="CreateEvent" portType="tns:SCASoap" variable="SCACreateEventOut"/>
+            </sequence>
+        </if>
+    </sequence>
+</process>

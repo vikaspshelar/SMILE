@@ -1,0 +1,123 @@
+/*
+-----------------------------------------------------------------------------
+Overall Page Size and layout
+-----------------------------------------------------------------------------
+*/
+#page-container {
+    background: #fff;
+    text-align: left;
+    margin:  auto;
+    background-color: #fff;
+}
+
+
+/* Heading level 1 */
+h1 { 
+    
+    margin-left: 4px;
+    margin-bottom: 15px;
+    padding-bottom: 0px;
+    font-size: 30px;
+    color: #50922C;
+    background-color: #fff;
+    text-align: center;
+    font-family: Arial, Helvetica, Verdana, Sans-serif;
+}
+
+/* Heading level 2 */
+h2 {
+    margin-left: 3px;
+    padding: 0;
+    padding-bottom: 0px;
+    font-size: 15px;
+    color: #50922C;
+    background-color: #fff;
+}
+
+/* Heading level 3 */
+h3 {
+    margin-left: 3px;
+    padding-bottom: 0px;
+    font-size: 13px;
+    color: #50922C;
+    background-color: #fff;
+}
+
+
+table.type1 {    
+  border-top-style: solid;
+  border-bottom-style: solid;
+  border-left-style: solid;
+  border-right-style: solid;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+  border-right-width: 1px;
+  width: 1000px;
+}
+
+table.type1 td {
+    
+  text-align: left;
+  vertical-align: top;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+  border-right-width: 1px;
+}
+
+table.itemlist {
+	border-width: 2px 2px 2px 2px;
+	border-spacing: 0px;
+	border-style: solid solid solid solid;
+	border-color: black black black black;
+	border-collapse: collapse;
+	background-color: white;
+}
+table.itemlist th {
+	border-width: 1px 1px 1px 1px;
+	padding: 3px 3px 3px 3px;
+	border-style: solid solid solid solid;
+	border-color: black black black black;
+	background-color: white;
+        text-align: left;
+}
+table.itemlist td {
+	border-width: 1px 1px 1px 1px;
+	padding: 3px 3px 3px 3px;
+	border-style: solid solid solid solid;
+	border-color: black black black black;
+	background-color: white;
+        text-align: left;
+}
+
+table.clear {
+	border-width: 0px;
+	border-spacing: 0px;
+	border-style: solid solid solid solid;
+	border-color: black black black black;
+	border-collapse: collapse;
+	background-color: white;
+}
+table.clear th {
+	border-width: 0px;
+	padding: 3px 3px 3px 3px;
+	border-style: solid solid solid solid;
+	border-color: black black black black;
+	background-color: white;
+}
+table.clear td {
+	border-width: 0px;
+	padding: 3px 3px 3px 3px;
+	border-style: solid solid solid solid;
+	border-color: black black black black;
+	background-color: white;
+}
+
+HR {
+page-break-after: always;
+}

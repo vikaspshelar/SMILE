@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="BSServiceDefinition" targetNamespace="http://xml.smilecoms.com/BS"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xml.smilecoms.com/BS" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://xml.smilecoms.com/schema/BS">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/BS" xmlns:ns1="http://xml.smilecoms.com/schema/BS">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/BS" schemaLocation="BSSchema.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="UpdateScheduleWithRunResultRequest">
+        <part name="BatchScheduleRunResult" element="ns1:BatchScheduleRunResult"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns1:Done"/>
+    </message>
+    <message name="BSError">
+        <part name="BSError" element="ns1:BSError"/>
+    </message>
+    <message name="GetBatchSchedulesRequest">
+        <part name="Nothing" element="ns1:BatchScheduleListRequest"/>
+    </message>
+    <message name="GetBatchSchedulesResponse">
+        <part name="BatchScheduleList" element="ns1:BatchScheduleList"/>
+    </message>
+    <message name="ModifyBatchScheduleRequest">
+        <part name="ModifiedBatchSchedule" element="ns1:ModifiedBatchSchedule"/>
+    </message>
+    <message name="RunUnixCommandRequest">
+        <part name="UnixCommand" element="ns1:UnixCommand"/>
+    </message>
+    <message name="RunUnixCommandResponse">
+        <part name="CommandResult" element="ns1:UnixCommandResult"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns1:IsUpRequest"/>
+    </message>
+    <portType name="BSSoap">
+        <operation name="UpdateScheduleWithRunResult">
+            <input name="input1" message="tns:UpdateScheduleWithRunResultRequest"/>
+            <output name="output1" message="tns:Done"/>
+            <fault name="fault1" message="tns:BSError"/>
+        </operation>
+        <operation name="GetBatchSchedules">
+            <input name="input2" message="tns:GetBatchSchedulesRequest"/>
+            <output name="output2" message="tns:GetBatchSchedulesResponse"/>
+            <fault name="fault1" message="tns:BSError"/>
+        </operation>
+        <operation name="ModifyBatchSchedule">
+            <input name="input3" message="tns:ModifyBatchScheduleRequest"/>
+            <output name="output3" message="tns:Done"/>
+            <fault name="fault1" message="tns:BSError"/>
+        </operation>
+        <operation name="RunUnixCommand">
+            <input name="input4" message="tns:RunUnixCommandRequest"/>
+            <output name="output4" message="tns:RunUnixCommandResponse"/>
+            <fault name="fault1" message="tns:BSError"/>
+        </operation>
+        <operation name="IsUp">
+            <input name="input5" message="tns:IsUpRequest"/>
+            <output name="output5" message="tns:Done"/>
+            <fault name="fault1" message="tns:BSError"/>
+        </operation>
+    </portType>
+    <binding name="BSBinding" type="tns:BSSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="UpdateScheduleWithRunResult">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetBatchSchedules">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="ModifyBatchSchedule">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="RunUnixCommand">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="IsUp">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="BS">
+        <port name="BSSoap" binding="tns:BSBinding">
+            <soap:address location="http://dummyhost:${HttpDefaultPort}/BS/BSSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="BSServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes. 
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="BS" portType="tns:BSSoap"/>
+    </plnk:partnerLinkType>
+</definitions>

@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/BM"
+            xmlns:tns="http://xml.smilecoms.com/schema/BM"         
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+            xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" 
+            elementFormDefault="qualified" jaxb:extensionBindingPrefixes="xjc" jaxb:version="1.0">
+                
+    <xsd:annotation>
+        <xsd:appinfo>
+            <jaxb:globalBindings>
+                <xjc:serializable />
+            </jaxb:globalBindings>
+        </xsd:appinfo>
+    </xsd:annotation>                 
+                
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject">
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext" minOccurs="0"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformInteger">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Integer" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformLong">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Long" type="xsd:long"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="BMError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string"></xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string"></xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:element name="BMError" type="tns:BMError"></xsd:element>
+    <xsd:complexType name="Done">
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="Done" type="tns:Done"></xsd:element>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+    <xsd:complexType name="ServiceInstanceIdentifier">
+        <xsd:sequence>
+            <xsd:element name="Identifier" type="xsd:string"></xsd:element>
+            <xsd:element name="IdentifierType" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="RatingKey">
+        <xsd:sequence>
+            <!-- This is with respect to what the S-CSCF sees -->
+            <xsd:element name="From" type="xsd:string"></xsd:element>
+            <xsd:element name="To" type="xsd:string"></xsd:element>
+            <xsd:element name="ServiceCode" type="xsd:string"></xsd:element>
+            <xsd:element name="RatingGroup" type="xsd:string"></xsd:element>
+            <xsd:element name="IncomingTrunk" type="xsd:string"></xsd:element>
+            <xsd:element name="OutgoingTrunk" type="xsd:string"></xsd:element>
+            <xsd:element name="Leg" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="RequestedServiceUnit">
+        <xsd:sequence>
+            <xsd:element name="UnitType" type="xsd:string"></xsd:element>
+            <xsd:element name="UnitQuantity" type="xsd:decimal"></xsd:element>
+            <xsd:element name="ReservationSecs" type="xsd:int"></xsd:element>
+            <xsd:element name="TriggerCharged" type="xsd:boolean"/>
+            <xsd:element name="CheckOnly" type="xsd:boolean"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="UsedServiceUnit">
+        <xsd:sequence>
+            <xsd:element name="UnitType" type="xsd:string"></xsd:element>
+            <xsd:element name="UnitQuantity" type="xsd:decimal"></xsd:element>
+            <xsd:element name="TerminationCode" type="xsd:string"></xsd:element>
+            <xsd:element name="TotalSessionUnits" type="xsd:boolean"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="GrantedServiceUnit">
+        <xsd:sequence>
+            <xsd:element name="ChargingDataIndex" type="xsd:int"/>
+            <xsd:element name="UnitType" type="xsd:string"></xsd:element>
+            <xsd:element name="UnitQuantity" type="xsd:decimal"></xsd:element>
+            <xsd:element name="ValidityTime" type="xsd:int"></xsd:element>
+            <xsd:element name="FinalUnits" type="xsd:boolean"></xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string"></xsd:element>
+            <xsd:element name="RetailCentsPerUnit" type="xsd:decimal"></xsd:element>
+            <xsd:element name="FromInterconnectCentsPerUnit" type="xsd:decimal"></xsd:element>
+            <xsd:element name="ToInterconnectCentsPerUnit" type="xsd:decimal"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ChargingRequest">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ChargingData" type="tns:ChargingData" maxOccurs="unbounded"/>
+                    <xsd:element name="Retrial" type="xsd:boolean"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ChargingData">
+        <xsd:sequence>
+            <xsd:element name="ChargingDataIndex" type="xsd:int"/>
+            <xsd:element name="ServiceInstanceIdentifier" type="tns:ServiceInstanceIdentifier"></xsd:element>
+            <xsd:element name="RequestedServiceUnit" type="tns:RequestedServiceUnit"></xsd:element>
+            <xsd:element name="UsedServiceUnit" type="tns:UsedServiceUnit"></xsd:element>
+            <xsd:element name="RatingKey" type="tns:RatingKey"></xsd:element>
+            <xsd:element name="SessionId" type="xsd:string"></xsd:element>
+            <xsd:element name="EventTimestamp" type="xsd:dateTime"></xsd:element>
+            <xsd:element name="UserEquipment" type="xsd:string"></xsd:element>
+            <xsd:element name="Description" type="xsd:string"></xsd:element>
+            <xsd:element name="Location" type="xsd:string"></xsd:element>
+            <xsd:element name="IPAddress" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ChargingResult">
+        <xsd:sequence>
+            <xsd:element name="GrantedServiceUnits" type="tns:GrantedServiceUnit" maxOccurs="unbounded"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="ChargingRequest" type="tns:ChargingRequest"></xsd:element>
+    <xsd:element name="ChargingResult" type="tns:ChargingResult"></xsd:element>
+
+
+    <!-- Account Management -->
+    
+    <xsd:complexType name="Account">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="AccountId" type="xsd:long"/>
+                    <xsd:element name="Status" type="xsd:int"/>
+                    <xsd:element name="CurrentBalanceInCents" type="xsd:double"></xsd:element>
+                    <xsd:element name="AvailableBalanceInCents" type="xsd:double"></xsd:element>
+                    <xsd:element name="UnitCreditInstances" type="tns:UnitCreditInstance" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="Reservations" type="tns:Reservation" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Reservation">
+        <xsd:sequence>
+            <xsd:element name="AccountId" type="xsd:long"/>
+            <xsd:element name="UnitCreditInstanceId" type="xsd:int"/>
+            <xsd:element name="SessionId" type="xsd:string"/>
+            <xsd:element name="ExpiryDate" type="xsd:dateTime"></xsd:element>
+            <xsd:element name="ReservationDate" type="xsd:dateTime"></xsd:element>
+            <xsd:element name="UnitCreditUnits" type="xsd:double"></xsd:element>
+            <xsd:element name="AmountInCents" type="xsd:double"></xsd:element>
+            <xsd:element name="Description" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="BalanceTransferLine">
+        <xsd:sequence>
+            <xsd:element name="SourceAccountId" type="xsd:long"/>
+            <xsd:element name="TargetAccountId" type="xsd:long"/>
+            <xsd:element name="AmountInCents" type="xsd:double"/>
+            <xsd:element name="TransferType" type="xsd:string"/>
+            <xsd:element name="SaleId" type="xsd:int"/>
+            <xsd:element name="Description" type="xsd:string"/>
+            <xsd:element name="Info" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ProvisionUnitCreditLine">
+        <xsd:sequence>
+            <xsd:element name="AccountId" type="xsd:long"></xsd:element>
+            <xsd:element name="UnitCreditSpecificationId" type="xsd:int"></xsd:element>
+            <xsd:element name="UnitCreditName" type="xsd:string"/>
+            <xsd:element name="ItemNumber" type="xsd:string"/>
+            <xsd:element name="ProductInstanceId" type="xsd:int"></xsd:element>
+            <xsd:element name="NumberToProvision" type="xsd:int"></xsd:element>
+            <xsd:element name="DaysGapBetweenStart" type="xsd:int"></xsd:element>
+            <xsd:element name="POSCentsPaidEach" type="xsd:double"/>
+            <xsd:element name="POSCentsDiscountEach" type="xsd:double"/>
+            <xsd:element name="StartDate" type="xsd:dateTime"/>
+            <xsd:element name="Info" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="BalanceTransferData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="BalanceTransferLines" type="tns:BalanceTransferLine" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TransactionReversalData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="UnitCreditExtTxIds" type="xsd:string" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="TransferExtTxIds" type="xsd:string" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="ChargeExtTxIds" type="xsd:string" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    
+    
+    <xsd:complexType name="AccountList">
+        <xsd:sequence>
+            <xsd:element name="Accounts" type="tns:Account" maxOccurs="unbounded"></xsd:element>
+            <xsd:element name="NumberOfAccounts" type="xsd:int"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="UnitCreditInstanceList">
+        <xsd:sequence>
+            <xsd:element name="UnitCreditInstances" type="tns:UnitCreditInstance" maxOccurs="unbounded"></xsd:element>
+            <xsd:element name="NumberOfUnitCreditInstances" type="xsd:int"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AccountQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="AccountId" type="xsd:long"></xsd:element>
+                    <xsd:element name="Identifier" type="xsd:string"></xsd:element>
+                    <xsd:element name="IdentifierType" type="xsd:string"></xsd:element>                    
+                    <xsd:element name="UnitCreditInstanceId" type="xsd:int"></xsd:element>
+                    <xsd:element name="Verbosity" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="UnitCreditInstanceQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="UnitCreditInstanceId" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TransactionRecord">
+        <xsd:sequence>
+            <xsd:element name="TransactionRecordId" type="xsd:long"></xsd:element>
+            <xsd:element name="Source" type="xsd:string"></xsd:element>
+            <xsd:element name="Destination" type="xsd:string"></xsd:element>
+            <xsd:element name="StartDate" type="xsd:dateTime"></xsd:element>
+            <xsd:element name="EndDate" type="xsd:dateTime"></xsd:element>
+            <xsd:element name="ExtTxId" type="xsd:string"></xsd:element>
+            <xsd:element name="AmountInCents" type="xsd:double"></xsd:element>
+            <xsd:element name="SourceDevice" type="xsd:string"></xsd:element>
+            <xsd:element name="TotalUnits" type="xsd:double"></xsd:element>
+            <xsd:element name="TermCode" type="xsd:string"></xsd:element>
+            <xsd:element name="TransactionType" type="xsd:string"></xsd:element>
+            <xsd:element name="AccountBalanceRemainingInCents" type="xsd:double"></xsd:element>
+            <xsd:element name="Description" type="xsd:string"></xsd:element>
+            <xsd:element name="Status" type="xsd:string"></xsd:element>
+            <xsd:element name="AccountId" type="xsd:long"></xsd:element>
+            <xsd:element name="ServiceInstanceId" type="xsd:int"></xsd:element>
+            <xsd:element name="UnitCreditUnits" type="xsd:double"></xsd:element>
+            <xsd:element name="UnitCreditBaselineUnits" type="xsd:double"></xsd:element>
+            <xsd:element name="ChargingDetail" type="xsd:string"></xsd:element>
+            <xsd:element name="IPAddress" type="xsd:string"></xsd:element>
+            <xsd:element name="Location" type="xsd:string"></xsd:element>
+            <xsd:element name="ServiceInstanceIdentifier" type="xsd:string"></xsd:element>
+            <xsd:element name="Info" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="PeriodSummary">
+        <xsd:sequence>
+            <xsd:element name="Period" type="xsd:string"></xsd:element>
+            <xsd:element name="TransactionType" type="xsd:string"></xsd:element>
+            <xsd:element name="UnitCreditUnits" type="xsd:double"></xsd:element>
+            <xsd:element name="UnitCreditBaselineUnits" type="xsd:double"></xsd:element>
+            <xsd:element name="AmountInCents" type="xsd:double"></xsd:element>
+            <xsd:element name="TotalUnits" type="xsd:double"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AccountHistory">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="TransactionRecords" type="tns:TransactionRecord" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="ResultsReturned" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="AccountSummary">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PeriodSummaries" type="tns:PeriodSummary" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="ResultsReturned" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AccountHistoryQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="TransactionRecordId" type="xsd:long" minOccurs="0"></xsd:element>
+                    <xsd:element name="Source" type="xsd:string" minOccurs="0"></xsd:element>
+                    <xsd:element name="DateFrom" type="xsd:dateTime" minOccurs="0"></xsd:element>
+                    <xsd:element name="DateTo" type="xsd:dateTime" minOccurs="0"></xsd:element>
+                    <xsd:element name="ExtTxId" type="xsd:string" minOccurs="0"></xsd:element>
+                    <xsd:element name="TransactionType" type="xsd:string" minOccurs="0"></xsd:element>
+                    <xsd:element name="ResultLimit" type="xsd:int" minOccurs="0"></xsd:element>
+                    <xsd:element name="Offset" type="xsd:int" minOccurs="0"></xsd:element>
+                    <xsd:element name="ServiceInstanceIds" type="xsd:int" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="AccountId" type="xsd:long"></xsd:element>
+                    <xsd:element name="Verbosity" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AccountSummaryQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="DateFrom" type="xsd:dateTime" minOccurs="0"></xsd:element>
+                    <xsd:element name="DateTo" type="xsd:dateTime" minOccurs="0"></xsd:element>
+                    <xsd:element name="AccountId" type="xsd:long"></xsd:element>
+                    <xsd:element name="ServiceInstanceIds" type="xsd:int" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="Verbosity" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="UnitCreditInstance">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="UnitCreditInstanceId" type="xsd:int"/>
+                    <xsd:element name="Name" type="xsd:string"/>
+                    <xsd:element name="UnitType" type="xsd:string"/>
+                    <xsd:element name="UnitCreditSpecificationId" type="xsd:int"/>
+                    <xsd:element name="AccountId" type="xsd:long"/>
+                    <xsd:element name="PurchaseDate" type="xsd:dateTime"/>
+                    <xsd:element name="StartDate" type="xsd:dateTime"/>
+                    <xsd:element name="EndDate" type="xsd:dateTime"/>
+                    <xsd:element name="ExpiryDate" type="xsd:dateTime"/>
+                    <xsd:element name="CurrentUnitsRemaining" type="xsd:double"/>
+                    <xsd:element name="AvailableUnitsRemaining" type="xsd:double"/>
+                    <xsd:element name="UnitsAtStart" type="xsd:double"/>
+                    <xsd:element name="ProductInstanceId" type="xsd:int"/>
+                    <xsd:element name="ExtTxId" type="xsd:string"></xsd:element>
+                    <xsd:element name="Info" type="xsd:string"></xsd:element>
+                    <xsd:element name="SaleLineId" type="xsd:int"></xsd:element>
+                    <xsd:element name="Comment" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ServiceInstanceMappingList">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ServiceInstanceId" type="xsd:int"/>
+                    <xsd:element name="ServiceInstanceMappings" type="tns:ServiceInstanceMapping" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="ServiceInstanceId" type="tns:PlatformInteger"></xsd:element>
+    
+    <xsd:complexType name="ServiceInstanceMapping">
+        <xsd:sequence>
+            <xsd:element name="Identifier" type="xsd:string"></xsd:element>
+            <xsd:element name="IdentifierType" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ServiceInstanceMappingsReplacementData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="OldServiceInstanceMapping" type="tns:ServiceInstanceMapping"/>
+                    <xsd:element name="NewServiceInstanceMapping" type="tns:ServiceInstanceMapping"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ServiceInstanceUpdateData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ServiceInstanceId" type="xsd:int"/>
+                    <xsd:element name="AccountId" type="xsd:long"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SplitUnitCreditData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="UnitCreditInstanceId" type="xsd:int"/>
+                    <xsd:element name="TargetAccountId" type="xsd:long"/>
+                    <xsd:element name="TargetProductInstanceId" type="xsd:int"/>
+                    <xsd:element name="Units" type="xsd:double"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ScheduledAccountHistory">
+        <xsd:complexContent>
+            <xsd:extension base="tns:SCAObject">
+                <xsd:sequence>
+                    <xsd:element name="ScheduledId" type="xsd:int"/>
+                    <xsd:element name="AccountId" type="xsd:long"/>
+                    <xsd:element name="Frequency" type="xsd:string"/>
+                    <xsd:element name="EmailTo" type="xsd:string"/>
+                    <xsd:element name="LastRunDate" type="xsd:dateTime"></xsd:element>
+                    <xsd:element name="Status" type="xsd:string"/>
+                    <xsd:element name="CreatedByProfileId" type="xsd:long"/>
+                    <xsd:element name="CreatedDateTime" type="xsd:dateTime"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ScheduledAccountHistoryQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:SCAObject">
+                <xsd:sequence>
+                    <xsd:element name="AccountId" type="xsd:long"/>
+                    <xsd:element name="Frequency" type="xsd:string"/>
+                    <xsd:element name="EmailTo" type="xsd:string"/>
+                    <xsd:element name="LastRunDate" type="xsd:dateTime"></xsd:element>
+                    <xsd:element name="Status" type="xsd:string"/>
+                    <xsd:element name="CreatedByProfileId" type="xsd:long"/>
+                    <xsd:element name="CreatedDateTime" type="xsd:dateTime"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="ScheduledAccountHistory" type="tns:ScheduledAccountHistory"></xsd:element>
+    <xsd:element name="ScheduledAccountHistoryQuery" type="tns:ScheduledAccountHistoryQuery"></xsd:element>
+    <xsd:element name="NewScheduledAccountHistoryData" type="tns:ScheduledAccountHistory"></xsd:element>
+
+    <xsd:element name="AccountList" type="tns:AccountList"></xsd:element>
+    <xsd:element name="UnitCreditInstanceList" type="tns:UnitCreditInstanceList"></xsd:element>
+    <xsd:element name="ServiceInstanceMappingsReplacementData" type="tns:ServiceInstanceMappingsReplacementData"></xsd:element>
+    <xsd:element name="Account" type="tns:Account"></xsd:element>
+    <xsd:element name="CreateAccountRequest" type="tns:Account"></xsd:element>    
+    <xsd:element name="ModifyAccountRequest" type="tns:Account"></xsd:element>
+    <xsd:element name="ModifyUnitCreditRequest" type="tns:UnitCreditInstance"></xsd:element>
+    <xsd:element name="SplitUnitCreditRequest" type="tns:SplitUnitCreditData"></xsd:element>
+    <xsd:element name="ServiceInstanceUpdateData" type="tns:ServiceInstanceUpdateData"></xsd:element>
+    <xsd:element name="ModifyServiceInstanceAccountRequest" type="tns:ServiceInstanceUpdateData"></xsd:element>
+    <xsd:element name="UnitCreditInstance" type="tns:UnitCreditInstance"></xsd:element>
+    <xsd:element name="DeleteAccountRequest" type="tns:PlatformLong"></xsd:element>
+    <xsd:element name="AccountHistoryQuery" type="tns:AccountHistoryQuery"></xsd:element>
+    <xsd:element name="AccountHistory" type="tns:AccountHistory"></xsd:element>
+    <xsd:element name="AccountSummaryQuery" type="tns:AccountSummaryQuery"></xsd:element>
+    <xsd:element name="AccountSummary" type="tns:AccountSummary"></xsd:element>
+    <xsd:element name="AccountQuery" type="tns:AccountQuery"></xsd:element>
+    <xsd:element name="UnitCreditInstanceQuery" type="tns:UnitCreditInstanceQuery"></xsd:element>
+    <xsd:element name="BalanceTransferData" type="tns:BalanceTransferData"></xsd:element>
+    <xsd:element name="TransactionReversalData" type="tns:TransactionReversalData"></xsd:element>
+    <xsd:element name="ServiceInstanceMappingList" type="tns:ServiceInstanceMappingList"></xsd:element>
+    <xsd:element name="ServiceInstanceMappingListToDelete" type="tns:ServiceInstanceMappingList"></xsd:element>
+
+    <xsd:complexType name="RatePlan">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="RatePlanId" type="xsd:int"/>
+                    <xsd:element name="Name" type="xsd:string"/>
+                    <xsd:element name="Description" type="xsd:string"/>
+                    <xsd:element name="RatingEngineClass" type="xsd:string"/>
+                    <xsd:element name="EventBased" type="xsd:boolean"/>
+                    <xsd:element name="SessionBased" type="xsd:boolean"/>
+                    <xsd:element name="AVPs" type="tns:AVP" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AVP">
+        <xsd:sequence>
+            <xsd:element name="Attribute" type="xsd:string"/>
+            <xsd:element name="Value" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:element name="RatePlanId" type="tns:PlatformInteger"></xsd:element>
+    <xsd:element name="RatePlan" type="tns:RatePlan"></xsd:element>
+    
+    <xsd:complexType name="ProvisionUnitCreditRequest">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="ProvisionUnitCreditLines" type="tns:ProvisionUnitCreditLine" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="VerifyOnly" type="xsd:boolean"></xsd:element>
+                    <xsd:element name="SkipUniqueTest" type="xsd:boolean"></xsd:element>
+                    <xsd:element name="CreditUnearnedRevenue" type="xsd:boolean"></xsd:element>
+                    <xsd:element name="SaleLineId" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="ProvisionUnitCreditRequest" type="tns:ProvisionUnitCreditRequest"></xsd:element>
+    
+    <xsd:complexType name="TransferGraphQuery">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="StartDate" type="xsd:dateTime"/>
+                    <xsd:element name="EndDate" type="xsd:dateTime"/>
+                    <xsd:element name="Recursions" type="xsd:int"/>
+                    <xsd:element name="RootAccountId" type="xsd:long"/>
+                    <xsd:element name="DebitType" type="xsd:string"/>
+                    <xsd:element name="RegexMatch" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TransferGraph">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Graph" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="TransferGraphQuery" type="tns:TransferGraphQuery"></xsd:element>  
+    <xsd:element name="TransferGraph" type="tns:TransferGraph"></xsd:element>  
+    
+    <xsd:complexType name="PortingData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="StartE164" type="xsd:long"></xsd:element>
+                    <xsd:element name="EndE164" type="xsd:long"></xsd:element>
+                    <xsd:element name="InterconnectPartnerName" type="xsd:string" minOccurs="0"></xsd:element>
+                    <xsd:element name="InterconnectPartnerCode" type="xsd:string" minOccurs="0"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent> 
+    </xsd:complexType>
+    
+    <xsd:element name="PortingData" type="tns:PortingData"></xsd:element>  
+    
+</xsd:schema>
+
+

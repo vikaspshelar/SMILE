@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://thenowfactory.com/cce" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="cce" targetNamespace="cce">
+  <wsdl:types xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://thenowfactory.com/cce" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://thenowfactory.com/cce">
+
+    <!-- Abstract request and response -->
+
+    <xs:simpleType name="NonEmptyString" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">String with length of trimmed value greater or equal than zero</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:whiteSpace value="collapse" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+            <xs:minLength value="1" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType abstract="true" name="BaseRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Base type for all requests</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="1" minOccurs="1" name="SubscriberId" type="NonEmptyString" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Subscriber ID (for example MSISDN)</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType abstract="true" name="BaseResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Base type for all responses</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="1" minOccurs="1" name="SubscriberId" type="NonEmptyString" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Subscriber ID (for example MSISDN)</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Request and response for Complex operation-->
+
+    <xs:element name="ComplexRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Complex operation combines the Attribution and Metric operations responses for given MSISDN.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:complexContent xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:extension base="BaseRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                        <xs:element maxOccurs="1" minOccurs="0" name="MetricReportIds" type="MetricReportIds" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <xs:element maxOccurs="1" minOccurs="1" name="MetricTimeRange" type="MetricTimeRange" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="MetricRequestParameterSet" type="MetricRequestParameterSet" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="AttributeNames" type="AttributeNames" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="MetricReportIds" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Wrapper tag for report IDs</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="MetricReportId" type="NonEmptyString" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Time Range complex type -->
+    <xs:element name="ComplexResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Complex operation combines the Attribution and Metric operations responses for given MSISDN.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:complexContent xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:extension base="BaseResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                        <xs:element maxOccurs="1" minOccurs="1" name="AttributionResponse" type="AttributionContainers" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <xs:element maxOccurs="1" minOccurs="1" name="MetricResponses" type="MetricResponses" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="AttributionContainers" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Wrapper tag for attributes per IMSI</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="AttributionContainer" type="AttributionContainer" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MetricResponses" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Wrapper tag for result reports</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="unbounded" minOccurs="1" name="Report" type="Report" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ########################## REQUEST ##################### -->
+
+    <xs:element name="AttributionRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Attribution operation provides access to subscriber attributes by given msisdn.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:complexContent xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:extension base="BaseRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                        <xs:element maxOccurs="1" minOccurs="0" name="AttributeNames" type="AttributeNames" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="AttributeNames" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Wrapper tag for attribute names</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="AttributeName" type="NonEmptyString" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ########################## RESPONSE ##################### -->
+
+    <xs:element name="AttributionResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Attribution operation provides access to subscriber attributes by given msisdn.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:complexContent xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:extension base="BaseResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="AttributionContainer" type="AttributionContainer" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="AttributionContainer" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Encapsulates  attributes per IMSI</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="1" minOccurs="1" name="Identificator" type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="AttributePair" type="AttributePair" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AttributePair" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Wrapper tag for attribute</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="1" minOccurs="1" name="AttributeKey" type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Attribute name</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="1" name="AttributeValue" type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Attribute value</xs:documentation>
+            </xs:annotation>
+        </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <!-- ########################## REQUEST ##################### -->
+
+    <xs:element name="MetricRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Request to MetricEndpoint</xs:documentation>
+        </xs:annotation>
+        <xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:complexContent xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:extension base="BaseRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                        <xs:element maxOccurs="1" minOccurs="1" name="MetricReportId" type="NonEmptyString" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Id of report; you should obtain supported report ids from The Now Factory
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element maxOccurs="1" minOccurs="1" name="MetricTimeRange" type="MetricTimeRange" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="MetricRequestParameterSet" type="MetricRequestParameterSet" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Time Range complex type -->
+    <xs:complexType name="MetricTimeRange" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Time period together with granularity</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="1" minOccurs="1" name="StartTime" type="xs:dateTime" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Start of time frame</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="1" name="EndTime" type="xs:dateTime" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">End of timeframe</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="1" name="Granularity" type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Granularity id; you should obtain supported granularity ids from The Now Factory
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Parameter Set complex type -->
+    <xs:complexType name="MetricRequestParameterSet" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Set of Key-Value entries used for parametrizing requests</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="unbounded" minOccurs="0" ref="MetricRequestParameter" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Parameter complex type -->
+    <xs:element name="MetricRequestParameter" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Key-Value entry used for parametrizing requests</xs:documentation>
+        </xs:annotation>
+        <xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:all xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:element maxOccurs="1" minOccurs="1" name="MetricRequestParameterKey" type="NonEmptyString" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                        <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Parameter name; you should obtain supported parameter names from The Now
+                            Factory
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element maxOccurs="1" minOccurs="1" name="MetricRequestParameterVal" type="NonEmptyString" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                        <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Parameter value</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ############################# RESPONSE ####################### -->
+
+    <xs:element name="MetricResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:complexContent xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:extension base="BaseResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                        <xs:element maxOccurs="1" minOccurs="0" name="Report" type="Report" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="Report" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:choice xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element name="BreakdownDataset" type="BreakdownDataset" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+            <xs:element name="TrendOverTimeDataset" type="TrendOverTimeDataset" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:choice>
+        <xs:attribute name="reportId" type="xs:string" use="required" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Report ID specified in service request</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <!-- BD response -->
+
+    <xs:attributeGroup name="DatasetAttributes" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:attribute name="hasMore" type="xs:boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    Some reports limit the results to a given amount of series;
+                    This flag indicates that there are more results available
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:complexType name="BreakdownDataset" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Represents a breakdown data set</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="unbounded" name="BreakdownDimension" type="BreakdownDimension" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="DatasetAttributes" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+    </xs:complexType>
+
+    <xs:complexType name="BreakdownDimension" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                Represents a breakdown item: information about dimensions together with set of KPI's values associated
+                with it
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="BreakdownKpi" type="BreakdownKpi" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+        <xs:attribute name="dimensionId" type="xs:long" use="optional" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">TNF internal id of dimension associated with given series</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="dimensionName" type="xs:string" use="optional" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Human readable name of dimension associated with given series</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="BreakdownKpi" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Represents one KPI value associated to given breakdown</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element name="BreakdownValue" type="xs:double" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+        <xs:attribute name="kpiId" type="xs:string" use="required" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">TNF internal id of KPI associated with given breakdown entry</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="kpiLabel" type="xs:string" use="required" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Human readable name of KPI associated with given breakdown entry</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="unitLabel" type="xs:string" use="optional" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Unit for all KPI's associated with given breakdown entry</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="residualValue" type="xs:double" use="optional" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    If report returns a limited number of breakdown, this attribute will hold the cumulative value for
+                    all other dimensions
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+
+    <!-- Trend Over Time Metric Service response -->
+    <xs:complexType name="TrendOverTimeDataset" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Represents a trend over time data set</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="TimeEntrySeries" type="TimeEntrySeries" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="DatasetAttributes" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+    </xs:complexType>
+
+    <!-- Time entry series complex type -->
+    <xs:complexType name="TimeEntrySeries" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Represents one series in trend over time data set</xs:documentation>
+        </xs:annotation>
+        <xs:sequence xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="TimeEntry" type="TimeEntry" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+        </xs:sequence>
+        <xs:attribute name="dimensionId" type="xs:long" use="optional" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">TNF internal id of dimension associated with given series</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="dimensionName" type="xs:string" use="optional" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Human readable name of dimension associated with given series</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="kpiId" type="xs:string" use="required" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">TNF internal id of KPI associated with given series</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="kpiLabel" type="xs:string" use="required" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Human readable name of KPI associated with given series</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="unitLabel" type="xs:string" use="optional" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Unit for all KPI's associated with given series</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <!-- Time entry complex type -->
+    <xs:complexType name="TimeEntry" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Represents one point of series in trend over time data set</xs:documentation>
+        </xs:annotation>
+        <xs:all xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element maxOccurs="1" minOccurs="1" name="StartTimestamp" type="xs:dateTime" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Start of time interval represented by given TimeEntry</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="1" name="EndTimestamp" type="xs:dateTime" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">End of time interval represented by given TimeEntry</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="1" name="TimeEntryValue" type="xs:double" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                <xs:annotation xmlns:xs="http://www.w3.org/2001/XMLSchema">
+                    <xs:documentation xmlns:xs="http://www.w3.org/2001/XMLSchema">Numeric value of KPI associated to given TimeEntry</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="MetricRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:part element="sch:MetricRequest" name="MetricRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ComplexResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:part element="sch:ComplexResponse" name="ComplexResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ComplexRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:part element="sch:ComplexRequest" name="ComplexRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="MetricResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:part element="sch:MetricResponse" name="MetricResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="AttributionResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:part element="sch:AttributionResponse" name="AttributionResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="AttributionRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:part element="sch:AttributionRequest" name="AttributionRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="CustomerCare" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:operation name="Metric" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+      <wsdl:input message="tns:MetricRequest" name="MetricRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:input>
+      <wsdl:output message="tns:MetricResponse" name="MetricResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Complex" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+      <wsdl:input message="tns:ComplexRequest" name="ComplexRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:input>
+      <wsdl:output message="tns:ComplexResponse" name="ComplexResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Attribution" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+      <wsdl:input message="tns:AttributionRequest" name="AttributionRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:input>
+      <wsdl:output message="tns:AttributionResponse" name="AttributionResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CustomerCareSoap11" type="tns:CustomerCare" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+    <wsdl:operation name="Metric" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+      <soap:operation soapAction="" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      <wsdl:input name="MetricRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:input>
+      <wsdl:output name="MetricResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Complex" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+      <soap:operation soapAction="" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      <wsdl:input name="ComplexRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:input>
+      <wsdl:output name="ComplexResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Attribution" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+      <soap:operation soapAction="" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      <wsdl:input name="AttributionRequest" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:input>
+      <wsdl:output name="AttributionResponse" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+        <soap:body use="literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CustomerCareService" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:port binding="tns:CustomerCareSoap11" name="CustomerCareSoap11" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+      <soap:address location="http://localhost:8080/customer-care-endpoint/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

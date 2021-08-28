@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process
+    name="GetPortOrders"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/AM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/AM" location="../Partners/AM/AMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="AM" xmlns:tns="http://xml.smilecoms.com/AM" partnerLinkType="tns:AMServiceDefinition" partnerRole="AM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+   <variables>
+      <variable name="SCAGetPortOrdersOut" messageType="tns:GetPortOrdersResponse">
+         <sxed:editor>
+            <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to">
+               <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]" source="to"/>
+               <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortRequestForms[$idxPortRequestForm]" source="to"/>
+               <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RingFenceNumberList[$idxRingFenceNumber]" source="to"/>
+            </sxed:predicate>
+         </sxed:editor>
+      </variable>
+      <variable name="AMGetPortOrdersOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:GetPortOrdersResponse">
+         <sxed:editor>
+            <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from">
+               <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RoutingInfoList/ns1:RoutingInfo[$routingInfoIndex]" source="from"/>
+               <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortRequestForms[$idxPortRequestForm]" source="from"/>
+               <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RingFenceNumberList[$idxRingFenceNumber]" source="from"/>
+            </sxed:predicate>
+         </sxed:editor>
+      </variable>
+      <variable name="AMGetPortOrdersIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:GetPortOrdersRequest"/>
+      <variable name="SCAGetPortOrdersIn" messageType="tns:GetPortOrdersRequest"/>
+      
+   </variables>
+   <sequence>
+      <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetPortOrders" portType="tns:SCASoap" variable="SCAGetPortOrdersIn"/>
+      <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('AM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="AM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+      <assign name="Assign1">
+         
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:PortingOrderId</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:PortingOrderId</to>
+         </copy>
+         <copy>
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:SCAContext/ns0:TxId</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:PlatformContext/ns1:TxId</to>
+         </copy>
+         <copy>
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+         </copy>
+         <copy>
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:SCAContext/ns0:Tenant</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:PlatformContext/ns1:Tenant</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:CustomerProfileId</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:CustomerProfileId</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:PortingDirection</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:PortingDirection</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:PortingState</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:PortingState</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:ProcessingState</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:ProcessingState</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:CustomerType</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:CustomerType</to>
+         </copy>
+         <copy ignoreMissingFromData="yes">
+            <from>$SCAGetPortOrdersIn.PortOrdersQuery/ns0:OrganisationId</from>
+            <to>$AMGetPortOrdersIn.PortOrdersQuery/ns1:OrganisationId</to>
+         </copy>
+      </assign>
+      <invoke name="Invoke1" partnerLink="AM" operation="GetPortOrders" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMGetPortOrdersIn" outputVariable="AMGetPortOrdersOut"/>
+      <forEach name="ForEachPortation" parallel="no" counterName="portationIndex">
+         <startCounterValue>1</startCounterValue>
+         <finalCounterValue>count($AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents)</finalCounterValue>
+         <scope name="Scope1">
+            <sequence name="Sequence1">
+               <assign name="Assign3">
+                  <copy>
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortingOrderId
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortingOrderId
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:MessageType
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:MessageType
+                           </to>
+                     </copy>
+                     <copy>
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:CustomerProfileId
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:CustomerProfileId
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:IdentityNumber
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:IdentityNumber
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:CustomerType
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:CustomerType
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:HandleManually
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:HandleManually
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortingDate
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortingDate
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:DonorId
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:DonorId
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:MessageId
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:MessageId
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:SenderId
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:SenderId
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RangeHolderId
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RangeHolderId
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RecipientId
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RecipientId
+                           </to>
+                     </copy>
+                     <copy>
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:ProcessingStatus
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:ProcessingStatus
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:ErrorCode
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:ErrorCode
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:ErrorDescription
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:ErrorDescription
+                           </to>
+                     </copy>
+                     <copy>
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RequestDatetime
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RequestDatetime
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:ValidationErrors
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:ValidationErrors
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortingRejectionList
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortingRejectionList
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:ServiceType
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:ServiceType
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:SubscriptionType
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:SubscriptionType
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:CustomerIdType
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:CustomerIdType
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:CustomerFirstName
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:CustomerFirstName
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:CustomerLastName
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:CustomerLastName
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:DateOfBirth
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:DateOfBirth
+                           </to>
+                     </copy>
+                     <copy ignoreMissingFromData="yes">
+                        <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:Gender
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:Gender
+                           </to>
+                     </copy>
+                  <copy ignoreMissingFromData="yes">
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:ValidationMSISDN
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:ValidationMSISDN
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+                  <copy>
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:NpState
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:NpState
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+                  <copy>
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortingDirection
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortingDirection
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+                  <copy ignoreMissingFromData="yes">
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:EmergencyRestoreId
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:EmergencyRestoreId
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+                  <copy ignoreMissingFromData="yes">
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortRequestFormId
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortRequestFormId
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+                  <copy ignoreMissingFromData="yes">
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RingFenceIndicator
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RingFenceIndicator
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+                  <copy ignoreMissingFromData="yes">
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:IsEmergencyRestore
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:IsEmergencyRestore
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+                  <copy ignoreMissingFromData="yes">
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:OrganisationId
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:OrganisationId
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+                  <copy ignoreMissingFromData="yes">
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:OrganisationName
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:OrganisationName
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+                  <copy ignoreMissingFromData="yes">
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:OrganisationNumber
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:OrganisationNumber
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+                  <copy ignoreMissingFromData="yes">
+                     <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:OrganisationTaxNumber
+                        <sxed:editor>
+                           <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                        </sxed:editor>
+                     </from>
+                     <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:OrganisationTaxNumber
+                        <sxed:editor>
+                           <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to"/>
+                        </sxed:editor>
+                     </to>
+                  </copy>
+               </assign>
+               <forEach name="ForEachRoutingInfo" parallel="no" counterName="routingInfoIndex">
+                  <startCounterValue>1</startCounterValue>
+                  <finalCounterValue>count($AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RoutingInfoList/ns1:RoutingInfo)
+                     <sxed:editor>
+                        <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                     </sxed:editor>
+                  </finalCounterValue>
+                  <scope name="Scope2">
+                     <assign name="Assign5">
+                        <copy>
+                           <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RoutingInfoList/ns1:RoutingInfo[$routingInfoIndex]/ns1:ServiceInstanceId
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:ServiceInstanceId
+                           </to>
+                        </copy>
+                        <copy>
+                           <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RoutingInfoList/ns1:RoutingInfo[$routingInfoIndex]/ns1:PhoneNumberRange/ns1:PhoneNumberStart
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:PhoneNumberRange/ns0:PhoneNumberStart
+                           </to>
+                        </copy>
+                        <copy>
+                           <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RoutingInfoList/ns1:RoutingInfo[$routingInfoIndex]/ns1:PhoneNumberRange/ns1:PhoneNumberEnd
+                              </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:PhoneNumberRange/ns0:PhoneNumberEnd
+                              
+                           </to>
+                        </copy>
+                        <copy>
+                           <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RoutingInfoList/ns1:RoutingInfo[$routingInfoIndex]/ns1:RoutingNumber
+                             
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RoutingInfoList/ns0:RoutingInfo[$routingInfoIndex]/ns0:RoutingNumber
+                              
+                           </to>
+                        </copy>
+                     </assign>
+                  </scope>
+               </forEach>
+               <forEach name="ForEachPortRequestForm" parallel="no" counterName="idxPortRequestForm">
+                  <startCounterValue>1</startCounterValue>
+                  <finalCounterValue>count($AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortRequestForms)
+                     <sxed:editor>
+                        <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                     </sxed:editor>
+                  </finalCounterValue>
+                  <scope name="Scope3">
+                     <assign name="Assign6">
+                        <copy>
+                           <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortRequestForms[$idxPortRequestForm]/ns1:PhotoGuid
+                              <sxed:editor>
+                                 <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from">
+                                    <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortRequestForms[$idxPortRequestForm]" source="from"/>
+                                 </sxed:predicate>
+                              </sxed:editor>
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortRequestForms[$idxPortRequestForm]/ns0:PhotoGuid
+                              <sxed:editor>
+                                 <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to">
+                                    <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortRequestForms[$idxPortRequestForm]" source="to"/>
+                                 </sxed:predicate>
+                              </sxed:editor>
+                           </to>
+                        </copy>
+                        <copy>
+                           <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortRequestForms[$idxPortRequestForm]/ns1:PhotoType
+                              <sxed:editor>
+                                 <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from">
+                                    <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortRequestForms[$idxPortRequestForm]" source="from"/>
+                                 </sxed:predicate>
+                              </sxed:editor>
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortRequestForms[$idxPortRequestForm]/ns0:PhotoType
+                              <sxed:editor>
+                                 <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to">
+                                    <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortRequestForms[$idxPortRequestForm]" source="to"/>
+                                 </sxed:predicate>
+                              </sxed:editor>
+                           </to>
+                        </copy>
+                        <copy>
+                           <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortRequestForms[$idxPortRequestForm]/ns1:Data
+                              <sxed:editor>
+                                 <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from">
+                                    <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:PortRequestForms[$idxPortRequestForm]" source="from"/>
+                                 </sxed:predicate>
+                              </sxed:editor>
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortRequestForms[$idxPortRequestForm]/ns0:Data
+                              <sxed:editor>
+                                 <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to">
+                                    <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:PortRequestForms[$idxPortRequestForm]" source="to"/>
+                                 </sxed:predicate>
+                              </sxed:editor>
+                           </to>
+                        </copy>
+                     </assign>
+                  </scope>
+               </forEach>
+               <forEach name="ForEachRingFenceNumber" parallel="no" counterName="idxRingFenceNumber">
+                  <startCounterValue>1</startCounterValue>
+                  <finalCounterValue>count($AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RingFenceNumberList)
+                     <sxed:editor>
+                        <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from"/>
+                     </sxed:editor>
+                  </finalCounterValue>
+                  <scope name="Scope4">
+                     <assign name="Assign7">
+                        <copy>
+                           <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RingFenceNumberList[$idxRingFenceNumber]/ns1:PhoneNumberStart
+                              <sxed:editor>
+                                 <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from">
+                                    <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RingFenceNumberList[$idxRingFenceNumber]" source="from"/>
+                                 </sxed:predicate>
+                              </sxed:editor>
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RingFenceNumberList[$idxRingFenceNumber]/ns0:PhoneNumberStart
+                              <sxed:editor>
+                                 <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to">
+                                    <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RingFenceNumberList[$idxRingFenceNumber]" source="to"/>
+                                 </sxed:predicate>
+                              </sxed:editor>
+                           </to>
+                        </copy>
+                        <copy>
+                           <from>$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RingFenceNumberList[$idxRingFenceNumber]/ns1:PhoneNumberEnd
+                              <sxed:editor>
+                                 <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]" source="from">
+                                    <sxed:predicate path="$AMGetPortOrdersOut.PortOrdersList/ns1:PortInEvents[$portationIndex]/ns1:RingFenceNumberList[$idxRingFenceNumber]" source="from"/>
+                                 </sxed:predicate>
+                              </sxed:editor>
+                           </from>
+                           <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RingFenceNumberList[$idxRingFenceNumber]/ns0:PhoneNumberEnd
+                              <sxed:editor>
+                                 <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]" source="to">
+                                    <sxed:predicate path="$SCAGetPortOrdersOut.PortOrdersList/ns0:PortInEvents[$portationIndex]/ns0:RingFenceNumberList[$idxRingFenceNumber]" source="to"/>
+                                 </sxed:predicate>
+                              </sxed:editor>
+                           </to>
+                        </copy>
+                     </assign>
+                  </scope>
+               </forEach>
+            </sequence>
+         </scope>
+      </forEach>
+      <assign name="Assign4">
+         <copy>
+            <from>$AMGetPortOrdersOut.PortOrdersList/ns1:NumberOfPortationEvents</from>
+            <to>$SCAGetPortOrdersOut.PortOrdersList/ns0:NumberOfPortationEvents</to>
+         </copy>
+      </assign>
+      <reply name="Reply1" partnerLink="SCA" operation="GetPortOrders" portType="tns:SCASoap" variable="SCAGetPortOrdersOut"/>
+   </sequence>
+</process>

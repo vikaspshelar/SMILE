@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ModifyVoiceService"
+    targetNamespace="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:tns="http://xml.smilecoms.com/SCASubFlows"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/IM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/AM">
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/AM" location="../Partners/AM/AMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="AM" xmlns:tns="http://xml.smilecoms.com/AM" partnerLinkType="tns:AMServiceDefinition" partnerRole="AM"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" myRole="SCASubFlows"/>
+        <partnerLink name="IM" xmlns:tns="http://xml.smilecoms.com/IM" partnerLinkType="tns:IMServiceDefinition" partnerRole="IM"/>
+    </partnerLinks>
+    <variables>
+        <variable name="IMGetIMSPublicIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPublicIdentityResponse"/>
+        <variable name="IMGetIMSPublicIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:GetIMSPublicIdentityRequest"/>
+        <variable name="IMModifyIMSPublicIdentityOut" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyIMSPublicIdentityResponse"/>
+        <variable name="IMModifyIMSPublicIdentityIn" xmlns:tns="http://xml.smilecoms.com/IM" messageType="tns:ModifyIMSPublicIdentityRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SubFlowError"/>
+        <variable name="ModifyVoiceServiceOut" messageType="tns:ProvisionServiceResponse"/>
+        <variable name="ModifyVoiceServiceIn" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" messageType="tns:ModifyVoiceServiceRequest"/>
+        <variable name="PublicIdentity" type="xsd:string"/>
+        <variable name="OriginalPublicIdentity" type="xsd:string"/>
+        <variable name="SIPPublicIdentityId" type="xsd:int"/>
+        <variable name="TELPublicIdentityId" type="xsd:int"/>
+        <variable name="IMPUChanged" type="xs:boolean"/>
+        <variable name="AMIssueNumberOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:Done"/>
+        <variable name="AMIssueNumberIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:IssueNumberRequest"/>
+        <variable name="AMFreeNumberOut" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:Done"/>
+        <variable name="AMFreeNumberIn" xmlns:tns="http://xml.smilecoms.com/AM" messageType="tns:FreeNumberRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:im="http://xml.smilecoms.com/IM" faultMessageType="im:IMError" faultVariable="IMError">
+            <sequence name="Sequence1">
+                <assign name="AssignErr">
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorType</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$IMError.IMError/ns0:ErrorCode</from>
+                        <to>$Fault1FaultVar.SubFlowError/ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="ReplyErr" partnerLink="SCASubFlows" operation="ModifyVoiceService" portType="tns:SCASubFlowsSoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCASubFlows" operation="ModifyVoiceService" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="ModifyVoiceServiceIn"/>
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('IM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="IM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('AM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="AM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        <assign name="Assign_Vars">
+            <copy>
+                <from>BPELUtils:getAVPValueAsString($ModifyVoiceServiceIn.ModifiedVoiceServiceData, 'PublicIdentity')</from>
+                <to variable="PublicIdentity"/>
+            </copy>
+            <copy>
+                <from>BPELUtils:getAVPValueAsString($ModifyVoiceServiceIn.ModifiedVoiceServiceData, 'IMPUChanged')</from>
+                <to variable="IMPUChanged"/>
+            </copy>
+            <copy>
+                <from>BPELUtils:getAVPValueAsString($ModifyVoiceServiceIn.ModifiedVoiceServiceData, 'OriginalPublicIdentity')</from>
+                <to variable="OriginalPublicIdentity"/>
+            </copy>
+        </assign>
+        <if name="If_IMPU_Changed">
+            <condition>$IMPUChanged</condition>
+            <sequence name="Free_And_Assign_Number">
+                <assign name="AssignFreeNumber">
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/TxId</from>
+                        <to>$AMFreeNumberIn.NumberToFree/ns2:PlatformContext/ns2:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/OriginatingIdentity</from>
+                        <to>$AMFreeNumberIn.NumberToFree/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/OriginatingIP</from>
+                        <to>$AMFreeNumberIn.NumberToFree/ns2:PlatformContext/ns2:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/Tenant</from>
+                        <to>$AMFreeNumberIn.NumberToFree/ns2:PlatformContext/ns2:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$OriginalPublicIdentity</from>
+                        <to>$AMFreeNumberIn.NumberToFree/ns2:String</to>
+                    </copy>
+                </assign>
+                <assign name="AssignIssueNumber">
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/TxId</from>
+                        <to>$AMIssueNumberIn.NumberToIssue/ns2:PlatformContext/ns2:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/OriginatingIdentity</from>
+                        <to>$AMIssueNumberIn.NumberToIssue/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/OriginatingIP</from>
+                        <to>$AMIssueNumberIn.NumberToIssue/ns2:PlatformContext/ns2:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/Tenant</from>
+                        <to>$AMIssueNumberIn.NumberToIssue/ns2:PlatformContext/ns2:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$PublicIdentity</from>
+                        <to>$AMIssueNumberIn.NumberToIssue/ns2:String</to>
+                    </copy>
+                </assign>
+                
+                <assign name="Assign_Get_SIP_IMPU_Id">
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/TxId</from>
+                        <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/OriginatingIdentity</from>
+                        <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/OriginatingIP</from>
+                        <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/Tenant</from>
+                        <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:PlatformContext/ns0:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from variable="OriginalPublicIdentity"/>
+                        <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:Identity</to>
+                    </copy>
+                </assign>
+                
+                <invoke name="Get_SIP_IMPU_Id" partnerLink="IM" operation="GetIMSPublicIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSPublicIdentityIn" outputVariable="IMGetIMSPublicIdentityOut"/>
+                <assign name="Assign_SIP_Id">
+                    <copy>
+                        <from>$IMGetIMSPublicIdentityOut.IMSPublicIdentity/ns0:IMSPublicIdentityId</from>
+                        <to variable="SIPPublicIdentityId"/>
+                    </copy>
+                </assign>
+                <assign name="Assign_Get_TEL_IMPU_Id">
+                    <copy>
+                        <from>concat('tel:', substring-before(substring-after($OriginalPublicIdentity, ':'), '@'))</from>
+                        <to>$IMGetIMSPublicIdentityIn.IMSPublicIdentityQuery/ns0:Identity</to>
+                    </copy>
+                </assign>
+                
+                
+                <invoke name="Get_TEL_IMPU_Id" partnerLink="IM" operation="GetIMSPublicIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMGetIMSPublicIdentityIn" outputVariable="IMGetIMSPublicIdentityOut"/>
+                
+                <assign name="Assign_TEL_Id">
+                    <copy>
+                        <from>$IMGetIMSPublicIdentityOut.IMSPublicIdentity/ns0:IMSPublicIdentityId</from>
+                        <to variable="TELPublicIdentityId"/>
+                    </copy>
+                </assign>
+                
+                <invoke name="FreeNumber" partnerLink="AM" operation="FreeNumber" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMFreeNumberIn" outputVariable="AMFreeNumberOut"/>
+                <invoke name="IssueNumber" partnerLink="AM" operation="IssueNumber" xmlns:tns="http://xml.smilecoms.com/AM" portType="tns:AMSoap" inputVariable="AMIssueNumberIn" outputVariable="AMIssueNumberOut"/>
+                <assign name="AssignModifyIMSSIP">
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/TxId</from>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:PlatformContext/ns0:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/OriginatingIdentity</from>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+                    </copy>
+                    <copy>
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/OriginatingIP</from>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:PlatformContext/ns0:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$ModifyVoiceServiceIn.ModifiedVoiceServiceData/SubFlowContext/Tenant</from>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:PlatformContext/ns0:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>BPELUtils:getAVPValueAsNumber($ModifyVoiceServiceIn.ModifiedVoiceServiceData, 'Barring')</from>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:Barring</to>
+                    </copy>
+                    <copy>
+                        <from>BPELUtils:getAVPValueAsNumber($ModifyVoiceServiceIn.ModifiedVoiceServiceData, 'CanRegister')</from>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:CanRegister</to>
+                    </copy>
+                    <copy>
+                        <from>$PublicIdentity</from>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:Identity</to>
+                    </copy>
+                    <copy>
+                        <from variable="SIPPublicIdentityId"/>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:IMSPublicIdentityId</to>
+                    </copy>
+                </assign>
+                <invoke name="ModifyIMSSIP" partnerLink="IM" operation="ModifyIMSPublicIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMModifyIMSPublicIdentityIn" outputVariable="IMModifyIMSPublicIdentityOut"/>
+                
+                <assign name="AssignResult">
+                    <copy>
+                        <from>concat('HSSIMPU-', $IMModifyIMSPublicIdentityOut.IMSPublicIdentity/ns0:IMSPublicIdentityId)</from>
+                        <to>$ModifyVoiceServiceOut.ProvisionedServiceData/ResourceId</to>
+                    </copy>            
+                </assign>
+        
+                <assign name="AssignModifyIMSTEL">
+                    <copy>
+                        <from>BPELUtils:getAVPValueAsNumber($ModifyVoiceServiceIn.ModifiedVoiceServiceData, 'Barring')</from>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:Barring</to>
+                    </copy>
+                    <copy>
+                        <from>BPELUtils:getAVPValueAsNumber($ModifyVoiceServiceIn.ModifiedVoiceServiceData, 'CanRegister')</from>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:CanRegister</to>
+                    </copy>
+                    <copy>
+                        <from>concat('tel:', substring-before(substring-after($PublicIdentity, ':'), '@'))</from>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:Identity</to>
+                    </copy>
+                    <copy>
+                        <from variable="TELPublicIdentityId"/>
+                        <to>$IMModifyIMSPublicIdentityIn.ModifiedIMSPublicIdentity/ns0:IMSPublicIdentityId</to>
+                    </copy>
+                </assign>
+                <invoke name="ModifyIMSTEL" partnerLink="IM" operation="ModifyIMSPublicIdentity" xmlns:tns="http://xml.smilecoms.com/IM" portType="tns:IMSoap" inputVariable="IMModifyIMSPublicIdentityIn" outputVariable="IMModifyIMSPublicIdentityOut"/>
+                
+                <assign name="AssignResultPart2">
+                    <copy>
+                        <from>concat($ModifyVoiceServiceOut.ProvisionedServiceData/ResourceId, ',', $IMModifyIMSPublicIdentityOut.IMSPublicIdentity/ns0:IMSPublicIdentityId)</from>
+                        <to>$ModifyVoiceServiceOut.ProvisionedServiceData/ResourceId</to>
+                    </copy>            
+                </assign>
+            </sequence>
+            <else>
+                <!-- CM wont change the resource Id if its sent blank string -->
+                <assign name="AssignBlankResult">
+                    <copy>
+                        <from>''</from>
+                        <to>$ModifyVoiceServiceOut.ProvisionedServiceData/ResourceId</to>
+                    </copy>
+                </assign>
+            </else>
+        </if>
+        <reply name="Reply1" partnerLink="SCASubFlows" operation="ModifyVoiceService" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" variable="ModifyVoiceServiceOut"/>
+    </sequence>
+</process>

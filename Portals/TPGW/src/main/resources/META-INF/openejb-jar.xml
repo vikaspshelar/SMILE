@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openejb-jar xmlns="http://www.openejb.org/openejb-jar/1.1">
+ <ejb-deployment ejb-name="ThirdPartyGateway">
+   <properties>
+       cxf.jaxws.out-interceptors = com.smilecoms.commons.interceptors.XMLDeclarationWritingInterceptor
+       cxf.jaxws.out-fault-interceptors = com.smilecoms.commons.interceptors.XMLDeclarationWritingInterceptor
+   </properties>
+ </ejb-deployment>
+</openejb-jar>

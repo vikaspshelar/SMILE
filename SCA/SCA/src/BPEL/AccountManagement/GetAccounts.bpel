@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetAccounts"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension" xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/BM" xmlns:ns3="http://xml.smilecoms.com/schema/CM" xmlns:sxnmp="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/NMProperty">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="BM" xmlns:tns="http://xml.smilecoms.com/BM" partnerLinkType="tns:BMServiceDefinition" partnerRole="BM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="DummyString" type="xsd:string"/>
+        <variable name="SFCopyCMSvcInstancesToSCASvcInstancesOut" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="SFCopyCMSvcInstancesToSCASvcInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="BMGetAccountsOut" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:GetAccountsResponse"/>
+        <variable name="BMGetAccountsIn" xmlns:tns="http://xml.smilecoms.com/BM" messageType="tns:GetAccountsRequest"/>
+        <variable name="SCAGetAccountsOut" messageType="tns:AccountsResponse"/>
+        <variable name="SCAGetAccountsIn" messageType="tns:GetAccountsRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="BM:BMError" faultVariable="BMError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetAccounts" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetAccounts" portType="tns:SCASoap" variable="SCAGetAccountsIn"/>
+        
+        
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('BM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BM"/>
+                    </copy>
+                </assign>
+                <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        
+        
+        <assign name="Assign_BM">
+            <copy>
+                <from>$SCAGetAccountsIn.AccountQuery/ns1:SCAContext/ns1:TxId</from>
+                <to>$BMGetAccountsIn.AccountQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetAccountsIn.AccountQuery/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$BMGetAccountsIn.AccountQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetAccountsIn.AccountQuery/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$BMGetAccountsIn.AccountQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetAccountsIn.AccountQuery/ns1:SCAContext/ns1:Tenant</from>
+                <to>$BMGetAccountsIn.AccountQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetAccountsIn.AccountQuery/ns1:AccountId</from>
+                <to>$BMGetAccountsIn.AccountQuery/ns2:AccountId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetAccountsIn.AccountQuery/ns1:Identifier</from>
+                <to>$BMGetAccountsIn.AccountQuery/ns2:Identifier</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetAccountsIn.AccountQuery/ns1:IdentifierType</from>
+                <to>$BMGetAccountsIn.AccountQuery/ns2:IdentifierType</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetAccountsIn.AccountQuery/ns1:UnitCreditInstanceId</from>
+                <to>$BMGetAccountsIn.AccountQuery/ns2:UnitCreditInstanceId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetAccountsIn.AccountQuery/ns1:Verbosity</from>
+                <to>$BMGetAccountsIn.AccountQuery/ns2:Verbosity</to>
+            </copy>
+        </assign>
+        <invoke name="Call_BM" partnerLink="BM" operation="GetAccounts" xmlns:tns="http://xml.smilecoms.com/BM" portType="tns:BMSoap" inputVariable="BMGetAccountsIn" outputVariable="BMGetAccountsOut"/>
+        <assign name="Assign_Result">
+            <copy>
+                <from>$BMGetAccountsOut.AccountList/ns2:NumberOfAccounts</from>
+                <to>$SCAGetAccountsOut.AccountList/ns1:NumberOfAccounts</to>
+            </copy>            
+        </assign>
+        <forEach name="ForEachAccount" parallel="no" counterName="accCounter">
+            <startCounterValue>1</startCounterValue>
+            <finalCounterValue>$BMGetAccountsOut.AccountList/ns2:NumberOfAccounts</finalCounterValue>
+            <scope name="Scope1">
+                <variables>
+                    <variable name="CMGetServiceInstancesOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ServiceInstancesResponse"/>
+                    <variable name="CMGetServiceInstancesIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetServiceInstancesRequest"/>
+                    <variable name="UCCount" type="xs:int"/>
+                </variables>
+                <sequence name="Sequence1">                   
+                    <assign name="CheckPermissions1">
+                        <copy>
+                            <from>BPELUtils:checkPermissions($SCAGetAccountsIn.AccountQuery/ns1:SCAContext, 'Account', $BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:AccountId)</from>
+                            <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:SCAContext/ns1:Obviscated</to>
+                        </copy>
+                    </assign>
+                    <assign name="AssignAccount">
+                        <copy>
+                            <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:AccountId</from>
+                            <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:AccountId</to>
+                        </copy>
+                        <copy>
+                            <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:CurrentBalanceInCents</from>
+                            <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:CurrentBalanceInCents</to>
+                        </copy>
+                        <copy>
+                            <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:AvailableBalanceInCents</from>
+                            <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:AvailableBalanceInCents</to>
+                        </copy>
+                        <copy>
+                            <from>count($BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances)</from>
+                            <to variable="UCCount"/>
+                        </copy>
+                        <copy>
+                            <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:Status</from>
+                            <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:Status</to>
+                        </copy>
+                    </assign>
+                    <forEach name="ForEachUC" parallel="no" counterName="ucCounter">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>$UCCount</finalCounterValue>
+                        <scope name="Scope2">
+                            <assign name="AssignUC">
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:UnitCreditInstanceId</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:UnitCreditInstanceId</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:Name</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:Name</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:UnitType</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:UnitType</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:UnitCreditSpecificationId</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:UnitCreditSpecificationId</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:AccountId</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:AccountId</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:PurchaseDate</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:PurchaseDate</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:StartDate</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:StartDate</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:EndDate</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:EndDate</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:ExpiryDate</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:ExpiryDate</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:CurrentUnitsRemaining</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:CurrentUnitsRemaining</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:UnitsAtStart</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:UnitsAtStart</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:AvailableUnitsRemaining</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:AvailableUnitsRemaining</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:ProductInstanceId</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:ProductInstanceId</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:ExtTxId</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:ExtTxId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:Info</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:Info</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:SaleLineId</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:SaleLineId</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:UnitCreditInstances[$ucCounter]/ns2:AuxCounter1</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:UnitCreditInstances[$ucCounter]/ns1:AuxCounter1</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                    <forEach name="ForEachReservation" parallel="no" counterName="reservation">
+                        <startCounterValue>1</startCounterValue>
+                        <finalCounterValue>count($BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:Reservations)</finalCounterValue>
+                        <scope name="Scope20">
+                            <assign name="AssignReservation">
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:Reservations[$reservation]/ns2:AccountId</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:Reservations[$reservation]/ns1:AccountId</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:Reservations[$reservation]/ns2:UnitCreditInstanceId</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:Reservations[$reservation]/ns1:UnitCreditInstanceId</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:Reservations[$reservation]/ns2:SessionId</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:Reservations[$reservation]/ns1:SessionId</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:Reservations[$reservation]/ns2:ExpiryDate</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:Reservations[$reservation]/ns1:ExpiryDate</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:Reservations[$reservation]/ns2:ReservationDate</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:Reservations[$reservation]/ns1:ReservationDate</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:Reservations[$reservation]/ns2:UnitCreditUnits</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:Reservations[$reservation]/ns1:UnitCreditUnits</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:Reservations[$reservation]/ns2:AmountInCents</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:Reservations[$reservation]/ns1:AmountInCents</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:Reservations[$reservation]/ns2:Description</from>
+                                    <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:Reservations[$reservation]/ns1:Description</to>
+                                </copy>
+                            </assign>
+                        </scope>
+                    </forEach>
+                    <if name="IfMustGetSIs">
+                        <condition>contains($SCAGetAccountsIn.AccountQuery/ns1:Verbosity, 'SERVICEINSTANCES')</condition>
+                        <sequence name="Sequence4">
+                            <assign name="AssignCM">
+                                <copy>
+                                    <from>$SCAGetAccountsIn.AccountQuery/ns1:SCAContext/ns1:TxId</from>
+                                    <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:PlatformContext/ns3:TxId</to>
+                                </copy>
+                                <copy>
+                                    <from>$SCAGetAccountsIn.AccountQuery/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                                    <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:PlatformContext/ns3:OriginatingIdentity</to>
+                                </copy>
+                                <copy>
+                                    <from>$SCAGetAccountsIn.AccountQuery/ns1:SCAContext/ns1:OriginatingIP</from>
+                                    <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:PlatformContext/ns3:OriginatingIP</to>
+                                </copy>
+                                <copy ignoreMissingFromData="yes">
+                                    <from>$SCAGetAccountsIn.AccountQuery/ns1:SCAContext/ns1:Tenant</from>
+                                    <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:PlatformContext/ns3:Tenant</to>
+                                </copy>
+                                <copy>
+                                    <from>$BMGetAccountsOut.AccountList/ns2:Accounts[$accCounter]/ns2:AccountId</from>
+                                    <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:AccountId</to>
+                                </copy>
+                                <copy>
+                                    <from>'MAIN'</from>
+                                    <to>$CMGetServiceInstancesIn.ServiceInstanceQuery/ns3:Verbosity</to>
+                                </copy>
+                            </assign>
+                            <invoke name="Call_CMGetSIs" partnerLink="CM" operation="GetServiceInstances" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetServiceInstancesIn" outputVariable="CMGetServiceInstancesOut"/>
+                            <if name="AreSIs">
+                                <condition>$CMGetServiceInstancesOut.ServiceInstanceList/ns3:NumberOfServiceInstances &gt; 0</condition>
+                                <sequence>
+                                    <assign name="AssignSF">
+                                        <copy>
+                                            <from variable="CMGetServiceInstancesOut" part="ServiceInstanceList"/>
+                                            <to variable="SFCopyCMSvcInstancesToSCASvcInstancesIn" part="ServiceInstanceList"/>
+                                        </copy>
+                                    </assign>
+                                    <invoke name="CopyCMtoSCA" partnerLink="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" operation="CopyCMSvcInstancesToSCASvcInstances" portType="tns:SCASubFlowsSoap" inputVariable="SFCopyCMSvcInstancesToSCASvcInstancesIn" outputVariable="SFCopyCMSvcInstancesToSCASvcInstancesOut"/>
+                                    <assign name="AssignSI">
+                                        <copy>
+                                            <from>$SFCopyCMSvcInstancesToSCASvcInstancesOut.ServiceInstanceList/ns1:ServiceInstances</from>
+                                            <to>$SCAGetAccountsOut.AccountList/ns1:Accounts[$accCounter]/ns1:ServiceInstances</to>
+                                        </copy>
+                                    </assign>
+                                </sequence>
+                            </if>
+                        </sequence>
+                    </if>
+                </sequence>
+            </scope>
+        </forEach>
+        <reply name="Reply1" partnerLink="SCA" operation="GetAccounts" portType="tns:SCASoap" variable="SCAGetAccountsOut"/>
+    </sequence>
+</process>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="BatchUpdatePrepaidStrips"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="_NS_"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/PVS" xmlns:ns2="http://xml.smilecoms.com/schema/BM" xmlns:ns3="http://xml.smilecoms.com/schema/POS">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/PVS" location="../Partners/PVS/PVSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="PVS" xmlns:tns="http://xml.smilecoms.com/PVS" partnerLinkType="tns:PVSServiceDefinition" partnerRole="PVS"/>
+        
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="PVSBatchUpdatePrepaidStripsOut" xmlns:tns="http://xml.smilecoms.com/PVS" messageType="tns:Done"/>
+        <variable name="PVSBatchUpdatePrepaidStripsIn" xmlns:tns="http://xml.smilecoms.com/PVS" messageType="tns:BatchUpdatePrepaidStripsRequest"/>
+        <variable name="SCABatchUpdatePrepaidStripsOut" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:Done"/>
+        <variable name="SCABatchUpdatePrepaidStripsIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:BatchUpdatePrepaidStripsRequest"/>
+        <variable name="Fault1FaultVar" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:PVS="http://xml.smilecoms.com/PVS" faultMessageType="PVS:PVSError" faultVariable="PVSError">
+            <sequence name="Sequence1">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$PVSError.PVSError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="BatchUpdatePrepaidStrips" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="BatchUpdatePrepaidStrips" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCABatchUpdatePrepaidStripsIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('PVS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="PVS"/>
+                    </copy>
+                </assign>
+                 <assign name="AssignPLs2">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignPVS">
+            <copy>
+                <from>$SCABatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns0:Status</from>
+                <to>$PVSBatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns1:Status</to>
+            </copy>
+            <copy>
+                <from>$SCABatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns0:EndingPrepaidStripId</from>
+                <to>$PVSBatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns1:EndingPrepaidStripId</to>
+            </copy>
+            <copy>
+                <from>$SCABatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns0:StartingPrepaidStripId</from>
+                <to>$PVSBatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns1:StartingPrepaidStripId</to>
+            </copy>
+            <copy>
+                <from>$SCABatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns0:SCAContext/ns0:TxId</from>
+                <to>$PVSBatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCABatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$PVSBatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCABatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$PVSBatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCABatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns0:SCAContext/ns0:Tenant</from>
+                <to>$PVSBatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCABatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns0:InvoiceData</from>
+                <to>$PVSBatchUpdatePrepaidStripsIn.PrepaidStripBatchData/ns1:InvoiceData</to>
+            </copy>
+        </assign>
+        <invoke name="CallPVS" partnerLink="PVS" operation="BatchUpdatePrepaidStrips" xmlns:tns="http://xml.smilecoms.com/PVS" portType="tns:PVSSoap" inputVariable="PVSBatchUpdatePrepaidStripsIn" outputVariable="PVSBatchUpdatePrepaidStripsOut"/>
+        <assign name="AssignDone">
+            <copy>
+                <from>$PVSBatchUpdatePrepaidStripsOut.Done/ns1:Done</from>
+                <to>$SCABatchUpdatePrepaidStripsOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="BatchUpdatePrepaidStrips" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCABatchUpdatePrepaidStripsOut"/>
+    </sequence>
+</process>

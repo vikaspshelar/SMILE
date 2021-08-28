@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="TPGWServiceDefinition" targetNamespace="http://xml.smilecoms.com/TPGW" 
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+             xmlns:ns="http://xml.smilecoms.com/schema/TPGW" 
+             xmlns:tns="http://xml.smilecoms.com/TPGW" 
+             xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/TPGW">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/TPGW" schemaLocation="TPGWSchema.xsd"/>
+        </xsd:schema>
+    </types> 
+    
+    <message name="TPGWError">
+        <part name="TPGWError" element="ns:TPGWError"/>
+    </message>
+    
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    
+    <message name="GetBalanceRequest">
+        <part name="BalanceQuery" element="ns:BalanceQuery"/>
+    </message>
+    
+    <message name="GetBalanceResponse">
+        <part name="BalanceResult" element="ns:BalanceResult"/>
+    </message>
+    
+    <message name="AddCustomerRequest">
+        <part name="NewCustomer" element="ns:NewCustomer"/>
+    </message>
+    
+    <message name="AddCustomerResponse">
+        <part name="AddCustomerResult" element="ns:AddCustomerResult"/>
+    </message>
+    
+    <message name="BalanceTransferRequest">
+        <part name="BalanceTransfer" element="ns:BalanceTransfer"/>
+    </message>
+    
+    <message name="BalanceTransferResponse">
+        <part name="BalanceTransferResult" element="ns:BalanceTransferResult"/>
+    </message>
+    
+    <message name="AuthenticateRequest">
+        <part name="Authenticate" element="ns:Authenticate"/>
+    </message>
+    
+    <message name="AuthenticateResponse">
+        <part name="AuthenticateResult" element="ns:AuthenticateResult"/>
+    </message>
+     
+    <message name="ValidateAccountRequest">
+        <part name="ValidateAccountQuery" element="ns:ValidateAccountQuery"/>
+    </message>
+    
+    <message name="ValidateAccountResponse">
+        <part name="ValidateAccountResult" element="ns:ValidateAccountResult"/>
+    </message>
+    
+    <message name="CustomerIdByAccountIdRequest">
+        <part name="CustomerIdByAccountIdQuery" element="ns:CustomerIdByAccountIdQuery"/>
+    </message>
+    <message name="CustomerIdByAccountIdResultResponse">
+        <part name="CustomerIdByAccountIdResult" element="ns:CustomerIdByAccountIdResult"/>
+    </message>
+    
+    <message name="NinByAccountIdOrPhoneNumberRequest">
+        <part name="NinByAccountIdOrPhoneNumberQuery" element="ns:NinByAccountIdOrPhoneNumberQuery"/>
+    </message>
+    <message name="NinByAccountIdOrPhoneNumberResponse">
+        <part name="NinByAccountIdOrPhoneNumberResult" element="ns:NinByAccountIdOrPhoneNumberResult"/>
+    </message>
+    
+    <message name="GetVoucherDetailRequest">
+        <part name="VoucherDetailQuery" element="ns:VoucherDetailQuery"/>
+    </message>
+    
+    <message name="GetVoucherDetailResponse">
+        <part name="VoucherDetailResult" element="ns:VoucherDetailResult"/>
+    </message>
+    
+    <message name="RedemPrepaidStripRequest">
+        <part name="RedemPrepaidStrip" element="ns:RedemPrepaidStrip"/>
+    </message>
+    
+    <message name="RedemPrepaidStripResponse">
+        <part name="RedemPrepaidStripResult" element="ns:RedemPrepaidStripResult"/>
+    </message>
+    
+    <message name="ValidatePhoneNumberRequest">
+        <part name="ValidatePhoneNumberQuery" element="ns:ValidatePhoneNumberQuery"/>
+    </message>
+    
+    <message name="ValidatePhoneNumberResponse">
+        <part name="ValidatePhoneNumberResult" element="ns:ValidatePhoneNumberResult"/>
+    </message>
+    
+    <message name="ValidateEmailAddressRequest">
+        <part name="ValidateEmailAddressQuery" element="ns:ValidateEmailAddressQuery"/>
+    </message>
+    
+    <message name="ValidateEmailAddressResponse">
+        <part name="ValidateEmailAddressResult" element="ns:ValidateEmailAddressResult"/>
+    </message>
+    
+    <message name="GetBundleCatalogueRequest">
+        <part name="BundleCatalogueQuery" element="ns:BundleCatalogueQuery"/>
+    </message>
+    
+    <message name="GetBundleCatalogueResponse">
+        <part name="BundleCatalogueResult" element="ns:BundleCatalogueResult"/>
+    </message>
+    
+    <message name="BuyBundleRequest">
+        <part name="BuyBundle" element="ns:BuyBundle"/>
+    </message>
+    
+    <message name="BuyBundleResponse">
+        <part name="BuyBundleResult" element="ns:BuyBundleResult"/>
+    </message>
+       
+    <message name="TransactionStatusRequest">
+        <part name="TransactionStatusQuery" element="ns:TransactionStatusQuery"/>
+    </message>
+    
+    <message name="TransactionStatusResponse">
+        <part name="TransactionStatusResult" element="ns:TransactionStatusResult"/>
+    </message>
+    
+    <message name="ValidateReferenceIdResponse">
+        <part name="ValidateReferenceIdResult" element="ns:ValidateReferenceIdResult"/>
+    </message>
+    
+    <message name="ValidateReferenceIdRequest">
+        <part name="ValidateReferenceIdQuery" element="ns:ValidateReferenceIdQuery"/>
+    </message>
+        
+    
+    <message name="BuyBundleUsingPriceInCentsRequest">
+        <part name="BuyBundleUsingPriceInCentsData" element="ns:BuyBundleUsingPriceInCentsData"/>
+    </message>
+    
+    <message name="BuyBundleUsingPriceInCentsResponse">
+        <part name="BuyBundleUsingPriceInCentsResult" element="ns:BuyBundleUsingPriceInCentsResult"/>
+    </message>
+        
+        
+    <portType name="TPGWSoap">
+        
+        <operation name="GetBalance">
+            <documentation>
+                (T MM) This function is used to get the available balance on a third party's account
+            </documentation>
+            <input name="input1" message="tns:GetBalanceRequest"/>
+            <output name="output1" message="tns:GetBalanceResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="DoBalanceTransfer">
+            <documentation>
+                (T MM) When a Smile customer purchases airtime at a third party, this function is 
+                called to tranfer the purchased amount from the third party's bulk account to the customer's account. 
+            </documentation>
+            <input name="input2" message="tns:BalanceTransferRequest"/>
+            <output name="output2" message="tns:BalanceTransferResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="AuthenticateUser">
+            <documentation>
+                (T MM) This function is used to authenticate a third party user, successfull result include a GUID which is then passed in with all further requests.
+                The GUID is valid for 30 minutes, on expiry, the user will be forced to authenticate again.
+            </documentation>
+            <input name="input3" message="tns:AuthenticateRequest"/>
+            <output name="output3" message="tns:AuthenticateResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="ValidateAccount">
+            <documentation>
+                (T MM) This function is used to validate the user account. 
+                Given an account id, the function returns the basic 
+                customer information - First Name, Middle Name and Last Name.
+            </documentation>
+            <input name="input4" message="tns:ValidateAccountRequest"/>
+            <output name="output4" message="tns:ValidateAccountResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="GetCustomerIdByAccountId">
+            <documentation>
+                (T MM) This function is used to get the customer id. 
+                Given an account id, the function returns the customer id.
+            </documentation>
+            <input name="input23" message="tns:CustomerIdByAccountIdRequest"/>
+            <output name="output23" message="tns:CustomerIdByAccountIdResultResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="UpdateNinByAccountIdOrPhoneNumber">
+            <documentation>
+                (T MM) This function is used to get the customer id. 
+                Given an account id, the function returns the customer id.
+            </documentation>
+            <input name="input24" message="tns:NinByAccountIdOrPhoneNumberRequest"/>
+            <output name="output24" message="tns:NinByAccountIdOrPhoneNumberResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="GetVoucheDetail">
+            <documentation>
+                (T MM) This function is used to get airtime or bundle voucher details. 
+                Given an voucher number, the function returns the airtime or  
+                bundle value.
+            </documentation>
+            <input name="input21" message="tns:GetVoucherDetailRequest"/>
+            <output name="output21" message="tns:GetVoucherDetailResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+
+        <operation name="RedemPrepaidStripVoucher">
+            <documentation>
+                (T MM) This function is used to redem airtime or bundle using Prepaid strip voucher. 
+                Given an voucher PIN.
+            </documentation>
+            <input name="input22" message="tns:RedemPrepaidStripRequest"/>
+            <output name="output22" message="tns:RedemPrepaidStripResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>  
+              
+        <operation name="ValidatePhoneNumber">
+            <documentation>
+                (T MM) This function is used to validate the user phone number. 
+                Given a Smile phone number, the function returns the basic 
+                customer information - First Name, Middle Name and Last Name.
+            </documentation>
+            <input name="input11" message="tns:ValidatePhoneNumberRequest"/>
+            <output name="output11" message="tns:ValidatePhoneNumberResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="ValidateEmailAddress">
+            <documentation>
+                (T MM) This function is used to validate the user's email address. 
+                Given a Smile registered email, the function returns the basic 
+                customer information - First Name, Middle Name and Last Name as
+                well as the list of accounts belonging to the customer
+            </documentation>
+            <input name="input12" message="tns:ValidateEmailAddressRequest"/>
+            <output name="output12" message="tns:ValidateEmailAddressResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="IsUp">
+            <input name="input5" message="tns:IsUpRequest"/>
+            <output name="output5" message="tns:Done"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="GetBundleCatalogue">
+            <documentation>
+                (T MM) This function is used to get the list of bundles that are available for selling through a TPGW partner.
+            </documentation>
+            <input name="input6" message="tns:GetBundleCatalogueRequest"/>
+            <output name="output6" message="tns:GetBundleCatalogueResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="PurchaseBundle">
+            <documentation>
+                (T MM) This function is used by a Smile TPGW partner to buy a bundle on behalf of a customer.
+            </documentation>
+            <input name="input7" message="tns:BuyBundleRequest"/>
+            <output name="output7" message="tns:BuyBundleResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="GetTransactionStatus">
+            <documentation>
+                (T MM) This function is used by a Smile TPGW partner get the status of a previously submitted transaction
+            </documentation>
+            <input name="input8" message="tns:TransactionStatusRequest"/>
+            <output name="output8" message="tns:TransactionStatusResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="AddCustomer">
+            <input name="input9" message="tns:AddCustomerRequest"/>
+            <output name="output9" message="tns:AddCustomerResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="ValidateReferenceId">
+            <input name="input10" message="tns:ValidateReferenceIdRequest"/>
+            <output name="output10" message="tns:ValidateReferenceIdResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+        <operation name="BuyBundleUsingPriceInCents">
+            <input name="input13" message="tns:BuyBundleUsingPriceInCentsRequest"/>
+            <output name="output13" message="tns:BuyBundleUsingPriceInCentsResponse"/>
+            <fault name="fault1" message="tns:TPGWError"/>
+        </operation>
+        
+    </portType>
+    
+    <binding name="TPGWBinding" type="tns:TPGWSoap">
+        
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        
+        <operation name="GetBalance">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="DoBalanceTransfer">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="AuthenticateUser">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="ValidateAccount">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="IsUp">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetBundleCatalogue">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="PurchaseBundle">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetTransactionStatus">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="AddCustomer">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="ValidateReferenceId">
+            <input name="input10">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output10">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="ValidatePhoneNumber">
+            <input name="input11">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output11">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="ValidateEmailAddress">
+            <input name="input12">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output12">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="BuyBundleUsingPriceInCents">
+            <input name="input13">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output13">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetVoucheDetail">
+            <input name="input21">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output21">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="RedemPrepaidStripVoucher">
+            <input name="input22">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output22">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetCustomerIdByAccountId">
+            <input name="input23">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output23">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="UpdateNinByAccountIdOrPhoneNumber">
+            <input name="input24">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output24">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    
+    <service name="TPGW">
+        <port name="TPGWSoap" binding="tns:TPGWBinding">
+            <soap:address location="https://localhost:${HttpDefaultPort}/TPGW/TPGWSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="TPGWServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+        In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+        A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="TPGW" portType="tns:TPGWSoap"/>
+    </plnk:partnerLinkType>
+    
+</definitions>

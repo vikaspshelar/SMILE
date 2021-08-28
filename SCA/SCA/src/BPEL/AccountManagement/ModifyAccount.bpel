@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="ModifyAccount"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:ns0="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension" xmlns:ns1="http://xml.smilecoms.com/schema/SCA" xmlns:ns2="http://xml.smilecoms.com/schema/BM" xmlns:ns3="http://xml.smilecoms.com/schema/CM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="BM" xmlns:tns="http://xml.smilecoms.com/BM" partnerLinkType="tns:BMServiceDefinition" partnerRole="BM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="BMModifyAccountOut" messageType="BM:Done"/>
+        <variable name="BMModifyAccountIn" messageType="BM:ModifyAccountRequest"/>
+        <variable name="SCAModifyAccountOut" messageType="tns:Done"/>
+        <variable name="SCAModifyAccountIn" messageType="tns:ModifyAccountRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="BM:BMError" faultVariable="BMError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$BMError.BMError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="ModifyAccount" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="ModifyAccount" portType="tns:SCASoap" variable="SCAModifyAccountIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('BM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="CheckPermissions1">
+            <copy>
+                <from>BPELUtils:checkPermissions($SCAModifyAccountIn.ModifyAccountRequest/ns1:SCAContext, 'Account', $SCAModifyAccountIn.ModifyAccountRequest/ns1:AccountId)</from>
+                <to>$SCAModifyAccountOut.Done/ns1:SCAContext/ns1:Obviscated</to>
+            </copy>
+        </assign>
+        <assign name="Assign2">
+            <copy>
+                <from>$SCAModifyAccountIn.ModifyAccountRequest/ns1:SCAContext/ns1:TxId</from>
+                <to>$BMModifyAccountIn.ModifyAccountRequest/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyAccountIn.ModifyAccountRequest/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$BMModifyAccountIn.ModifyAccountRequest/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyAccountIn.ModifyAccountRequest/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$BMModifyAccountIn.ModifyAccountRequest/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAModifyAccountIn.ModifyAccountRequest/ns1:SCAContext/ns1:Tenant</from>
+                <to>$BMModifyAccountIn.ModifyAccountRequest/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyAccountIn.ModifyAccountRequest/ns1:AccountId</from>
+                <to>$BMModifyAccountIn.ModifyAccountRequest/ns2:AccountId</to>
+            </copy>
+            <copy>
+                <from>$SCAModifyAccountIn.ModifyAccountRequest/ns1:Status</from>
+                <to>$BMModifyAccountIn.ModifyAccountRequest/ns2:Status</to>
+            </copy>
+        </assign>
+        <invoke name="Invoke1" partnerLink="BM" operation="ModifyAccount" portType="BM:BMSoap" inputVariable="BMModifyAccountIn" outputVariable="BMModifyAccountOut"/>
+        <assign name="Assign3">
+            <copy>
+                <from>$BMModifyAccountOut.Done/ns2:Done</from>
+                <to>$SCAModifyAccountOut.Done/ns1:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply3" partnerLink="SCA" operation="ModifyAccount" portType="tns:SCASoap" variable="SCAModifyAccountOut"/>
+    </sequence>
+</process>

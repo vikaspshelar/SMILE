@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetProductSpecifications"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/CM" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="SCA" xmlns:tns="http://xml.smilecoms.com/SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="SFCopyCMProdSpecsToSCAProdSpecsOut" messageType="tns:ProductSpecificationsResponse"/>
+        <variable name="SFCopyCMProdSpecsToSCAProdSpecsIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductSpecificationsResponse"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="SCAGetProductSpecificationsOut" messageType="tns:ProductSpecificationsResponse"/>
+        <variable name="CMGetProductSpecificationsOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:ProductSpecificationsResponse"/>
+        <variable name="CMGetProductSpecificationsIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetProductSpecificationsRequest"/>
+        <variable name="SCAGetProductSpecificationsIn" xmlns:tns="http://xml.smilecoms.com/SCA" messageType="tns:GetProductSpecificationsRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="CMError" xmlns:CM="http://xml.smilecoms.com/CM" faultMessageType="CM:CMError">
+            <sequence name="Sequence4">
+                <sequence name="Sequence3">
+                    <assign name="Assign2">
+                        <copy>
+                            <from>$CMError.CMError/ns0:ErrorDesc</from>
+                            <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                        </copy>
+                        <copy>
+                            <from>$CMError.CMError/ns0:ErrorType</from>
+                            <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                        </copy>
+                        <copy>
+                            <from>$CMError.CMError/ns0:ErrorCode</from>
+                            <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                        </copy>
+                    </assign>
+                    <reply name="Reply2" partnerLink="SCA" operation="GetProductSpecifications" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+                </sequence>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive_Request" createInstance="yes" partnerLink="SCA" operation="GetProductSpecifications" xmlns:tns="http://xml.smilecoms.com/SCA" portType="tns:SCASoap" variable="SCAGetProductSpecificationsIn"/>
+    
+         <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAGetProductSpecificationsIn.ProductSpecificationQuery/ns1:SCAContext/ns1:TxId</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns0:PlatformContext/ns0:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetProductSpecificationsIn.ProductSpecificationQuery/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns0:PlatformContext/ns0:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetProductSpecificationsIn.ProductSpecificationQuery/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns0:PlatformContext/ns0:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetProductSpecificationsIn.ProductSpecificationQuery/ns1:SCAContext/ns1:Tenant</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns0:PlatformContext/ns0:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAGetProductSpecificationsIn.ProductSpecificationQuery/ns1:ProductSpecificationId</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns0:ProductSpecificationId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetProductSpecificationsIn.ProductSpecificationQuery/ns1:Verbosity</from>
+                <to>$CMGetProductSpecificationsIn.ProductSpecificationQuery/ns0:Verbosity</to>
+            </copy>
+        </assign>
+        <invoke name="Call_GetProductSpecifications" partnerLink="CM" operation="GetProductSpecifications" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetProductSpecificationsIn" outputVariable="CMGetProductSpecificationsOut"/>
+        <assign name="AssignCopy">
+            <copy>
+                <from variable="CMGetProductSpecificationsOut" part="ProductSpecificationList"/>
+                <to variable="SFCopyCMProdSpecsToSCAProdSpecsIn" part="ProductSpecificationList"/>
+            </copy>
+        </assign>
+        <invoke name="CopyCMToSCA" partnerLink="SCASubFlows" operation="CopyCMProdSpecsToSCAProdSpecs" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" inputVariable="SFCopyCMProdSpecsToSCAProdSpecsIn" outputVariable="SFCopyCMProdSpecsToSCAProdSpecsOut"/>
+        <assign name="AssignResult">
+            <copy>
+                <from variable="SFCopyCMProdSpecsToSCAProdSpecsOut" part="ProductSpecificationList"/>
+                <to variable="SCAGetProductSpecificationsOut" part="ProductSpecificationList"/>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="GetProductSpecifications" portType="tns:SCASoap" variable="SCAGetProductSpecificationsOut"/>
+    </sequence>
+</process>

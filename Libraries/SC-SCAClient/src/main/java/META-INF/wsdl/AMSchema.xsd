@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xml.smilecoms.com/schema/AM"
+            xmlns:tns="http://xml.smilecoms.com/schema/AM"
+            elementFormDefault="qualified">
+    <xsd:complexType name="PlatformInteger">
+        <xsd:complexContent>
+            <xsd:extension  base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Integer" type="xsd:int">
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="AMError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string"></xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string"></xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="PlatformContext">
+        <xsd:sequence>
+            <xsd:element name="TxId" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIdentity" type="xsd:string"></xsd:element>
+            <xsd:element name="OriginatingIP" type="xsd:string"></xsd:element>
+            <xsd:element name="Tenant" type="xsd:string"></xsd:element>
+            <xsd:element name="Comment" type="xsd:string"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PlatformObject">
+        <xsd:sequence>
+            <xsd:element name="PlatformContext" type="tns:PlatformContext">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="SMError">
+        <xsd:sequence>
+            <xsd:element name="ErrorDesc" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorType" type="xsd:string">
+            </xsd:element>
+            <xsd:element name="ErrorCode" type="xsd:string">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Done">
+        <xsd:sequence>
+            <xsd:element name="Done" type="tns:stDone">
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="Done" type="tns:Done">
+    </xsd:element>
+
+    <xsd:complexType name="Photograph">
+        <xsd:sequence>
+            <xsd:element name="PhotoGuid" type="xsd:string"/>
+            <xsd:element name="PhotoType" type="xsd:string"/>
+            <xsd:element name="Data" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="stDone">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="AMError" type="tns:AMError"></xsd:element>
+    <xsd:simpleType name="stBoolean">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PlatformString">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="String" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="IsUpRequest" type="xsd:string"></xsd:element>
+    
+    <xsd:complexType name="NumberReservationData">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IMPU" type="xsd:string"></xsd:element>
+                    <xsd:element name="OwnedByCustomerProfileId" type="xsd:int"></xsd:element>
+                    <xsd:element name="OwnedByOrganisationId" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="NumberToFree" type="tns:PlatformString"></xsd:element>
+    <xsd:element name="AvailableNumberQuery" type="tns:NumbersQuery"></xsd:element>
+    <xsd:element name="AvailableNumbersResult" type="tns:NumberList"></xsd:element>
+    <xsd:element name="NumberToIssue" type="tns:PlatformString"></xsd:element>
+    <xsd:element name="NumberReservationData" type="tns:NumberReservationData"></xsd:element>
+    <xsd:element name="IssuedNumbersQuery" type="tns:NumbersQuery"></xsd:element>
+    <xsd:element name="IssuedNumbersResult" type="tns:NumberList"></xsd:element>
+    
+    <xsd:complexType name="Number">
+        <xsd:sequence>
+            <xsd:element name="IMPU" type="xsd:string"></xsd:element>
+            <xsd:element name="PriceCents" type="xsd:int"></xsd:element>
+            <xsd:element name="OwnedByCustomerProfileId" type="xsd:int"></xsd:element>
+            <xsd:element name="OwnedByOrganisationId" type="xsd:int"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="NumberList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Numbers" type="tns:Number" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="NumberOfNumbers" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="NumbersQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Pattern" type="xsd:string"></xsd:element>
+                    <xsd:element name="ResultLimit" type="xsd:int"></xsd:element>
+                    <xsd:element name="PriceLimitCents" type="xsd:int"></xsd:element>
+                    <xsd:element name="OwnedByCustomerProfileId" type="xsd:int"></xsd:element>
+                    <xsd:element name="OwnedByOrganisationId" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    
+    
+    <xsd:element name="FreeIPQuery" type="tns:FreeIPQuery"></xsd:element>
+    <xsd:element name="AvailableIPsQuery" type="tns:AvailableIPsQuery"></xsd:element>
+    <xsd:element name="AvailableIPs" type="tns:AvailableIPs"></xsd:element>
+    <xsd:element name="IssueIPQuery" type="tns:IssueIPQuery"></xsd:element>
+    <xsd:element name="IssuedIPsQuery" type="tns:IssuedIPsQuery"></xsd:element>
+    <xsd:element name="IssuedIPsResult" type="tns:IssuedIPsResult"></xsd:element>
+    
+    
+    <xsd:complexType name="AvailableIPs">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IPs" type="xsd:string" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="IssuedIPsQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="Pattern" type="xsd:string"></xsd:element>
+                    <xsd:element name="ResultLimit" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="IssuedIPsResult">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IPs" type="xsd:string" maxOccurs="unbounded"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="AvailableIPsQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="NumberOfIPs" type="xsd:int"></xsd:element>
+                    <xsd:element name="IMPI" type="xsd:string"></xsd:element>
+                    <xsd:element name="Region" type="xsd:string"></xsd:element>
+                    <xsd:element name="ApnList" type="xsd:string"></xsd:element>
+                    <xsd:element name="ApplicableApnRegex" type="xsd:string"></xsd:element>
+                    <xsd:element name="PrivateOnly" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="FreeIPQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IPToFree" type="xsd:string"></xsd:element>
+                    <xsd:element name="IMPI" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="IssueIPQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="IPToIssue" type="xsd:string"></xsd:element>
+                    <xsd:element name="IMPI" type="xsd:string"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+     
+    <!--
+    #################################################
+    MNP Packets
+    #################################################
+    -->   
+    <xsd:simpleType name="PhoneNumber">
+            <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                            The phone number to be ported
+                    </xsd:documentation>
+            </xsd:annotation>
+            <xsd:restriction base="xsd:string">
+                    <!-- <xsd:pattern value="[0-9]{20}"/> -->
+            </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:complexType name="PhoneNumberRange">
+            <xsd:sequence>
+                    <xsd:element name="PhoneNumberStart" type="xsd:string" />
+                    <xsd:element name="PhoneNumberEnd" type="xsd:string" />
+            </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AvailableNumberRange">
+        <xsd:complexContent>  
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PriceCents" type="xsd:int"></xsd:element>
+                    <xsd:element name="OwnedByCustomerProfileId" type="xsd:int"></xsd:element>
+                    <xsd:element name="OwnedByOrganisationId" type="xsd:int"></xsd:element>
+                    <xsd:element name="PhoneNumberRange" type="tns:PhoneNumberRange"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="RoutingInfoList">
+            <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" name="RoutingInfo" type="tns:RoutingInfo" />
+            </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="RoutingInfo">
+            <xsd:sequence>
+                    <xsd:element name="SelectedForPortIn" type="xsd:boolean" />
+                    <xsd:element name="ServiceInstanceId" type="xsd:int"/>
+                    <xsd:element name="PhoneNumberRange" type="tns:PhoneNumberRange" />
+                    <xsd:element name="RoutingNumber" type="tns:RoutingNumber" />
+            </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="RoutingNumber">
+            <xsd:restriction base="xsd:string">
+            </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="PhoneNumberList">
+            <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" name="PhoneNumberRange" type="tns:PhoneNumberRange" />
+            </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="PortInEvent">
+        <xsd:complexContent>  
+            <xsd:extension base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PortingOrderId" type="xsd:string"      minOccurs="0"/>
+                    <xsd:element name="MessageType" type="xsd:string"/>
+                    <xsd:element name="EmergencyRestoreId" type="xsd:string"         minOccurs="0"/>
+                    <xsd:element name="IsEmergencyRestore" type="xsd:string"         minOccurs="0"/>
+                    <xsd:element name="CustomerProfileId" type="xsd:int"    minOccurs="0"/>
+                    <xsd:element name="OrganisationId" type="xsd:int"  minOccurs="0"/>
+                    <xsd:element name="OrganisationName" type="xsd:string"  minOccurs="0"/>
+                    <xsd:element name="OrganisationNumber" type="xsd:string"  minOccurs="0"/>
+                    <xsd:element name="OrganisationTaxNumber" type="xsd:string"  minOccurs="0"/>
+                    <xsd:element name="IdentityNumber" type="xsd:string"    minOccurs="0"/>
+                    <xsd:element name="CustomerType" type="xsd:string"      minOccurs="0"/>
+                    <xsd:element name="HandleManually" type="xsd:string"    minOccurs="0"/>
+                    <xsd:element name="PortingDate" type="xsd:dateTime"     minOccurs="0"/>
+                    <xsd:element name="DonorId" type="xsd:string"           minOccurs="0"/>
+                    <xsd:element name="PortingDirection" type="xsd:string" />
+                    <xsd:element name="MessageId" type="xsd:long"           minOccurs="0"/>
+                    <xsd:element name="SenderId" type="xsd:string"          minOccurs="0"/>
+                    <xsd:element name="RangeHolderId" type="xsd:string"     minOccurs="0"/>
+                    <xsd:element name="RecipientId" type="xsd:string"       minOccurs="0"/>
+                    <xsd:element name="NpState" type="xsd:string"   minOccurs="0"/>
+                    <xsd:element name="ErrorCode" type="xsd:string"         minOccurs="0"/>
+                    <xsd:element name="ErrorDescription" type="xsd:string"     minOccurs="0"/>
+                    <xsd:element name="ProcessingStatus" type="xsd:string"  minOccurs="0"/>
+                    <xsd:element name="RoutingInfoList" type="tns:RoutingInfoList" minOccurs="0"/>
+                    <xsd:element name="ReducedRoutingInfoList" type="tns:PhoneNumberRange" maxOccurs="unbounded" minOccurs="0" />
+                    <xsd:element name="AutomaticAccept" type="xsd:int"   minOccurs="0"/>
+                    <xsd:element name="ValidationMSISDN" type="xsd:string"   minOccurs="0"/>
+                    <xsd:element name="DateOfBirth" type="xsd:dateTime"     minOccurs="0"/>
+                    <xsd:element name="Gender" type="xsd:string"     minOccurs="0"/>
+                    <xsd:element name="CustomerLastName" type="xsd:string"     minOccurs="0"/>
+                    <xsd:element name="CustomerFirstName" type="xsd:string"     minOccurs="0"/>
+                    <xsd:element name="CustomerIdType" type="xsd:string"     minOccurs="0"/>
+                    <xsd:element name="SubscriptionType" type="xsd:string"     minOccurs="0"/>
+                    <xsd:element name="ServiceType" type="xsd:string"     minOccurs="0"/>
+                    <xsd:element name="PortingRejectionList" type="xsd:string"     minOccurs="0"/>
+                    <xsd:element name="ValidationErrors" type="xsd:string" maxOccurs="unbounded" minOccurs="0"/>
+                    <xsd:element name="RequestDatetime" type="xsd:dateTime"   minOccurs="0"/>
+                    <xsd:element name="PortRequestForms" type="tns:Photograph" maxOccurs="unbounded" minOccurs="0"/>
+                    <xsd:element name="RingFenceNumberList" type="tns:PhoneNumberRange" maxOccurs="unbounded" minOccurs="0" />
+                    <xsd:element name="PortRequestFormId" type="xsd:string"     minOccurs="0"/>
+                    <xsd:element name="RingFenceIndicator" type="xsd:string"     minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+   
+    
+    <xsd:element name="PortInEventRequest" type="tns:PortInEvent"></xsd:element> 
+    <xsd:element name="PortInEventResponse" type="tns:PortInEvent"></xsd:element> 
+    <xsd:element name="AvailableNumberRange" type="tns:AvailableNumberRange"></xsd:element> 
+    <xsd:element name="PhoneNumberRange" type="tns:PhoneNumberRange"></xsd:element>
+    <xsd:element name="PortInEvent" type="tns:PortInEvent"></xsd:element>
+    <xsd:complexType name="PortOrdersQuery">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PortingDirection" type="xsd:string"  minOccurs="0"/>
+                    <xsd:element name="PortingOrderId" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="CustomerProfileId" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="PortingState" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="ProcessingState" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="CustomerType" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="OrganisationId" type="xsd:int" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="PortOrdersList">
+        <xsd:complexContent>
+            <xsd:extension xmlns:tns="http://xml.smilecoms.com/schema/AM" base="tns:PlatformObject">
+                <xsd:sequence>
+                    <xsd:element name="PortInEvents" type="tns:PortInEvent" maxOccurs="unbounded"></xsd:element>
+                    <xsd:element name="NumberOfPortationEvents" type="xsd:int"></xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="PortOrdersQuery" type="tns:PortOrdersQuery"></xsd:element> 
+    <xsd:element name="PortOrdersList" type="tns:PortOrdersList"></xsd:element> 
+    
+</xsd:schema>
+
+

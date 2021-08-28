@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<casa xmlns="http://java.sun.com/xml/ns/casa" xmlns:ns1="http://xml.smilecoms.com/TT" xmlns:ns10="http://xml.smilecoms.com/BS" xmlns:ns11="http://xml.smilecoms.com/MM" xmlns:ns12="http://xml.smilecoms.com/CTI" xmlns:ns13="http://xml.smilecoms.com/CM" xmlns:ns14="http://xml.smilecoms.com/SN" xmlns:ns15="http://xml.smilecoms.com/IM" xmlns:ns16="http://xml.smilecoms.com/SCA" xmlns:ns17="http://xml.smilecoms.com/TNF" xmlns:ns18="http://xml.smilecoms.com/SCASubFlows" xmlns:ns2="http://xml.smilecoms.com/PM" xmlns:ns3="http://xml.smilecoms.com/BM" xmlns:ns4="http://xml.smilecoms.com/ET" xmlns:ns5="http://xml.smilecoms.com/AM" xmlns:ns6="http://xml.smilecoms.com/PVS" xmlns:ns7="http://xml.smilecoms.com/PC" xmlns:ns8="http://xml.smilecoms.com/POS" xmlns:ns9="http://xml.smilecoms.com/IMSSC" xmlns:xlink="http://www.w3.org/2000/xlink">
+    <endpoints>
+        <endpoint endpoint-name="TTSoap" interface-name="ns1:TTSoap" name="endpoint1" service-name="ns1:TT"/>
+        <endpoint endpoint-name="PMSoap" interface-name="ns2:PMSoap" name="endpoint2" service-name="ns2:PM"/>
+        <endpoint endpoint-name="BMSoap" interface-name="ns3:BMSoap" name="endpoint3" service-name="ns3:BM"/>
+        <endpoint endpoint-name="ETSoap" interface-name="ns4:ETSoap" name="endpoint4" service-name="ns4:ET"/>
+        <endpoint endpoint-name="AMSoap" interface-name="ns5:AMSoap" name="endpoint5" service-name="ns5:AM"/>
+        <endpoint endpoint-name="PVSSoap" interface-name="ns6:PVSSoap" name="endpoint6" service-name="ns6:PVS"/>
+        <endpoint endpoint-name="PCSoap" interface-name="ns7:PCSoap" name="endpoint7" service-name="ns7:PC"/>
+        <endpoint endpoint-name="POSSoap" interface-name="ns8:POSSoap" name="endpoint8" service-name="ns8:POS"/>
+        <endpoint endpoint-name="IMSSCSoap" interface-name="ns9:IMSSCSoap" name="endpoint9" service-name="ns9:IMSSC"/>
+        <endpoint endpoint-name="BSSoap" interface-name="ns10:BSSoap" name="endpoint10" service-name="ns10:BS"/>
+        <endpoint endpoint-name="MMSoap" interface-name="ns11:MMSoap" name="endpoint11" service-name="ns11:MM"/>
+        <endpoint endpoint-name="CTISoap" interface-name="ns12:CTISoap" name="endpoint12" service-name="ns12:CTI"/>
+        <endpoint endpoint-name="CMSoap" interface-name="ns13:CMSoap" name="endpoint13" service-name="ns13:CM"/>
+        <endpoint endpoint-name="SNSoap" interface-name="ns14:SNSoap" name="endpoint14" service-name="ns14:SN"/>
+        <endpoint endpoint-name="IMSoap" interface-name="ns15:IMSoap" name="endpoint15" service-name="ns15:IM"/>
+        <endpoint endpoint-name="SCASoap" interface-name="ns16:SCASoap" name="endpoint16" service-name="ns16:SCA"/>
+        <endpoint endpoint-name="TNFSoap" interface-name="ns17:TNFSoap" name="endpoint17" service-name="ns17:TNF"/>
+        <endpoint display-name="SCA" endpoint-name="SCAImplementation_myRole" file-path="BPEL/CampaignManagement/StoreCampaignData.bpel" interface-name="ns16:SCASoap" name="endpoint18" process-name="StoreCampaignData" service-name="ns16:SCA"/>
+        <endpoint display-name="SCASubFlows" endpoint-name="SCASubFlows_myRole" file-path="BPEL/ServiceData/GetVoiceServiceAVPs.bpel" interface-name="ns18:SCASubFlowsSoap" name="endpoint19" process-name="GetVoiceServiceAVPs" service-name="ns18:SCASubFlows"/>
+        <endpoint display-name="CM" endpoint-name="CM_partnerRole" file-path="BPEL/CampaignManagement/StoreCampaignData.bpel" interface-name="ns13:CMSoap" name="endpoint20" process-name="StoreCampaignData" service-name="ns16:CM"/>
+        <endpoint display-name="POS" endpoint-name="POS_partnerRole" file-path="BPEL/ContractManagement/DeleteContract.bpel" interface-name="ns8:POSSoap" name="endpoint21" process-name="DeleteContract" service-name="ns16:POS"/>
+        <endpoint display-name="BM" endpoint-name="BM_partnerRole" file-path="BPEL/AccountManagement/ModifyAccount.bpel" interface-name="ns3:BMSoap" name="endpoint22" process-name="ModifyAccount" service-name="ns16:BM"/>
+        <endpoint display-name="SCACalling" endpoint-name="SCAImplementation_partnerRole" file-path="BPEL/AccountManagement/SplitUnitCredit.bpel" interface-name="ns16:SCASoap" name="endpoint23" process-name="SplitUnitCredit" service-name="ns16:SCACalling"/>
+        <endpoint display-name="SCASubFlows" endpoint-name="SCASubFlows_partnerRole" file-path="BPEL/AccountManagement/GetUnitCreditInstances.bpel" interface-name="ns18:SCASubFlowsSoap" name="endpoint24" process-name="GetUnitCreditInstances" service-name="ns16:SCASubFlows"/>
+        <endpoint display-name="MM" endpoint-name="MM_partnerRole" file-path="BPEL/MessageManagement/SendShortMessage.bpel" interface-name="ns11:MMSoap" name="endpoint25" process-name="SendShortMessage" service-name="ns16:MM"/>
+        <endpoint display-name="IM" endpoint-name="IM_partnerRole" file-path="BPEL/UiccManagement/PerformSIMSwap.bpel" interface-name="ns15:IMSoap" name="endpoint26" process-name="PerformSIMSwap" service-name="ns16:IM"/>
+        <endpoint display-name="ET" endpoint-name="ET_partnerRole" file-path="BPEL/EventManagement/DeleteFutureEvent.bpel" interface-name="ns4:ETSoap" name="endpoint27" process-name="DeleteFutureEvent" service-name="ns16:ET"/>
+        <endpoint display-name="TNF" endpoint-name="TNF_partnerRole" file-path="BPEL/TNFData/GetDataFromTNF.bpel" interface-name="ns17:TNFSoap" name="endpoint28" process-name="GetDataFromTNF" service-name="ns16:TNF"/>
+        <endpoint display-name="PM" endpoint-name="PM_partnerRole" file-path="BPEL/PropertyManagement/GetProperty.bpel" interface-name="ns2:PMSoap" name="endpoint29" process-name="GetProperty" service-name="ns16:PM"/>
+        <endpoint display-name="PVS" endpoint-name="PVS_partnerRole" file-path="BPEL/VoucherSystem/CreatePrepaidStrips.bpel" interface-name="ns6:PVSSoap" name="endpoint30" process-name="CreatePrepaidStrips" service-name="ns16:PVS"/>
+        <endpoint display-name="SN" endpoint-name="SN_partnerRole" file-path="BPEL/StickyNoteManagement/DeleteStickyNote.bpel" interface-name="ns14:SNSoap" name="endpoint31" process-name="DeleteStickyNote" service-name="ns16:SN"/>
+        <endpoint display-name="CTI" endpoint-name="CTI_partnerRole" file-path="BPEL/CallcentreManagement/LogCCAgentOutQueues.bpel" interface-name="ns12:CTISoap" name="endpoint32" process-name="LogCCAgentOutQueues" service-name="ns16:CTI"/>
+        <endpoint display-name="IM" endpoint-name="IM_partnerRole" file-path="BPEL/ServiceData/GetVoiceServiceAVPs.bpel" interface-name="ns15:IMSoap" name="endpoint33" process-name="GetVoiceServiceAVPs" service-name="ns18:IM"/>
+        <endpoint display-name="TT" endpoint-name="TT_partnerRole" file-path="BPEL/CustomerManagement/CloseSalesLead.bpel" interface-name="ns1:TTSoap" name="endpoint34" process-name="CloseSalesLead" service-name="ns16:TT"/>
+        <endpoint display-name="BS" endpoint-name="BS_partnerRole" file-path="BPEL/BatchManagement/ModifyBatchSchedule.bpel" interface-name="ns10:BSSoap" name="endpoint35" process-name="ModifyBatchSchedule" service-name="ns16:BS"/>
+        <endpoint display-name="PM" endpoint-name="PM_partnerRole" file-path="BPEL/Batches/OSCommandBatch.bpel" interface-name="ns2:PMSoap" name="endpoint36" process-name="OSCommandBatch" service-name="ns18:PM"/>
+        <endpoint display-name="BS" endpoint-name="BS_partnerRole" file-path="BPEL/Batches/OSCommandBatch.bpel" interface-name="ns10:BSSoap" name="endpoint37" process-name="OSCommandBatch" service-name="ns18:BS"/>
+        <endpoint display-name="AM" endpoint-name="AM_partnerRole" file-path="BPEL/AddressManagement/HandlePortingEvent.bpel" interface-name="ns5:AMSoap" name="endpoint38" process-name="HandlePortingEvent" service-name="ns16:AM"/>
+        <endpoint display-name="AM" endpoint-name="AM_partnerRole" file-path="BPEL/ServiceProvisioning/ProvisionVoiceService.bpel" interface-name="ns5:AMSoap" name="endpoint39" process-name="ProvisionVoiceService" service-name="ns18:AM"/>
+        <endpoint display-name="PC" endpoint-name="PC_partnerRole" file-path="BPEL/PolicyControl/GetPCRFData.bpel" interface-name="ns7:PCSoap" name="endpoint40" process-name="GetPCRFData" service-name="ns16:PC"/>
+        <endpoint display-name="SCASubFlowsInvoke" endpoint-name="SCASubFlows_partnerRole" file-path="BPEL/Internal/CopyCMSvcSpecToSCASvcSpec.bpel" interface-name="ns18:SCASubFlowsSoap" name="endpoint41" process-name="CopyCMSvcSpecToSCASvcSpec" service-name="ns18:SCASubFlowsInvoke"/>
+        <endpoint display-name="CM" endpoint-name="CM_partnerRole" file-path="BPEL/Internal/CopyCMSvcInstancesToSCASvcInstances.bpel" interface-name="ns13:CMSoap" name="endpoint42" process-name="CopyCMSvcInstancesToSCASvcInstances" service-name="ns18:CM"/>
+        <endpoint display-name="SCACalling" endpoint-name="SCAImplementation_partnerRole" file-path="BPEL/Internal/CopyCMSvcInstancesToSCASvcInstances.bpel" interface-name="ns16:SCASoap" name="endpoint43" process-name="CopyCMSvcInstancesToSCASvcInstances" service-name="ns18:SCACalling"/>
+        <endpoint display-name="IMSSC" endpoint-name="IMSSC_partnerRole" file-path="BPEL/IMSSessionManagement/DeregisterIMPU.bpel" interface-name="ns9:IMSSCSoap" name="endpoint44" process-name="DeregisterIMPU" service-name="ns16:IMSSC"/>
+    </endpoints>
+    <service-units>
+        <service-engine-service-unit artifacts-zip="SCA.jar" component-name="sun-bpel-engine" defined="true" description="Represents this Service Unit" internal="true" name="ESB-SCA" unit-name="SCA" unknown="false" x="72" y="97">
+            <provides endpoint="endpoint18"/>
+            <provides endpoint="endpoint19"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint23"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint25"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint27"/>
+            <consumes endpoint="endpoint27"/>
+            <consumes endpoint="endpoint27"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint28"/>
+            <consumes endpoint="endpoint29"/>
+            <consumes endpoint="endpoint29"/>
+            <consumes endpoint="endpoint29"/>
+            <consumes endpoint="endpoint29"/>
+            <consumes endpoint="endpoint29"/>
+            <consumes endpoint="endpoint29"/>
+            <consumes endpoint="endpoint29"/>
+            <consumes endpoint="endpoint30"/>
+            <consumes endpoint="endpoint30"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint30"/>
+            <consumes endpoint="endpoint30"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint30"/>
+            <consumes endpoint="endpoint31"/>
+            <consumes endpoint="endpoint31"/>
+            <consumes endpoint="endpoint31"/>
+            <consumes endpoint="endpoint31"/>
+            <consumes endpoint="endpoint31"/>
+            <consumes endpoint="endpoint31"/>
+            <consumes endpoint="endpoint31"/>
+            <consumes endpoint="endpoint32"/>
+            <consumes endpoint="endpoint32"/>
+            <consumes endpoint="endpoint32"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint25"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint23"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint31"/>
+            <consumes endpoint="endpoint34"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint23"/>
+            <consumes endpoint="endpoint23"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint23"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint35"/>
+            <consumes endpoint="endpoint35"/>
+            <consumes endpoint="endpoint36"/>
+            <consumes endpoint="endpoint37"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint35"/>
+            <consumes endpoint="endpoint38"/>
+            <consumes endpoint="endpoint38"/>
+            <consumes endpoint="endpoint38"/>
+            <consumes endpoint="endpoint39"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint39"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint39"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint21"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint22"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint23"/>
+            <consumes endpoint="endpoint38"/>
+            <consumes endpoint="endpoint20"/>
+            <consumes endpoint="endpoint39"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint39"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint39"/>
+            <consumes endpoint="endpoint33"/>
+            <consumes endpoint="endpoint40"/>
+            <consumes endpoint="endpoint40"/>
+            <consumes endpoint="endpoint41"/>
+            <consumes endpoint="endpoint41"/>
+            <consumes endpoint="endpoint41"/>
+            <consumes endpoint="endpoint41"/>
+            <consumes endpoint="endpoint41"/>
+            <consumes endpoint="endpoint42"/>
+            <consumes endpoint="endpoint43"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint34"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint34"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint24"/>
+            <consumes endpoint="endpoint34"/>
+            <consumes endpoint="endpoint34"/>
+            <consumes endpoint="endpoint34"/>
+            <consumes endpoint="endpoint34"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint34"/>
+            <consumes endpoint="endpoint34"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint34"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint26"/>
+            <consumes endpoint="endpoint44"/>
+            <consumes endpoint="endpoint44"/>
+        </service-engine-service-unit>
+        <binding-component-service-unit artifacts-zip="sun-http-binding.jar" component-name="sun-http-binding" description="Represents this Service Unit" name="ESB-sun-http-binding" unit-name="sun-http-binding">
+            <ports>
+                <port x="67" y="117">
+                    <link xlink:href="../jbiServiceUnits/SCA/wsdl/SCAServiceDefinition.wsdl#xpointer(/definitions/service[@name='SCA']/port[@name='SCASoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint16">
+                        <handler-chain xmlns="http://www.sun.com/jbi/httpbc/jaxws_handlers">
+                            <handler classname="com.smilecoms.soapcache.SoapCacheHandler" jarpaths="/var/smile/install/packages/smile_java/openesb_lib/SoapCacheHandler.jar" name="SoapCacheHandler"/>
+                        </handler-chain>
+                    </consumes>
+                    <provides endpoint="endpoint16"/>
+                </port>
+                <port x="67" y="1237">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/POS/POSServiceDefinition.wsdl#xpointer(/definitions/service[@name='POS']/port[@name='POSSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint8"/>
+                    <provides endpoint="endpoint8"/>
+                </port>
+                <port x="67" y="37">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TNF/TNFServiceDefinition.wsdl#xpointer(/definitions/service[@name='TNF']/port[@name='TNFSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint17"/>
+                    <provides endpoint="endpoint17"/>
+                </port>
+                <port x="67" y="677">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/CTI/CTIServiceDefinition.wsdl#xpointer(/definitions/service[@name='CTI']/port[@name='CTISoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint12"/>
+                    <provides endpoint="endpoint12"/>
+                </port>
+                <port x="67" y="1157">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TT/TTServiceDefinition.wsdl#xpointer(/definitions/service[@name='TT']/port[@name='TTSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint1"/>
+                    <provides endpoint="endpoint1"/>
+                </port>
+                <port x="67" y="1077">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IM/IMServiceDefinition.wsdl#xpointer(/definitions/service[@name='IM']/port[@name='IMSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint15"/>
+                    <provides endpoint="endpoint15"/>
+                </port>
+                <port x="67" y="357">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/CM/CMServiceDefinition.wsdl#xpointer(/definitions/service[@name='CM']/port[@name='CMSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint13"/>
+                    <provides endpoint="endpoint13"/>
+                </port>
+                <port x="67" y="997">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PM/PMServiceDefinition.wsdl#xpointer(/definitions/service[@name='PM']/port[@name='PMSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint2"/>
+                    <provides endpoint="endpoint2"/>
+                </port>
+                <port x="67" y="277">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PVS/PVSServiceDefinition.wsdl#xpointer(/definitions/service[@name='PVS']/port[@name='PVSSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint6"/>
+                    <provides endpoint="endpoint6"/>
+                </port>
+                <port x="67" y="437">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/BM/BMServiceDefinition.wsdl#xpointer(/definitions/service[@name='BM']/port[@name='BMSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint3"/>
+                    <provides endpoint="endpoint3"/>
+                </port>
+                <port x="67" y="837">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/SN/SNServiceDefinition.wsdl#xpointer(/definitions/service[@name='SN']/port[@name='SNSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint14"/>
+                    <provides endpoint="endpoint14"/>
+                </port>
+                <port x="67" y="197">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/ET/ETServiceDefinition.wsdl#xpointer(/definitions/service[@name='ET']/port[@name='ETSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint4"/>
+                    <provides endpoint="endpoint4"/>
+                </port>
+                <port x="67" y="917">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/BS/BSServiceDefinition.wsdl#xpointer(/definitions/service[@name='BS']/port[@name='BSSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint10"/>
+                    <provides endpoint="endpoint10"/>
+                </port>
+                <port x="67" y="597">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IMSSC/IMSSCServiceDefinition.wsdl#xpointer(/definitions/service[@name='IMSSC']/port[@name='IMSSCSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint9"/>
+                    <provides endpoint="endpoint9"/>
+                </port>
+                <port x="67" y="517">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/MM/MMServiceDefinition.wsdl#xpointer(/definitions/service[@name='MM']/port[@name='MMSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint11"/>
+                    <provides endpoint="endpoint11"/>
+                </port>
+                <port x="67" y="1317">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/AM/AMServiceDefinition.wsdl#xpointer(/definitions/service[@name='AM']/port[@name='AMSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint5"/>
+                    <provides endpoint="endpoint5"/>
+                </port>
+                <port x="67" y="757">
+                    <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PC/PCServiceDefinition.wsdl#xpointer(/definitions/service[@name='PC']/port[@name='PCSoap'])" xlink:type="simple"/>
+                    <consumes endpoint="endpoint7"/>
+                    <provides endpoint="endpoint7"/>
+                </port>
+            </ports>
+        </binding-component-service-unit>
+    </service-units>
+    <connections>
+        <connection consumer="endpoint32" provider="endpoint12" state="unchanged"/>
+        <connection consumer="endpoint25" provider="endpoint11" state="unchanged"/>
+        <connection consumer="endpoint27" provider="endpoint4" state="unchanged"/>
+        <connection consumer="endpoint16" provider="endpoint18" state="unchanged"/>
+        <connection consumer="endpoint23" provider="endpoint18" state="unchanged"/>
+        <connection consumer="endpoint43" provider="endpoint18" state="unchanged"/>
+        <connection consumer="endpoint20" provider="endpoint13" state="unchanged"/>
+        <connection consumer="endpoint42" provider="endpoint13" state="unchanged"/>
+        <connection consumer="endpoint30" provider="endpoint6" state="unchanged"/>
+        <connection consumer="endpoint24" provider="endpoint19" state="unchanged"/>
+        <connection consumer="endpoint41" provider="endpoint19" state="unchanged"/>
+        <connection consumer="endpoint26" provider="endpoint15" state="unchanged"/>
+        <connection consumer="endpoint33" provider="endpoint15" state="unchanged"/>
+        <connection consumer="endpoint28" provider="endpoint17" state="unchanged"/>
+        <connection consumer="endpoint34" provider="endpoint1" state="unchanged"/>
+        <connection consumer="endpoint38" provider="endpoint5" state="unchanged"/>
+        <connection consumer="endpoint39" provider="endpoint5" state="unchanged"/>
+        <connection consumer="endpoint40" provider="endpoint7" state="unchanged"/>
+        <connection consumer="endpoint44" provider="endpoint9" state="unchanged"/>
+        <connection consumer="endpoint35" provider="endpoint10" state="unchanged"/>
+        <connection consumer="endpoint37" provider="endpoint10" state="unchanged"/>
+        <connection consumer="endpoint31" provider="endpoint14" state="unchanged"/>
+        <connection consumer="endpoint21" provider="endpoint8" state="unchanged"/>
+        <connection consumer="endpoint22" provider="endpoint3" state="unchanged"/>
+        <connection consumer="endpoint29" provider="endpoint2" state="unchanged"/>
+        <connection consumer="endpoint36" provider="endpoint2" state="unchanged"/>
+    </connections>
+    <porttypes>
+        <link xlink:href="../jbiServiceUnits/SCA/wsdl/SCAServiceDefinition.wsdl#xpointer(/definitions/portType[@name='SCASoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/wsdl/SCASubFlows.wsdl#xpointer(/definitions/portType[@name='SCASubFlowsSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/POS/POSServiceDefinition.wsdl#xpointer(/definitions/portType[@name='POSSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TNF/TNFServiceDefinition.wsdl#xpointer(/definitions/portType[@name='TNFSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TNF/cce.wsdl#xpointer(/definitions/portType[@name='CustomerCare'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/HWF/HWFServiceDefinition.wsdl#xpointer(/definitions/portType[@name='HWFSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/CTI/CTIServiceDefinition.wsdl#xpointer(/definitions/portType[@name='CTISoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TT/TTServiceDefinition.wsdl#xpointer(/definitions/portType[@name='TTSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IM/IMServiceDefinition.wsdl#xpointer(/definitions/portType[@name='IMSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IM/ThirdPartyInterfaceNewWS_Updated.wsdl#xpointer(/definitions/portType[@name='ThirdPartyInterfaceFacadeNew'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/CM/CMServiceDefinition.wsdl#xpointer(/definitions/portType[@name='CMSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PM/PMServiceDefinition.wsdl#xpointer(/definitions/portType[@name='PMSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PVS/PVSServiceDefinition.wsdl#xpointer(/definitions/portType[@name='PVSSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/BM/BMServiceDefinition.wsdl#xpointer(/definitions/portType[@name='BMSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/SN/SNServiceDefinition.wsdl#xpointer(/definitions/portType[@name='SNSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/ET/ETServiceDefinition.wsdl#xpointer(/definitions/portType[@name='ETSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/BS/BSServiceDefinition.wsdl#xpointer(/definitions/portType[@name='BSSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IMSSC/IMSSCServiceDefinition.wsdl#xpointer(/definitions/portType[@name='IMSSCSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/MM/MMServiceDefinition.wsdl#xpointer(/definitions/portType[@name='MMSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/AM/NGMNP.wsdl#xpointer(/definitions/portType[@name='NPCWebServicePortType'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/AM/TZMNP.wsdl#xpointer(/definitions/portType[@name='NpcdbPort'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/AM/AMServiceDefinition.wsdl#xpointer(/definitions/portType[@name='AMSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PC/PCServiceDefinition.wsdl#xpointer(/definitions/portType[@name='PCSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/FileBC/FileProcessingServiceDefinition.wsdl#xpointer(/definitions/portType[@name='FileProcessing'])" xlink:type="simple"/>
+    </porttypes>
+    <bindings>
+        <link xlink:href="../jbiServiceUnits/SCA/wsdl/SCAServiceDefinition.wsdl#xpointer(/definitions/binding[@name='SCABinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/POS/POSServiceDefinition.wsdl#xpointer(/definitions/binding[@name='POSBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TNF/TNFServiceDefinition.wsdl#xpointer(/definitions/binding[@name='TNFBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TNF/cce.wsdl#xpointer(/definitions/binding[@name='CustomerCareSoap11'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/HWF/HWFServiceDefinition.wsdl#xpointer(/definitions/binding[@name='HWFBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/CTI/CTIServiceDefinition.wsdl#xpointer(/definitions/binding[@name='CTIBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TT/TTServiceDefinition.wsdl#xpointer(/definitions/binding[@name='TTBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IM/IMServiceDefinition.wsdl#xpointer(/definitions/binding[@name='IMBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IM/ThirdPartyInterfaceNewWS_Updated.wsdl#xpointer(/definitions/binding[@name='ThirdPartyInterfaceNewWSServiceSoapBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/CM/CMServiceDefinition.wsdl#xpointer(/definitions/binding[@name='CMBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PM/PMServiceDefinition.wsdl#xpointer(/definitions/binding[@name='PMBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PVS/PVSServiceDefinition.wsdl#xpointer(/definitions/binding[@name='PVSBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/BM/BMServiceDefinition.wsdl#xpointer(/definitions/binding[@name='BMBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/SN/SNServiceDefinition.wsdl#xpointer(/definitions/binding[@name='SNBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/ET/ETServiceDefinition.wsdl#xpointer(/definitions/binding[@name='ETBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/BS/BSServiceDefinition.wsdl#xpointer(/definitions/binding[@name='BSBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IMSSC/IMSSCServiceDefinition.wsdl#xpointer(/definitions/binding[@name='IMSSCBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/MM/MMServiceDefinition.wsdl#xpointer(/definitions/binding[@name='MMBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/AM/NGMNP.wsdl#xpointer(/definitions/binding[@name='NPCWebServiceSoap12Binding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/AM/TZMNP.wsdl#xpointer(/definitions/binding[@name='NpcdbSoap'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/AM/AMServiceDefinition.wsdl#xpointer(/definitions/binding[@name='AMBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PC/PCServiceDefinition.wsdl#xpointer(/definitions/binding[@name='PCBinding'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/FileBC/FileProcessingServiceDefinition.wsdl#xpointer(/definitions/binding[@name='FileProcessingBinding'])" xlink:type="simple"/>
+    </bindings>
+    <services>
+        <link xlink:href="../jbiServiceUnits/SCA/wsdl/SCAServiceDefinition.wsdl#xpointer(/definitions/service[@name='SCA'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/POS/POSServiceDefinition.wsdl#xpointer(/definitions/service[@name='POS'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TNF/TNFServiceDefinition.wsdl#xpointer(/definitions/service[@name='TNF'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TNF/cce.wsdl#xpointer(/definitions/service[@name='CustomerCareService'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/HWF/HWFServiceDefinition.wsdl#xpointer(/definitions/service[@name='HWF'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/CTI/CTIServiceDefinition.wsdl#xpointer(/definitions/service[@name='CTI'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/TT/TTServiceDefinition.wsdl#xpointer(/definitions/service[@name='TT'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IM/IMServiceDefinition.wsdl#xpointer(/definitions/service[@name='IM'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IM/ThirdPartyInterfaceNewWS_Updated.wsdl#xpointer(/definitions/service[@name='ThirdPartyInterfaceNewWSService'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/CM/CMServiceDefinition.wsdl#xpointer(/definitions/service[@name='CM'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PM/PMServiceDefinition.wsdl#xpointer(/definitions/service[@name='PM'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PVS/PVSServiceDefinition.wsdl#xpointer(/definitions/service[@name='PVS'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/BM/BMServiceDefinition.wsdl#xpointer(/definitions/service[@name='BM'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/SN/SNServiceDefinition.wsdl#xpointer(/definitions/service[@name='SN'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/ET/ETServiceDefinition.wsdl#xpointer(/definitions/service[@name='ET'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/BS/BSServiceDefinition.wsdl#xpointer(/definitions/service[@name='BS'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/IMSSC/IMSSCServiceDefinition.wsdl#xpointer(/definitions/service[@name='IMSSC'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/MM/MMServiceDefinition.wsdl#xpointer(/definitions/service[@name='MM'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/AM/NGMNP.wsdl#xpointer(/definitions/service[@name='NPCWebService'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/AM/TZMNP.wsdl#xpointer(/definitions/service[@name='NpcdbService'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/AM/AMServiceDefinition.wsdl#xpointer(/definitions/service[@name='AM'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/PC/PCServiceDefinition.wsdl#xpointer(/definitions/service[@name='PC'])" xlink:type="simple"/>
+        <link xlink:href="../jbiServiceUnits/SCA/BPEL/Partners/FileBC/FileProcessingServiceDefinition.wsdl#xpointer(/definitions/service[@name='FileProcessing'])" xlink:type="simple"/>
+    </services>
+    <regions>
+        <region name="WSDL Endpoints" width="150"/>
+        <region name="JBI Modules" width="500"/>
+        <region name="External Modules" width="200"/>
+    </regions>
+</casa>

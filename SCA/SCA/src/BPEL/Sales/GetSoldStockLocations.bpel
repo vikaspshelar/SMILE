@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetSoldStockLocations"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:POS="http://xml.smilecoms.com/POS"
+    xmlns:BM="http://xml.smilecoms.com/BM"
+    xmlns:CM="http://xml.smilecoms.com/CM"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils" 
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns2="http://xml.smilecoms.com/schema/POS" xmlns:ns3="http://xml.smilecoms.com/schema/BM" xmlns:ns4="http://xml.smilecoms.com/schema/CM" >
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/POS" location="../Partners/POS/POSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        <partnerLink name="POS" xmlns:tns="http://xml.smilecoms.com/POS" partnerLinkType="tns:POSServiceDefinition" partnerRole="POS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="TmpString" type="xsd:string"/>
+        <variable name="POSGetSoldStockLocationsOut" messageType="POS:GetSoldStockLocationsResponse"/>
+        <variable name="POSGetSoldStockLocationsIn" messageType="POS:GetSoldStockLocationsRequest"/>
+        <variable name="SCAGetSoldStockLocationsOut" messageType="tns:GetSoldStockLocationsResponse"/>
+        <variable name="SCAGetSoldStockLocationsIn" messageType="tns:GetSoldStockLocationsRequest"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+    </variables>
+    <faultHandlers>
+        <catch  faultMessageType="POS:POSError" faultVariable="POSError">
+            <sequence name="Sequence2">
+                <assign name="Assign1">
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$POSError.POSError/ns2:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns1:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetSoldStockLocations" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetSoldStockLocations" portType="tns:SCASoap" variable="SCAGetSoldStockLocationsIn"/>
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('POS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="POS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignPOS">
+            <copy>
+                <from>$SCAGetSoldStockLocationsIn.SoldStockLocationQuery/ns1:SCAContext/ns1:TxId</from>
+                <to>$POSGetSoldStockLocationsIn.SoldStockLocationQuery/ns2:PlatformContext/ns2:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetSoldStockLocationsIn.SoldStockLocationQuery/ns1:SCAContext/ns1:OriginatingIdentity</from>
+                <to>$POSGetSoldStockLocationsIn.SoldStockLocationQuery/ns2:PlatformContext/ns2:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetSoldStockLocationsIn.SoldStockLocationQuery/ns1:SCAContext/ns1:OriginatingIP</from>
+                <to>$POSGetSoldStockLocationsIn.SoldStockLocationQuery/ns2:PlatformContext/ns2:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetSoldStockLocationsIn.SoldStockLocationQuery/ns1:SCAContext/ns1:Tenant</from>
+                <to>$POSGetSoldStockLocationsIn.SoldStockLocationQuery/ns2:PlatformContext/ns2:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetSoldStockLocationsIn.SoldStockLocationQuery/ns1:SoldToOrganisationId</from>
+                <to>$POSGetSoldStockLocationsIn.SoldStockLocationQuery/ns2:SoldToOrganisationId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetSoldStockLocationsIn.SoldStockLocationQuery/ns1:HeldByOrganisationId</from>
+                <to>$POSGetSoldStockLocationsIn.SoldStockLocationQuery/ns2:HeldByOrganisationId</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetSoldStockLocationsIn.SoldStockLocationQuery/ns1:ItemNumber</from>
+                <to>$POSGetSoldStockLocationsIn.SoldStockLocationQuery/ns2:ItemNumber</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetSoldStockLocationsIn.SoldStockLocationQuery/ns1:SerialNumber</from>
+                <to>$POSGetSoldStockLocationsIn.SoldStockLocationQuery/ns2:SerialNumber</to>
+            </copy>
+        </assign>
+        <invoke name="CallPOS" partnerLink="POS" operation="GetSoldStockLocations" portType="POS:POSSoap" inputVariable="POSGetSoldStockLocationsIn" outputVariable="POSGetSoldStockLocationsOut"/>
+        
+        <assign name="POSToSCA">
+            <copy>
+                <from>BPELUtils:changeNamespace(sxxf:doMarshal($POSGetSoldStockLocationsOut.SoldStockLocationList), 'http://xml.smilecoms.com/schema/POS', 'http://xml.smilecoms.com/schema/SCA')</from>
+                <to variable="TmpString"/>
+            </copy>
+            <copy>
+                <from>sxxf:doUnMarshal($TmpString)</from>
+                <to variable="SCAGetSoldStockLocationsOut" part="SoldStockLocationList"/>
+            </copy>
+        </assign>
+        
+        <reply name="Reply3" partnerLink="SCA" operation="GetSoldStockLocations" portType="tns:SCASoap" variable="SCAGetSoldStockLocationsOut"/>
+    </sequence>
+</process>

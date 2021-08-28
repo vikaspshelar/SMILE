@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="FlushPropertyCache"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/PM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/PM" location="../Partners/PM/PMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        
+        <partnerLink name="PM" xmlns:tns="http://xml.smilecoms.com/PM" partnerLinkType="tns:PMServiceDefinition" partnerRole="PM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="PMFlushCacheOut" xmlns:tns="http://xml.smilecoms.com/PM" messageType="tns:Done"/>
+        <variable name="PMFlushCacheIn" xmlns:tns="http://xml.smilecoms.com/PM" messageType="tns:FlushCacheRequest"/>
+        <variable name="SCAFlushPropertyCacheOut" messageType="tns:FlushPropertyCacheResponse"/>
+        <variable name="SCAFlushPropertyCacheIn" messageType="tns:FlushPropertyCacheRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="FlushPropertyCache" portType="tns:SCASoap" variable="SCAFlushPropertyCacheIn"/>
+
+
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('PM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="PM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+
+
+        <assign name="Assign1">
+            <copy>
+                <from>$SCAFlushPropertyCacheIn.FlushPropertyCacheRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$PMFlushCacheIn.FlushCacheRequest/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAFlushPropertyCacheIn.FlushPropertyCacheRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$PMFlushCacheIn.FlushCacheRequest/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAFlushPropertyCacheIn.FlushPropertyCacheRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$PMFlushCacheIn.FlushCacheRequest/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAFlushPropertyCacheIn.FlushPropertyCacheRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$PMFlushCacheIn.FlushCacheRequest/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>true()</from>
+                <to>$PMFlushCacheIn.FlushCacheRequest/ns1:FlushCache</to>
+            </copy>
+        </assign>
+        <invoke name="Call_PM" partnerLink="PM" operation="FlushCache" xmlns:tns="http://xml.smilecoms.com/PM" portType="tns:PMSoap" inputVariable="PMFlushCacheIn" outputVariable="PMFlushCacheOut"/>
+        <assign name="Assign2">
+            <copy>
+                <from>$PMFlushCacheOut.Done/ns1:Done</from>
+                <to>$SCAFlushPropertyCacheOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="FlushPropertyCache" portType="tns:SCASoap" variable="SCAFlushPropertyCacheOut"/>
+    </sequence>
+</process>
+

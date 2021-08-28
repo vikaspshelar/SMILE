@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions id="definitions"
+             targetNamespace="http://activiti.org/bpmn20" 
+             xmlns:activiti="http://activiti.org/bpmn"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
+    <process name="Grant Free Staff Bundle" id="GFSB">
+                      
+        <startEvent id="theStart"/>
+        <sequenceFlow id="flow1" sourceRef="theStart" targetRef="UserTask_CaptureInfo"/>
+        <sequenceFlow id="flow2" sourceRef="BoundaryEvent_Timer1" targetRef="End_end" /> 
+        <sequenceFlow id="flow3" sourceRef="UserTask_CaptureInfo" targetRef="ServiceTask_EmailApprover"/>         
+        <sequenceFlow id="flow4" sourceRef="ServiceTask_EmailApprover" targetRef="Gateway_BundleSize"/>  
+        
+        <exclusiveGateway id="Gateway_BundleSize" name="Bundle Size For Approver?"/>        
+        
+        <sequenceFlow id="flowA" sourceRef="Gateway_BundleSize" targetRef="UserTask_ApproveNetworkOpsBundleProvisionRequest">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${UnitCreditName == '50GB for Network Operations'}
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flowB" sourceRef="Gateway_BundleSize" targetRef="UserTask_ApproveAbove3GBBundleProvisionRequest">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${UnitCreditName == '50GB Staff data' || UnitCreditName == '5GB Staff data'}
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flowC" sourceRef="Gateway_BundleSize" targetRef="UserTask_ApproveBundleProvisionRequest">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${UnitCreditName == '3GB Staff data' || UnitCreditName == '500MB Staff data'}
+            </conditionExpression>
+        </sequenceFlow> 
+        
+            
+        <sequenceFlow id="flow5" sourceRef="UserTask_ApproveBundleProvisionRequest" targetRef="Gateway_WasApproved" />        
+        <sequenceFlow id="flow6" sourceRef="UserTask_ApproveAbove3GBBundleProvisionRequest" targetRef="Gateway_WasApproved"/>
+        <sequenceFlow id="flow7" sourceRef="UserTask_ApproveNetworkOpsBundleProvisionRequest" targetRef="Gateway_WasApproved" /> 
+        
+        <exclusiveGateway id="Gateway_WasApproved" name="Bundle Provision Approved?"/>        
+        
+        <sequenceFlow id="flow8" sourceRef="Gateway_WasApproved" targetRef="ServiceTask_ProvisionBundle">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${Approved == 'Yes'}
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow9" sourceRef="Gateway_WasApproved" targetRef="End_end">
+            <conditionExpression xsi:type="tFormalExpression">
+                ${Approved == 'No'}
+            </conditionExpression>
+        </sequenceFlow>
+        
+        <sequenceFlow id="flow10" sourceRef="ServiceTask_ProvisionBundle" targetRef="End_end"/>        
+        
+        <endEvent id="End_end"/>
+
+        <userTask id="UserTask_CaptureInfo" name="Capture Free Staff Bundle Request" >
+            <documentation>Capture Account Number, Bundle Name, Name of person requesting the Staff bundle to be provisioned and the justification.</documentation>
+            <extensionElements>
+                <activiti:formProperty name="AccountId" variable="AccountId" id="AccountId" />                
+                <activiti:formProperty name="NameOfRequestor" variable="NameOfRequestor" id="NameOfRequestor" />
+                <activiti:formProperty name="UnitCreditName" variable="Unit Credit Name" id="Unit Credit Name" type="enum">
+                    <activiti:value name="50GB Staff data" id="50GB Staff data"/>
+                    <activiti:value name="5GB Staff data" id="5GB Staff data"/>
+                    <activiti:value name="3GB Staff data" id="3GB Staff data"/>
+                    <activiti:value name="500MB Staff data" id="500MB Staff data"/>
+                    <activiti:value name="50GB for Network Operations" id="50GB for Network Operations  "/>
+                </activiti:formProperty>               
+                  
+                <activiti:formProperty name="Justification" variable="Justification" id="Justification" />
+                <activiti:formProperty name="ApproverEmail" variable="ApproverEmail" id="ApproverEmail" type="enum">
+                    <activiti:value name="chris.murtagh@smilecoms.com" id="chris.murtagh@smilecoms.com"/>
+                    <activiti:value name="sudhir.chopra@smilecoms.com" id="sudhir.chopra@smilecoms.com"/>
+                    <activiti:value name="caroline.kekana@smilecoms.com" id="caroline.kekana@smilecoms.com"/>
+                    <activiti:value name="nilay.naik@smilecoms.com" id="nilay.naik@smilecoms.com"/>
+                    <activiti:value name="ikechukwu.ugbaja@smilecoms.com" id="ikechukwu.ugbaja@smilecoms.com"/>
+                    <activiti:value name="debbie.ricketts@smilecoms.com" id="debbie.ricketts@smilecoms.com"/>
+                    <activiti:value name="olaitan.lucas@smilecoms.com" id="olaitan.lucas@smilecoms.com"/>
+                    <activiti:value name="ogor.chukwudebelu@smilecoms.com" id="ogor.chukwudebelu@smilecoms.com"/>
+                    <activiti:value name="olukayode.joseph@smilecoms.com" id="olukayode.joseph@smilecoms.com"/>
+                    <activiti:value name="temisan.ogisi@smilecoms.com" id="temisan.ogisi@smilecoms.com"/>
+                    <activiti:value name="sarah.joseph@smilecoms.com" id="sarah.joseph@smilecoms.com"/>
+                    <activiti:value name="lotanna.anajemba@smilecoms.com" id="lotanna.anajemba@smilecoms.com"/>
+                    <activiti:value name="alero.ladipo@smilecoms.com" id="alero.ladipo@smilecoms.com"/>
+                    <activiti:value name="jubril.sanusi@smilecoms.com" id="jubril.sanusi@smilecoms.com"/>
+                    <activiti:value name="chiekezi.dozie@smilecoms.com" id="chiekezi.dozie@smilecoms.com"/>
+                    <activiti:value name="tunde.baale@smilecoms.com" id="tunde.baale@smilecoms.com"/>
+                    <activiti:value name="adenike.ajayi@smilecoms.com" id="adenike.ajayi@smilecoms.com"/>
+                    <activiti:value name="oladapo.ogunmekan@smilecoms.com" id="oladapo.ogunmekan@smilecoms.com"/>
+                    <activiti:value name="emmanuel.ozakpo@smilecoms.com" id="emmanuel.ozakpo@smilecoms.com"/>
+                    <activiti:value name="alloysius.bazuaye@smilecoms.com" id="alloysius.bazuaye@smilecoms.com"/>
+                    <activiti:value name="johnson.ekwere@smilecoms.com" id="johnson.ekwere@smilecoms.com"/>
+                    <activiti:value name="aniesin.umoh@smilecoms.com" id="aniesin.umoh@smilecoms.com"/>
+                    <activiti:value name="kenneth.esenwah@smilecoms.com" id="kenneth.esenwah@smilecoms.com"/>
+                    <activiti:value name="chinyere.agwunobi@smilecoms.com" id="chinyere.agwunobi@smilecoms.com"/>  
+                    <activiti:value name="john.ogboi@smilecoms.com" id="john.ogboi@smilecoms.com"/>                    
+                    <activiti:value name="pcb@smilecoms.com" id="pcb@smilecoms.com"/>         
+                </activiti:formProperty>
+            </extensionElements>
+            <potentialOwner>
+                <resourceAssignmentExpression>
+                    <formalExpression>
+                        Customer,SOP,Administrator,GroupITSupport,GroupITManager,GroupNWSupport,GroupNWManager,GroupLogistics,GroupProcesses,GroupFinance,GroupProducts,GroupSDManager,GroupMDManager,CashInClerk,FinanceAccountant,FinanceManager,InboundLogistics,RevenueAssurance,ITSupport,ITManager,NWSupport,NWManager,Products,MarketAnalyst,SDNationalHead,SDOperationsManager,DirectSalesManager,IndirectSalesManager,CorporateSalesManager,RetailSalesManager,CustomerServiceManager,CallCentreOperationsManager,SecondLineComplainsManager,InboundCallCentreManager,OutboundCallCentreManager,InboundCallCentreAgent,OutboundCallCentreAgent,CallCentreShiftSupervisor,TechnicalSalesSupport,RegionalSDManager,RegionalMDManager,RegionalSDOperationsManager,KioskSales,ShopSales,CorporateSales,DirectSales,IndirectSales,RegionalRetailSalesManager,ShopManagement,RegionalDirectSalesManager,RegionalCorporateSalesManager,RegionalIndirectSalesManager,RegionalTechnicalSalesSupport,ICPSales,ICPManager,Trainer,Talent,TPGW,MarketingOperations,FreeBundleRequestor
+                    </formalExpression>
+                </resourceAssignmentExpression>
+            </potentialOwner>
+        </userTask>
+        
+        <userTask name="Approve Bundle Provision Above 3GB Request" id="UserTask_ApproveAbove3GBBundleProvisionRequest" activiti:candidateUsers="alero2006, chexolala, debbie.ricketts, onyeka, nilay.naik@smilecoms.com, sudhir.chopra@smilecoms.com, dapo, togisi, tunde, admin">
+            <documentation> <![CDATA[${NameOfRequestor} requested that ${UnitCreditName} be provisioned for Account Id : ${AccountId}. Justification being that ${Justification}.]]> </documentation>
+            <extensionElements>
+                <activiti:formProperty name="Approved" variable="Approved" id="Approved" type="enum">
+                    <activiti:value name="Yes" id="Yes"/> 
+                    <activiti:value name="No" id="No"/>
+                </activiti:formProperty>
+            </extensionElements>
+        </userTask>        
+        
+        <userTask name="Approve Bundle Provision Request" id="UserTask_ApproveBundleProvisionRequest" activiti:candidateUsers="adenike.ajayi, alero2006, aniesin, chexolala, chris, debbie.ricketts, emmaconomy, ekwere, jayreal2002ng, onyeka, sarah, lotanna, nilay.naik@smilecoms.com, dapo, adetulak, sudhir.chopra@smilecoms.com, togisi, tunde, admin">
+            <documentation> <![CDATA[${NameOfRequestor} requested that ${UnitCreditName} be provisioned for Account Id : ${AccountId}. Justification being that ${Justification}.]]> </documentation>
+            <extensionElements>
+                <activiti:formProperty name="Approved" variable="Approved" id="Approved" type="enum">
+                    <activiti:value name="Yes" id="Yes"/> 
+                    <activiti:value name="No" id="No"/>
+                </activiti:formProperty>
+            </extensionElements>
+        </userTask>            
+        
+        <userTask name="Approve Network Operations Bundle Provision Request" id="UserTask_ApproveNetworkOpsBundleProvisionRequest" activiti:candidateUsers="sudhir.chopra@smilecoms.com, chris, admin">
+            <documentation> / <![CDATA[${NameOfRequestor} requested that ${UnitCreditName} be provisioned for Account Id : ${AccountId}. Justification being that ${Justification}.]]> </documentation>
+            <extensionElements>
+                <activiti:formProperty name="Approved" variable="Approved" id="Approved" type="enum">
+                    <activiti:value name="Yes" id="Yes"/> 
+                    <activiti:value name="No" id="No"/>
+                </activiti:formProperty>
+            </extensionElements>
+        </userTask>    
+        
+        <serviceTask id="ServiceTask_ProvisionBundle" name="Call SCA to Provision Bundle" activiti:class="com.smilecoms.hwf.activiti.ActivitiSCADelegate">
+            <extensionElements>
+                <activiti:field stringValue="provisionUnitCredit"  name="method"/>
+            </extensionElements>  
+        </serviceTask>       
+        
+        <serviceTask id="ServiceTask_EmailApprover" name="Email Approver" activiti:type="mail">
+            <documentation>Notify the approver of the request</documentation>
+            <extensionElements>
+                <activiti:field name="to">
+                    <activiti:expression><![CDATA[${ApproverEmail}]]></activiti:expression>
+                </activiti:field> 
+                <activiti:field name="from">
+                    <activiti:string><![CDATA[admin@smilecoms.com]]></activiti:string>
+                </activiti:field>
+                <activiti:field name="subject">
+                    <activiti:string><![CDATA[Requesting Approval Email]]></activiti:string>
+                </activiti:field>
+                <activiti:field name="text">
+                    <activiti:string><![CDATA[You have a request for a staff bundle that requires your approval on SEP.]]></activiti:string>
+                </activiti:field>
+            </extensionElements>
+        </serviceTask>         
+        <boundaryEvent id="BoundaryEvent_Timer1" cancelActivity="true" attachedToRef="UserTask_CaptureInfo">
+            <timerEventDefinition>
+                <timeDuration>PT24H</timeDuration>
+            </timerEventDefinition>
+        </boundaryEvent>                    
+    </process>
+</definitions>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="HWFServiceDefinition" targetNamespace="http://xml.smilecoms.com/HWF"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://xml.smilecoms.com/HWF" xmlns:ns="http://xml.smilecoms.com/schema/HWF" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <types>
+        <xsd:schema targetNamespace="http://xml.smilecoms.com/HWF">
+            <xsd:import namespace="http://xml.smilecoms.com/schema/HWF" schemaLocation="HWFSchema.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="HWFError">
+        <part name="HWFError" element="ns:HWFError"/>
+    </message>
+    <message name="IsUpRequest">
+        <part name="IsUpRequest" element="ns:IsUpRequest"/>
+    </message>
+    <message name="Done">
+        <part name="Done" element="ns:Done"/>
+    </message>
+    <message name="GetTaskListRequest">
+        <part name="TaskQuery" element="ns:TaskQuery"/>
+    </message>
+    <message name="GetTaskListResponse">
+        <part name="TaskList" element="ns:TaskList"/>
+    </message>
+    <message name="UpdateTaskRequest">
+        <part name="TaskUpdateData" element="ns:TaskUpdateData"/>
+    </message>
+    <message name="SetProcessVariablesRequest">
+        <part name="ProcessVariableAssignmentData" element="ns:ProcessVariableAssignmentData"/>
+    </message>
+    <message name="SetTaskVariablesRequest">
+        <part name="TaskVariableAssignmentData" element="ns:TaskVariableAssignmentData"/>
+    </message>
+    <message name="StartProcessRequest">
+        <part name="ProcessDefinitionKey" element="ns:ProcessDefinitionKey"/>
+    </message>
+    <message name="DeleteProcessDefinitionRequest">
+        <part name="ProcessDefinitionKeyToDelete" element="ns:ProcessDefinitionKeyToDelete"/>
+    </message>
+    <message name="GetProcessDefinitionsRequest">
+        <part name="ProcessDefinitionQuery" element="ns:ProcessDefinitionQuery"/>
+    </message>
+    <message name="GetProcessDefinitionsResponse">
+        <part name="ProcessDefinitionList" element="ns:ProcessDefinitionList"/>
+    </message>
+    <message name="GetProcessHistoryRequest">
+        <part name="ProcessHistoryQuery" element="ns:ProcessHistoryQuery"/>
+    </message>
+    <message name="GetProcessHistoryResponse">
+        <part name="ProcessHistory" element="ns:ProcessHistory"/>
+    </message>
+    
+    <portType name="HWFSoap">
+        <operation name="IsUp">
+            <input name="input1" message="tns:IsUpRequest"/>
+            <output name="output1" message="tns:Done"/>
+            <fault name="fault1" message="tns:HWFError"/>
+        </operation>
+        <operation name="GetTaskList">
+            <input name="input2" message="tns:GetTaskListRequest"/>
+            <output name="output2" message="tns:GetTaskListResponse"/>
+            <fault name="fault1" message="tns:HWFError"/>
+        </operation>
+        <operation name="UpdateTask">
+            <input name="input3" message="tns:UpdateTaskRequest"/>
+            <output name="output3" message="tns:Done"/>
+            <fault name="fault1" message="tns:HWFError"/>
+        </operation>
+        <operation name="SetProcessVariables">
+            <input name="input5" message="tns:SetProcessVariablesRequest"/>
+            <output name="output5" message="tns:Done"/>
+            <fault name="fault1" message="tns:HWFError"/>
+        </operation>
+        <operation name="SetTaskVariables">
+            <input name="input9" message="tns:SetTaskVariablesRequest"/>
+            <output name="output9" message="tns:Done"/>
+            <fault name="fault1" message="tns:HWFError"/>
+        </operation>
+        <operation name="StartProcess">
+            <input name="input7" message="tns:StartProcessRequest"/>
+            <output name="output7" message="tns:Done"/>
+            <fault name="fault1" message="tns:HWFError"/>
+        </operation>
+        <operation name="GetProcessDefinitions">
+            <input name="input8" message="tns:GetProcessDefinitionsRequest"/>
+            <output name="output8" message="tns:GetProcessDefinitionsResponse"/>
+            <fault name="fault1" message="tns:HWFError"/>
+        </operation>
+        <operation name="DeleteProcessDefinition">
+            <input name="input4" message="tns:DeleteProcessDefinitionRequest"/>
+            <output name="output4" message="tns:Done"/>
+            <fault name="fault1" message="tns:HWFError"/>
+        </operation>
+        <operation name="GetProcessHistory">
+            <input name="input6" message="tns:GetProcessHistoryRequest"/>
+            <output name="output6" message="tns:GetProcessHistoryResponse"/>
+            <fault name="fault1" message="tns:HWFError"/>
+        </operation>
+    </portType>
+    <binding name="HWFBinding" type="tns:HWFSoap">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="IsUp">
+            <input name="input1">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output1">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetTaskList">
+            <input name="input2">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output2">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="UpdateTask">
+            <input name="input3">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output3">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="DeleteProcessDefinition">
+            <input name="input4">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output4">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SetProcessVariables">
+            <input name="input5">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output5">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetProcessHistory">
+            <input name="input6">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output6">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="StartProcess">
+            <input name="input7">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output7">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="GetProcessDefinitions">
+            <input name="input8">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output8">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="SetTaskVariables">
+            <input name="input9">
+                <soap:body use="literal"/>
+            </input>
+            <output name="output9">
+                <soap:body use="literal"/>
+            </output>
+            <fault name="fault1">
+                <soap:fault name="fault1" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="HWF">
+        <port name="HWFSoap" binding="tns:HWFBinding">
+            <soap:address location="http://localhost:${HttpDefaultPort}/HWF/HWFSoap"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="HWFServiceDefinition">
+        <!-- A partner link type is automatically generated when a new port type is added. Partner link types are used by BPEL processes.
+In a BPEL process, a partner link represents the interaction between the BPEL process and a partner service. Each partner link is associated with a partner link type.
+A partner link type characterizes the conversational relationship between two services. The partner link type can have one or two roles.-->
+        <plnk:role name="HWF" portType="tns:HWFSoap"/>
+    </plnk:partnerLinkType>
+</definitions>
+

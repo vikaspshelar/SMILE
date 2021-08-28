@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+  <handler-chain>
+    <handler>
+      <handler-name>com.smilecoms.mnp.soap.MNPSoapHandler</handler-name>
+      <handler-class>com.smilecoms.mnp.soap.MNPSoapHandler</handler-class>
+    </handler>
+    <handler>
+      <handler-name>com.smilecoms.mnp.soap.MNPSoapFaultHandler</handler-name>
+      <handler-class>com.smilecoms.mnp.soap.MNPSoapFaultHandler</handler-class>
+    </handler>
+  </handler-chain>
+</handler-chains>

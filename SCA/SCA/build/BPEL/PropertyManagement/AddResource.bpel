@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="AddResource"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" xmlns:ns1="http://xml.smilecoms.com/schema/PM"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/PM" location="../Partners/PM/PMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        
+        <partnerLink name="PM" xmlns:tns="http://xml.smilecoms.com/PM" partnerLinkType="tns:PMServiceDefinition" partnerRole="PM"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="SCAAddResourceOut" messageType="tns:AddResourceResponse"/>
+        <variable name="PMAddResourceOut" xmlns:tns="http://xml.smilecoms.com/PM" messageType="tns:AddResourceResponse"/>
+        <variable name="PMAddResourceIn" xmlns:tns="http://xml.smilecoms.com/PM" messageType="tns:AddResourceRequest"/>
+        <variable name="SCAAddResourceIn" messageType="tns:AddResourceRequest"/>
+    </variables>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="AddResource" portType="tns:SCASoap" variable="SCAAddResourceIn"/>
+
+
+
+
+        <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs">
+                    <copy>
+                        <from>LT:getEndPoint('PM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="PM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+
+
+
+
+
+
+        <assign name="Assign1">
+
+            <copy>
+                <from>$SCAAddResourceIn.NewResource/ns0:SCAContext/ns0:TxId</from>
+                <to>$PMAddResourceIn.NewResource/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAAddResourceIn.NewResource/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$PMAddResourceIn.NewResource/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAAddResourceIn.NewResource/ns0:SCAContext/ns0:Tenant</from>
+                <to>$PMAddResourceIn.NewResource/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCAAddResourceIn.NewResource/ns0:Key</from>
+                <to>$PMAddResourceIn.NewResource/ns1:Key</to>
+            </copy>
+            <copy>
+                <from>$SCAAddResourceIn.NewResource/ns0:Value</from>
+                <to>$PMAddResourceIn.NewResource/ns1:Value</to>
+            </copy>
+            <copy>
+                <from>$SCAAddResourceIn.NewResource/ns0:Locale</from>
+                <to>$PMAddResourceIn.NewResource/ns1:Locale</to>
+            </copy>
+            <copy>
+                <from>$SCAAddResourceIn.NewResource/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$PMAddResourceIn.NewResource/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+        </assign>
+        <invoke name="Call_PM" partnerLink="PM" operation="AddResource" xmlns:tns="http://xml.smilecoms.com/PM" portType="tns:PMSoap" inputVariable="PMAddResourceIn" outputVariable="PMAddResourceOut"/>
+        <assign name="Assign2">
+            <copy>
+                <from>$PMAddResourceOut.Done/ns1:Done</from>
+                <to>$SCAAddResourceOut.Done/ns0:Done</to>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="AddResource" portType="tns:SCASoap" variable="SCAAddResourceOut"/>
+    </sequence>
+</process>
+

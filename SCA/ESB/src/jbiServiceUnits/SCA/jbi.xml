@@ -1,0 +1,985 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jbi xmlns="http://java.sun.com/xml/ns/jbi" xmlns:ns0="http://xml.smilecoms.com/SCA" xmlns:ns1="http://xml.smilecoms.com/CM" xmlns:ns10="http://xml.smilecoms.com/PVS" xmlns:ns11="http://xml.smilecoms.com/SN" xmlns:ns12="http://xml.smilecoms.com/CTI" xmlns:ns13="http://xml.smilecoms.com/TT" xmlns:ns14="http://xml.smilecoms.com/BS" xmlns:ns15="http://xml.smilecoms.com/AM" xmlns:ns16="http://xml.smilecoms.com/PC" xmlns:ns17="http://xml.smilecoms.com/IMSSC" xmlns:ns18="http://www.sun.com/jbi/descriptor/service-unit" xmlns:ns2="http://xml.smilecoms.com/POS" xmlns:ns3="http://xml.smilecoms.com/BM" xmlns:ns4="http://xml.smilecoms.com/SCASubFlows" xmlns:ns5="http://xml.smilecoms.com/MM" xmlns:ns6="http://xml.smilecoms.com/IM" xmlns:ns7="http://xml.smilecoms.com/ET" xmlns:ns8="http://xml.smilecoms.com/TNF" xmlns:ns9="http://xml.smilecoms.com/PM" version="1.0">
+    <services binding-component="false">
+        <provides endpoint-name="SCAImplementation_myRole" interface-name="ns0:SCASoap" service-name="ns0:SCA">
+            <ns18:display-name>SCA</ns18:display-name>
+            <ns18:process-name>StoreCampaignData</ns18:process-name>
+            <ns18:file-path>BPEL/CampaignManagement/StoreCampaignData.bpel</ns18:file-path>
+        </provides>
+        <provides endpoint-name="SCASubFlows_myRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns4:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetVoiceServiceAVPs</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceData/GetVoiceServiceAVPs.bpel</ns18:file-path>
+        </provides>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>StoreCampaignData</ns18:process-name>
+            <ns18:file-path>BPEL/CampaignManagement/StoreCampaignData.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>DeleteContract</ns18:process-name>
+            <ns18:file-path>BPEL/ContractManagement/DeleteContract.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>ModifyContract</ns18:process-name>
+            <ns18:file-path>BPEL/ContractManagement/ModifyContract.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>AddContract</ns18:process-name>
+            <ns18:file-path>BPEL/ContractManagement/AddContract.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>GetContracts</ns18:process-name>
+            <ns18:file-path>BPEL/ContractManagement/GetContracts.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>ModifyAccount</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/ModifyAccount.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>GetAccountHistory</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetAccountHistory.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>CreateAccount</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/CreateAccount.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>CreateScheduledAccountHistory</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/CreateScheduledAccountHistory.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCAImplementation_partnerRole" interface-name="ns0:SCASoap" service-name="ns0:SCACalling">
+            <ns18:display-name>SCACalling</ns18:display-name>
+            <ns18:process-name>SplitUnitCredit</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/SplitUnitCredit.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>SplitUnitCredit</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/SplitUnitCredit.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>SplitUnitCredit</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/SplitUnitCredit.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>GetTransferGraph</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetTransferGraph.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>CheckReservation</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/CheckReservation.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>ModifyUnitCredit</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/ModifyUnitCredit.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>TransferBalance</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/TransferBalance.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>TransferBalance</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/TransferBalance.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>GetUnitCreditInstances</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetUnitCreditInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetUnitCreditInstances</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetUnitCreditInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>GetUnitCreditInstances</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetUnitCreditInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetRatePlan</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetRatePlan.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>GetRatePlan</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetRatePlan.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>ReverseTransactions</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/ReverseTransactions.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>GetAccountSummary</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetAccountSummary.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>GetAccounts</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetAccounts.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetAccounts</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetAccounts.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>GetAccounts</ns18:process-name>
+            <ns18:file-path>BPEL/AccountManagement/GetAccounts.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="MM_partnerRole" interface-name="ns5:MMSoap" service-name="ns0:MM">
+            <ns18:display-name>MM</ns18:display-name>
+            <ns18:process-name>SendShortMessage</ns18:process-name>
+            <ns18:file-path>BPEL/MessageManagement/SendShortMessage.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>PerformSIMSwap</ns18:process-name>
+            <ns18:file-path>BPEL/UiccManagement/PerformSIMSwap.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>PerformSIMSwap</ns18:process-name>
+            <ns18:file-path>BPEL/UiccManagement/PerformSIMSwap.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>PerformSIMSwap</ns18:process-name>
+            <ns18:file-path>BPEL/UiccManagement/PerformSIMSwap.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>PerformSIMSwap</ns18:process-name>
+            <ns18:file-path>BPEL/UiccManagement/PerformSIMSwap.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ProvisionSIMCard</ns18:process-name>
+            <ns18:file-path>BPEL/UiccManagement/ProvisionSIMCard.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="ET_partnerRole" interface-name="ns7:ETSoap" service-name="ns0:ET">
+            <ns18:display-name>ET</ns18:display-name>
+            <ns18:process-name>DeleteFutureEvent</ns18:process-name>
+            <ns18:file-path>BPEL/EventManagement/DeleteFutureEvent.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="ET_partnerRole" interface-name="ns7:ETSoap" service-name="ns0:ET">
+            <ns18:display-name>ET</ns18:display-name>
+            <ns18:process-name>CreateEvent</ns18:process-name>
+            <ns18:file-path>BPEL/EventManagement/CreateEvent.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="ET_partnerRole" interface-name="ns7:ETSoap" service-name="ns0:ET">
+            <ns18:display-name>ET</ns18:display-name>
+            <ns18:process-name>GetEvents</ns18:process-name>
+            <ns18:file-path>BPEL/EventManagement/GetEvents.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetServiceInstances</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetServiceInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>GetServiceInstances</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetServiceInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>GetServiceInstances</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetServiceInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>GetUnitCreditSpecifications</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetUnitCreditSpecifications.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetUnitCreditSpecifications</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetUnitCreditSpecifications.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>GetProductSpecifications</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetProductSpecifications.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetProductSpecifications</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetProductSpecifications.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetServiceSpecification</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetServiceSpecification.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>GetServiceSpecification</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetServiceSpecification.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetProductInstances</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetProductInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>GetProductInstances</ns18:process-name>
+            <ns18:file-path>BPEL/CatalogueManagement/GetProductInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TNF_partnerRole" interface-name="ns8:TNFSoap" service-name="ns0:TNF">
+            <ns18:display-name>TNF</ns18:display-name>
+            <ns18:process-name>GetDataFromTNF</ns18:process-name>
+            <ns18:file-path>BPEL/TNFData/GetDataFromTNF.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PM_partnerRole" interface-name="ns9:PMSoap" service-name="ns0:PM">
+            <ns18:display-name>PM</ns18:display-name>
+            <ns18:process-name>GetProperty</ns18:process-name>
+            <ns18:file-path>BPEL/PropertyManagement/GetProperty.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PM_partnerRole" interface-name="ns9:PMSoap" service-name="ns0:PM">
+            <ns18:display-name>PM</ns18:display-name>
+            <ns18:process-name>AddResource</ns18:process-name>
+            <ns18:file-path>BPEL/PropertyManagement/AddResource.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PM_partnerRole" interface-name="ns9:PMSoap" service-name="ns0:PM">
+            <ns18:display-name>PM</ns18:display-name>
+            <ns18:process-name>RunGeneralQuery</ns18:process-name>
+            <ns18:file-path>BPEL/PropertyManagement/RunGeneralQuery.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PM_partnerRole" interface-name="ns9:PMSoap" service-name="ns0:PM">
+            <ns18:display-name>PM</ns18:display-name>
+            <ns18:process-name>GetResourceList</ns18:process-name>
+            <ns18:file-path>BPEL/PropertyManagement/GetResourceList.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PM_partnerRole" interface-name="ns9:PMSoap" service-name="ns0:PM">
+            <ns18:display-name>PM</ns18:display-name>
+            <ns18:process-name>IsStale</ns18:process-name>
+            <ns18:file-path>BPEL/PropertyManagement/IsStale.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PM_partnerRole" interface-name="ns9:PMSoap" service-name="ns0:PM">
+            <ns18:display-name>PM</ns18:display-name>
+            <ns18:process-name>FlushPropertyCache</ns18:process-name>
+            <ns18:file-path>BPEL/PropertyManagement/FlushPropertyCache.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PM_partnerRole" interface-name="ns9:PMSoap" service-name="ns0:PM">
+            <ns18:display-name>PM</ns18:display-name>
+            <ns18:process-name>UpdateProperty</ns18:process-name>
+            <ns18:file-path>BPEL/PropertyManagement/UpdateProperty.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PVS_partnerRole" interface-name="ns10:PVSSoap" service-name="ns0:PVS">
+            <ns18:display-name>PVS</ns18:display-name>
+            <ns18:process-name>CreatePrepaidStrips</ns18:process-name>
+            <ns18:file-path>BPEL/VoucherSystem/CreatePrepaidStrips.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PVS_partnerRole" interface-name="ns10:PVSSoap" service-name="ns0:PVS">
+            <ns18:display-name>PVS</ns18:display-name>
+            <ns18:process-name>RedeemPrepaidStrip</ns18:process-name>
+            <ns18:file-path>BPEL/VoucherSystem/RedeemPrepaidStrip.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>RedeemPrepaidStrip</ns18:process-name>
+            <ns18:file-path>BPEL/VoucherSystem/RedeemPrepaidStrip.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>RedeemPrepaidStrip</ns18:process-name>
+            <ns18:file-path>BPEL/VoucherSystem/RedeemPrepaidStrip.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PVS_partnerRole" interface-name="ns10:PVSSoap" service-name="ns0:PVS">
+            <ns18:display-name>PVS</ns18:display-name>
+            <ns18:process-name>GetVoucherLockForAccount</ns18:process-name>
+            <ns18:file-path>BPEL/VoucherSystem/GetVoucherLockForAccount.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PVS_partnerRole" interface-name="ns10:PVSSoap" service-name="ns0:PVS">
+            <ns18:display-name>PVS</ns18:display-name>
+            <ns18:process-name>GetPrepaidStrip</ns18:process-name>
+            <ns18:file-path>BPEL/VoucherSystem/GetPrepaidStrip.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>BatchUpdatePrepaidStrips</ns18:process-name>
+            <ns18:file-path>BPEL/VoucherSystem/BatchUpdatePrepaidStrips.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PVS_partnerRole" interface-name="ns10:PVSSoap" service-name="ns0:PVS">
+            <ns18:display-name>PVS</ns18:display-name>
+            <ns18:process-name>BatchUpdatePrepaidStrips</ns18:process-name>
+            <ns18:file-path>BPEL/VoucherSystem/BatchUpdatePrepaidStrips.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SN_partnerRole" interface-name="ns11:SNSoap" service-name="ns0:SN">
+            <ns18:display-name>SN</ns18:display-name>
+            <ns18:process-name>DeleteStickyNote</ns18:process-name>
+            <ns18:file-path>BPEL/StickyNoteManagement/DeleteStickyNote.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SN_partnerRole" interface-name="ns11:SNSoap" service-name="ns0:SN">
+            <ns18:display-name>SN</ns18:display-name>
+            <ns18:process-name>ModifyStickyNote</ns18:process-name>
+            <ns18:file-path>BPEL/StickyNoteManagement/ModifyStickyNote.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SN_partnerRole" interface-name="ns11:SNSoap" service-name="ns0:SN">
+            <ns18:display-name>SN</ns18:display-name>
+            <ns18:process-name>GetStickyNoteTypeList</ns18:process-name>
+            <ns18:file-path>BPEL/StickyNoteManagement/GetStickyNoteTypeList.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SN_partnerRole" interface-name="ns11:SNSoap" service-name="ns0:SN">
+            <ns18:display-name>SN</ns18:display-name>
+            <ns18:process-name>GetStickyNoteType</ns18:process-name>
+            <ns18:file-path>BPEL/StickyNoteManagement/GetStickyNoteType.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SN_partnerRole" interface-name="ns11:SNSoap" service-name="ns0:SN">
+            <ns18:display-name>SN</ns18:display-name>
+            <ns18:process-name>GetStickyNote</ns18:process-name>
+            <ns18:file-path>BPEL/StickyNoteManagement/GetStickyNote.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SN_partnerRole" interface-name="ns11:SNSoap" service-name="ns0:SN">
+            <ns18:display-name>SN</ns18:display-name>
+            <ns18:process-name>GetEntitiesStickyNotes</ns18:process-name>
+            <ns18:file-path>BPEL/StickyNoteManagement/GetEntitiesStickyNotes.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SN_partnerRole" interface-name="ns11:SNSoap" service-name="ns0:SN">
+            <ns18:display-name>SN</ns18:display-name>
+            <ns18:process-name>AddStickyNote</ns18:process-name>
+            <ns18:file-path>BPEL/StickyNoteManagement/AddStickyNote.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CTI_partnerRole" interface-name="ns12:CTISoap" service-name="ns0:CTI">
+            <ns18:display-name>CTI</ns18:display-name>
+            <ns18:process-name>LogCCAgentOutQueues</ns18:process-name>
+            <ns18:file-path>BPEL/CallcentreManagement/LogCCAgentOutQueues.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CTI_partnerRole" interface-name="ns12:CTISoap" service-name="ns0:CTI">
+            <ns18:display-name>CTI</ns18:display-name>
+            <ns18:process-name>CheckForNewCCAgentCall</ns18:process-name>
+            <ns18:file-path>BPEL/CallcentreManagement/CheckForNewCCAgentCall.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CTI_partnerRole" interface-name="ns12:CTISoap" service-name="ns0:CTI">
+            <ns18:display-name>CTI</ns18:display-name>
+            <ns18:process-name>LogCCAgentIntoQueues</ns18:process-name>
+            <ns18:file-path>BPEL/CallcentreManagement/LogCCAgentIntoQueues.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetVoiceServiceAVPs</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceData/GetVoiceServiceAVPs.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetWLANServiceAVPs</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceData/GetWLANServiceAVPs.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetLTEServiceAVPs</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceData/GetLTEServiceAVPs.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetUICCDetailsAVPs</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceData/GetUICCDetailsAVPs.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ModifyIMSSubscriptionStatus</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/ModifyIMSSubscriptionStatus.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="MM_partnerRole" interface-name="ns5:MMSoap" service-name="ns0:MM">
+            <ns18:display-name>MM</ns18:display-name>
+            <ns18:process-name>SendCustomerCommunication</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/SendCustomerCommunication.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>SendCustomerCommunication</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/SendCustomerCommunication.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>SendCustomerCommunication</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/SendCustomerCommunication.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>SendCustomerCommunication</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/SendCustomerCommunication.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>Authenticate</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/Authenticate.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>AddCustomer</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/AddCustomer.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>AddCustomer</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/AddCustomer.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>AddAddress</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/AddAddress.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>AddAddress</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/AddAddress.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ModifyAddress</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/ModifyAddress.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>ModifyAddress</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/ModifyAddress.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ResetSSOPassword</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/ResetSSOPassword.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetThirdPartyAuthorisationRules</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetThirdPartyAuthorisationRules.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetThirdPartyAuthorisationRules</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetThirdPartyAuthorisationRules.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>DeleteAddress</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/DeleteAddress.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>DeleteAddress</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/DeleteAddress.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetServiceActivationData</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetServiceActivationData.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCAImplementation_partnerRole" interface-name="ns0:SCASoap" service-name="ns0:SCACalling">
+            <ns18:display-name>SCACalling</ns18:display-name>
+            <ns18:process-name>GetNAIIdentity</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetNAIIdentity.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetNAIIdentity</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetNAIIdentity.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>SendSSOPasswordResetLink</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/SendSSOPasswordResetLink.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetPhoto</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetPhoto.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SN_partnerRole" interface-name="ns11:SNSoap" service-name="ns0:SN">
+            <ns18:display-name>SN</ns18:display-name>
+            <ns18:process-name>CloseSalesLead</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/CloseSalesLead.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TT_partnerRole" interface-name="ns13:TTSoap" service-name="ns0:TT">
+            <ns18:display-name>TT</ns18:display-name>
+            <ns18:process-name>CloseSalesLead</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/CloseSalesLead.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetCustomers</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetCustomers.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>GetCustomers</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetCustomers.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>GetCustomers</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetCustomers.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetCustomerTenant</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetCustomerTenant.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>ModifyCustomer</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/ModifyCustomer.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>ModifyCustomer</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/ModifyCustomer.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ModifyCustomer</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/ModifyCustomer.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCAImplementation_partnerRole" interface-name="ns0:SCASoap" service-name="ns0:SCACalling">
+            <ns18:display-name>SCACalling</ns18:display-name>
+            <ns18:process-name>ModifyCustomer</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/ModifyCustomer.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCAImplementation_partnerRole" interface-name="ns0:SCASoap" service-name="ns0:SCACalling">
+            <ns18:display-name>SCACalling</ns18:display-name>
+            <ns18:process-name>GetIMSSubscription</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetIMSSubscription.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetIMSSubscription</ns18:process-name>
+            <ns18:file-path>BPEL/CustomerManagement/GetIMSSubscription.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>GenerateQuote</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/GenerateQuote.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>GetUpSizeInventory</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/GetUpSizeInventory.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>ProcessCashIn</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/ProcessCashIn.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>PurchaseUnitCredit</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/PurchaseUnitCredit.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>PurchaseUnitCredit</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/PurchaseUnitCredit.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>PurchaseUnitCredit</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/PurchaseUnitCredit.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCAImplementation_partnerRole" interface-name="ns0:SCASoap" service-name="ns0:SCACalling">
+            <ns18:display-name>SCACalling</ns18:display-name>
+            <ns18:process-name>PurchaseUnitCredit</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/PurchaseUnitCredit.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>PurchaseUnitCredit</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/PurchaseUnitCredit.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>GetSales</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/GetSales.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>ProcessPaymentNotification</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/ProcessPaymentNotification.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>SetSoldStockLocations</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/SetSoldStockLocations.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>ModifySale</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/ModifySale.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>GetInventory</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/GetInventory.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>PostProcessSale</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/PostProcessSale.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>GetCreditNotes</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/GetCreditNotes.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>GetCashIns</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/GetCashIns.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>ApprovePromotionCode</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/ApprovePromotionCode.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>ReverseGL</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/ReverseGL.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>ProcessReturn</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/ProcessReturn.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>CreateStandardGL</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/CreateStandardGL.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>ProcessSale</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/ProcessSale.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>ProcessSale</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/ProcessSale.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>GetSoldStockLocations</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/GetSoldStockLocations.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>ProcessReturnOrReplacement</ns18:process-name>
+            <ns18:file-path>BPEL/Sales/ProcessReturnOrReplacement.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BS_partnerRole" interface-name="ns14:BSSoap" service-name="ns0:BS">
+            <ns18:display-name>BS</ns18:display-name>
+            <ns18:process-name>ModifyBatchSchedule</ns18:process-name>
+            <ns18:file-path>BPEL/BatchManagement/ModifyBatchSchedule.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BS_partnerRole" interface-name="ns14:BSSoap" service-name="ns0:BS">
+            <ns18:display-name>BS</ns18:display-name>
+            <ns18:process-name>GetBatchSchedules</ns18:process-name>
+            <ns18:file-path>BPEL/BatchManagement/GetBatchSchedules.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PM_partnerRole" interface-name="ns9:PMSoap" service-name="ns4:PM">
+            <ns18:display-name>PM</ns18:display-name>
+            <ns18:process-name>OSCommandBatch</ns18:process-name>
+            <ns18:file-path>BPEL/Batches/OSCommandBatch.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BS_partnerRole" interface-name="ns14:BSSoap" service-name="ns4:BS">
+            <ns18:display-name>BS</ns18:display-name>
+            <ns18:process-name>OSCommandBatch</ns18:process-name>
+            <ns18:file-path>BPEL/Batches/OSCommandBatch.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>RunBatch</ns18:process-name>
+            <ns18:file-path>BPEL/Batches/RunBatch.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BS_partnerRole" interface-name="ns14:BSSoap" service-name="ns0:BS">
+            <ns18:display-name>BS</ns18:display-name>
+            <ns18:process-name>RunBatch</ns18:process-name>
+            <ns18:file-path>BPEL/Batches/RunBatch.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="AM_partnerRole" interface-name="ns15:AMSoap" service-name="ns0:AM">
+            <ns18:display-name>AM</ns18:display-name>
+            <ns18:process-name>HandlePortingEvent</ns18:process-name>
+            <ns18:file-path>BPEL/AddressManagement/HandlePortingEvent.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="AM_partnerRole" interface-name="ns15:AMSoap" service-name="ns0:AM">
+            <ns18:display-name>AM</ns18:display-name>
+            <ns18:process-name>GetAvailableNumbers</ns18:process-name>
+            <ns18:file-path>BPEL/AddressManagement/GetAvailableNumbers.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="AM_partnerRole" interface-name="ns15:AMSoap" service-name="ns0:AM">
+            <ns18:display-name>AM</ns18:display-name>
+            <ns18:process-name>GetPortOrders</ns18:process-name>
+            <ns18:file-path>BPEL/AddressManagement/GetPortOrders.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="AM_partnerRole" interface-name="ns15:AMSoap" service-name="ns4:AM">
+            <ns18:display-name>AM</ns18:display-name>
+            <ns18:process-name>ProvisionVoiceService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProvisionVoiceService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ProvisionVoiceService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProvisionVoiceService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="AM_partnerRole" interface-name="ns15:AMSoap" service-name="ns4:AM">
+            <ns18:display-name>AM</ns18:display-name>
+            <ns18:process-name>ProvisionLTEService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProvisionLTEService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ProvisionLTEService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProvisionLTEService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="AM_partnerRole" interface-name="ns15:AMSoap" service-name="ns4:AM">
+            <ns18:display-name>AM</ns18:display-name>
+            <ns18:process-name>ModifyLTEService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ModifyLTEService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ModifyLTEService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ModifyLTEService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="POS_partnerRole" interface-name="ns2:POSSoap" service-name="ns0:POS">
+            <ns18:display-name>POS</ns18:display-name>
+            <ns18:process-name>ProcessOrder</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProcessOrder.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ProcessOrder</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProcessOrder.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="BM_partnerRole" interface-name="ns3:BMSoap" service-name="ns0:BM">
+            <ns18:display-name>BM</ns18:display-name>
+            <ns18:process-name>ProcessOrder</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProcessOrder.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>ProcessOrder</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProcessOrder.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCAImplementation_partnerRole" interface-name="ns0:SCASoap" service-name="ns0:SCACalling">
+            <ns18:display-name>SCACalling</ns18:display-name>
+            <ns18:process-name>ProcessOrder</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProcessOrder.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="AM_partnerRole" interface-name="ns15:AMSoap" service-name="ns0:AM">
+            <ns18:display-name>AM</ns18:display-name>
+            <ns18:process-name>ProcessOrder</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProcessOrder.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns0:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>ProcessOrder</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProcessOrder.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="AM_partnerRole" interface-name="ns15:AMSoap" service-name="ns4:AM">
+            <ns18:display-name>AM</ns18:display-name>
+            <ns18:process-name>ModifyVoiceService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ModifyVoiceService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ModifyVoiceService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ModifyVoiceService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>DeleteWLANService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/DeleteWLANService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ProvisionWLANService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/ProvisionWLANService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="AM_partnerRole" interface-name="ns15:AMSoap" service-name="ns4:AM">
+            <ns18:display-name>AM</ns18:display-name>
+            <ns18:process-name>DeleteLTEService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/DeleteLTEService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>DeleteLTEService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/DeleteLTEService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="AM_partnerRole" interface-name="ns15:AMSoap" service-name="ns4:AM">
+            <ns18:display-name>AM</ns18:display-name>
+            <ns18:process-name>DeleteVoiceService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/DeleteVoiceService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns4:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>DeleteVoiceService</ns18:process-name>
+            <ns18:file-path>BPEL/ServiceProvisioning/DeleteVoiceService.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PC_partnerRole" interface-name="ns16:PCSoap" service-name="ns0:PC">
+            <ns18:display-name>PC</ns18:display-name>
+            <ns18:process-name>GetPCRFData</ns18:process-name>
+            <ns18:file-path>BPEL/PolicyControl/GetPCRFData.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="PC_partnerRole" interface-name="ns16:PCSoap" service-name="ns0:PC">
+            <ns18:display-name>PC</ns18:display-name>
+            <ns18:process-name>PurgeUserData</ns18:process-name>
+            <ns18:file-path>BPEL/PolicyControl/PurgeUserData.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns4:SCASubFlowsInvoke">
+            <ns18:display-name>SCASubFlowsInvoke</ns18:display-name>
+            <ns18:process-name>CopyCMSvcSpecToSCASvcSpec</ns18:process-name>
+            <ns18:file-path>BPEL/Internal/CopyCMSvcSpecToSCASvcSpec.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns4:SCASubFlowsInvoke">
+            <ns18:display-name>SCASubFlowsInvoke</ns18:display-name>
+            <ns18:process-name>CopyCMProdInstancesToSCAProdInstances</ns18:process-name>
+            <ns18:file-path>BPEL/Internal/CopyCMProdInstancesToSCAProdInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns4:SCASubFlowsInvoke">
+            <ns18:display-name>SCASubFlowsInvoke</ns18:display-name>
+            <ns18:process-name>CopyCMProdSpecsToSCAProdSpecs</ns18:process-name>
+            <ns18:file-path>BPEL/Internal/CopyCMProdSpecsToSCAProdSpecs.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns4:SCASubFlowsInvoke">
+            <ns18:display-name>SCASubFlowsInvoke</ns18:display-name>
+            <ns18:process-name>CopyIMTpAuthRulesToSCATpAuthRules</ns18:process-name>
+            <ns18:file-path>BPEL/Internal/CopyIMTpAuthRulesToSCATpAuthRules.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns4:SCASubFlowsInvoke">
+            <ns18:display-name>SCASubFlowsInvoke</ns18:display-name>
+            <ns18:process-name>CopyCMSvcInstancesToSCASvcInstances</ns18:process-name>
+            <ns18:file-path>BPEL/Internal/CopyCMSvcInstancesToSCASvcInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="CM_partnerRole" interface-name="ns1:CMSoap" service-name="ns4:CM">
+            <ns18:display-name>CM</ns18:display-name>
+            <ns18:process-name>CopyCMSvcInstancesToSCASvcInstances</ns18:process-name>
+            <ns18:file-path>BPEL/Internal/CopyCMSvcInstancesToSCASvcInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCAImplementation_partnerRole" interface-name="ns0:SCASoap" service-name="ns4:SCACalling">
+            <ns18:display-name>SCACalling</ns18:display-name>
+            <ns18:process-name>CopyCMSvcInstancesToSCASvcInstances</ns18:process-name>
+            <ns18:file-path>BPEL/Internal/CopyCMSvcInstancesToSCASvcInstances.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ModifyTroubleTicketComment</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/ModifyTroubleTicketComment.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TT_partnerRole" interface-name="ns13:TTSoap" service-name="ns0:TT">
+            <ns18:display-name>TT</ns18:display-name>
+            <ns18:process-name>ModifyTroubleTicketComment</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/ModifyTroubleTicketComment.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ModifyTroubleTicketIssue</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/ModifyTroubleTicketIssue.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TT_partnerRole" interface-name="ns13:TTSoap" service-name="ns0:TT">
+            <ns18:display-name>TT</ns18:display-name>
+            <ns18:process-name>ModifyTroubleTicketIssue</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/ModifyTroubleTicketIssue.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>CreateTroubleTicketUser</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/CreateTroubleTicketUser.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="SCASubFlows_partnerRole" interface-name="ns4:SCASubFlowsSoap" service-name="ns0:SCASubFlows">
+            <ns18:display-name>SCASubFlows</ns18:display-name>
+            <ns18:process-name>CreateTroubleTicketUser</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/CreateTroubleTicketUser.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TT_partnerRole" interface-name="ns13:TTSoap" service-name="ns0:TT">
+            <ns18:display-name>TT</ns18:display-name>
+            <ns18:process-name>CreateTroubleTicketUser</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/CreateTroubleTicketUser.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TT_partnerRole" interface-name="ns13:TTSoap" service-name="ns0:TT">
+            <ns18:display-name>TT</ns18:display-name>
+            <ns18:process-name>GetJiraUsers</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/GetJiraUsers.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TT_partnerRole" interface-name="ns13:TTSoap" service-name="ns0:TT">
+            <ns18:display-name>TT</ns18:display-name>
+            <ns18:process-name>GetTroubleTicketMetaData</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/GetTroubleTicketMetaData.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TT_partnerRole" interface-name="ns13:TTSoap" service-name="ns0:TT">
+            <ns18:display-name>TT</ns18:display-name>
+            <ns18:process-name>GetTroubleTicketIssues</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/GetTroubleTicketIssues.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>CreateTroubleTicketComment</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/CreateTroubleTicketComment.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TT_partnerRole" interface-name="ns13:TTSoap" service-name="ns0:TT">
+            <ns18:display-name>TT</ns18:display-name>
+            <ns18:process-name>CreateTroubleTicketComment</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/CreateTroubleTicketComment.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TT_partnerRole" interface-name="ns13:TTSoap" service-name="ns0:TT">
+            <ns18:display-name>TT</ns18:display-name>
+            <ns18:process-name>GetTroubleTicketComments</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/GetTroubleTicketComments.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>CreateTroubleTicketIssue</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/CreateTroubleTicketIssue.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="TT_partnerRole" interface-name="ns13:TTSoap" service-name="ns0:TT">
+            <ns18:display-name>TT</ns18:display-name>
+            <ns18:process-name>CreateTroubleTicketIssue</ns18:process-name>
+            <ns18:file-path>BPEL/TroubleTicketManagement/CreateTroubleTicketIssue.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>GetOrganisations</ns18:process-name>
+            <ns18:file-path>BPEL/OrganisationManagement/GetOrganisations.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>AddOrganisation</ns18:process-name>
+            <ns18:file-path>BPEL/OrganisationManagement/AddOrganisation.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IM_partnerRole" interface-name="ns6:IMSoap" service-name="ns0:IM">
+            <ns18:display-name>IM</ns18:display-name>
+            <ns18:process-name>ModifyOrganisation</ns18:process-name>
+            <ns18:file-path>BPEL/OrganisationManagement/ModifyOrganisation.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IMSSC_partnerRole" interface-name="ns17:IMSSCSoap" service-name="ns0:IMSSC">
+            <ns18:display-name>IMSSC</ns18:display-name>
+            <ns18:process-name>DeregisterIMPU</ns18:process-name>
+            <ns18:file-path>BPEL/IMSSessionManagement/DeregisterIMPU.bpel</ns18:file-path>
+        </consumes>
+        <consumes endpoint-name="IMSSC_partnerRole" interface-name="ns17:IMSSCSoap" service-name="ns0:IMSSC">
+            <ns18:display-name>IMSSC</ns18:display-name>
+            <ns18:process-name>GetIMPUSCSCFData</ns18:process-name>
+            <ns18:file-path>BPEL/IMSSessionManagement/GetIMPUSCSCFData.bpel</ns18:file-path>
+        </consumes>
+    </services>
+</jbi>

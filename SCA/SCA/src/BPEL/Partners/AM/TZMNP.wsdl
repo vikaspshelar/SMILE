@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://np.systor.st/npcdb" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:commontypes="http://np.systor.st/commontypes" targetNamespace="http://np.systor.st/npcdb">
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://np.systor.st/npcdb" 
+                    xmlns:commontypes="http://np.systor.st/commontypes" attributeFormDefault="unqualified" 
+                    elementFormDefault="qualified" targetNamespace="http://np.systor.st/npcdb">
+            <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                    Date: $Date: 2014/02/24 08:14:06 $
+                    Author:	$Author: karl $
+                    Revision: $Id: sp2npcdb.wsdl,v 1.3.2.4 2014/08/31 08:14:06 karl Exp $
+                    Log: $Log: sp2npcdb.wsdl,v $
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:import namespace="http://np.systor.st/commontypes" schemaLocation="TZMNP.xsd"/>
+            <xsd:element name="Noop" type="commontypes:Noop_Type">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        This message can be used to test that the Web service is available.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="NoopResponse" type="commontypes:NoopResponse_Type">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        This response will confirm that the Web service is available.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:complexType name="NpcdbReject_Type">
+                <xsd:sequence>
+                    <xsd:element name="ErrorCode" type="xsd:string" />
+                    <xsd:element minOccurs="0" name="Description" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="NpcdbReject" type="NpcdbReject_Type">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        This fault indicates a validation error (message rejected by the NPCDB)
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:complexType name="NpcdbMessageAck_Type">
+                <xsd:sequence>
+                    <xsd:element name="MessageID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="RecipientID" type="commontypes:OperatorID" minOccurs="0"/>
+                    <xsd:element name="DonorID" type="commontypes:OperatorID" minOccurs="0"/>
+                    <xsd:element name="RangeHolderID" type="commontypes:OperatorID" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPRequestToNpcdb_Type">
+                <xsd:sequence>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="EmergencyRestoreID" type="commontypes:NpcdbID" minOccurs="0"/>
+                    <xsd:element name="BlockOrderID" type="commontypes:BlockOrderID" minOccurs="0"/>
+                    <xsd:element name="BlockOrderCount" type="xsd:integer" minOccurs="0"/>
+                    <xsd:element name="ValidationMSISDN" type="commontypes:PhoneNumber" minOccurs="0"/>
+                    <xsd:element name="HandleManually" type="commontypes:HandleManually" minOccurs="0"/>
+                    <xsd:element name="CustomerName" type="xsd:string"/>
+                    <xsd:element name="CustomerIDType" type="commontypes:CustomerIDType"/>
+                    <xsd:element name="CustomerID" type="xsd:string"/>
+                    <xsd:element name="DateOfBirth" type="xsd:date" minOccurs="0"/>
+                    <xsd:element name="ServiceType" type="commontypes:ServiceType"/>
+                    <xsd:element name="CustomerType" type="commontypes:CustomerType"/>
+                    <xsd:element name="SubscriptionType" type="commontypes:SubscriptionType" minOccurs="0"/>
+                    <xsd:element name="RoutingInfoList" type="commontypes:RoutingInfoList"/>
+                    <xsd:element name="PortingTime" type="xsd:dateTime" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPRequestCancelToNpcdb_Type">
+                <xsd:sequence>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="CancelReason" type="xsd:integer"/>
+                    <xsd:element name="CancelMessage" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPDonorRejectToNpcdb_Type">
+                <xsd:sequence>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                    <xsd:element name="DonorRejectList" type="commontypes:DonorRejectList"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPDonorAcceptToNpcdb_Type">
+                <xsd:sequence>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPActivatedToNpcdb_Type">
+                <xsd:sequence>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPDeactivatedToNpcdb_Type">
+                <xsd:sequence>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPReturnToNpcdb_Type">
+                <xsd:sequence>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="PhoneNumberList" type="commontypes:PhoneNumberList"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPReturnCancelToNpcdb_Type">
+                <xsd:sequence>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="NPOrderID" type="commontypes:NpcdbID"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPRingFenceRequestToNpcdb_Type">
+                <xsd:sequence>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="PhoneNumberList" type="commontypes:PhoneNumberList"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="NPEmergencyRestoreToNpcdb_Type">
+                <xsd:sequence>
+                    <xsd:element name="SenderID" type="commontypes:OperatorID"/>
+                    <xsd:element name="OriginalNPOrderID" type="commontypes:NpcdbID"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="MessageAck" type="NpcdbMessageAck_Type"/>
+            <xsd:element name="AccessFault" type="commontypes:AccessFault_Type"/>
+            <xsd:element name="TechnicalFault" type="commontypes:TechnicalFault_Type"/>
+            <xsd:element name="NPRequest" type="NPRequestToNpcdb_Type"/>
+            <xsd:element name="NPRequestCancel" type="NPRequestCancelToNpcdb_Type"/>
+            <xsd:element name="NPDonorReject" type="NPDonorRejectToNpcdb_Type"/>
+            <xsd:element name="NPDonorAccept" type="NPDonorAcceptToNpcdb_Type"/>
+            <xsd:element name="NPActivated" type="NPActivatedToNpcdb_Type"/>
+            <xsd:element name="NPDeactivated" type="NPDeactivatedToNpcdb_Type"/>
+            <xsd:element name="NPReturn" type="NPReturnToNpcdb_Type"/>
+            <xsd:element name="NPReturnCancel" type="NPReturnCancelToNpcdb_Type"/>
+            <xsd:element name="NPRingFenceRequest" type="NPRingFenceRequestToNpcdb_Type"/>
+            <xsd:element name="NPEmergencyRestore" type="NPEmergencyRestoreToNpcdb_Type"/>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="Noop">
+        <wsdl:part element="tns:Noop" name="noop">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NoopResponse">
+        <wsdl:part element="tns:NoopResponse" name="noopResp">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NpcdbReject">
+        <wsdl:part name="rej" element="tns:NpcdbReject">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="MessageAck">
+        <wsdl:part name="ack" element="tns:MessageAck">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPRequest">
+        <wsdl:part name="npReq" element="tns:NPRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPRequestCancel">
+        <wsdl:part name="npCan" element="tns:NPRequestCancel">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPDonorReject">
+        <wsdl:part name="npRej" element="tns:NPDonorReject">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPDonorAccept">
+        <wsdl:part name="npAcc" element="tns:NPDonorAccept">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPActivated">
+        <wsdl:part name="npAct" element="tns:NPActivated">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPDeactivated">
+        <wsdl:part name="npDeact" element="tns:NPDeactivated">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPReturn">
+        <wsdl:part name="npRet" element="tns:NPReturn">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPReturnCancel">
+        <wsdl:part name="npRetCan" element="tns:NPReturnCancel">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPRingFenceRequest">
+        <wsdl:part name="npRingFence" element="tns:NPRingFenceRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NPEmergencyRestore">
+        <wsdl:part name="npEmergRest" element="tns:NPEmergencyRestore">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NpcdbAccessFault">
+        <wsdl:part name="accessFault" element="tns:AccessFault">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="NpcdbTechnicalFault">
+        <wsdl:part name="technicalFault" element="tns:TechnicalFault">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="NpcdbPort">
+        <wsdl:operation name="Noop">
+            <wsdl:input message="tns:Noop" name="Noop">
+            </wsdl:input>
+            <wsdl:output message="tns:NoopResponse" name="NoopResponse">
+            </wsdl:output>
+            <wsdl:fault message="tns:NpcdbTechnicalFault" name="NpcdbTechnicalFault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPRequest">
+            <wsdl:input name="NPRequest" message="tns:NPRequest">
+            </wsdl:input>
+            <wsdl:output name="NPRequestAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault" message="tns:NpcdbAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault" message="tns:NpcdbTechnicalFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject" message="tns:NpcdbReject">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPRequestCancel">
+            <wsdl:input name="NPRequestCancel" message="tns:NPRequestCancel">
+            </wsdl:input>
+            <wsdl:output name="NPRequestCancelAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault" message="tns:NpcdbAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault" message="tns:NpcdbTechnicalFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject" message="tns:NpcdbReject">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPDonorReject">
+            <wsdl:input name="NPDonorReject" message="tns:NPDonorReject">
+            </wsdl:input>
+            <wsdl:output name="NPDonorRejectAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault" message="tns:NpcdbAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault" message="tns:NpcdbTechnicalFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject" message="tns:NpcdbReject">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPDonorAccept">
+            <wsdl:input name="NPDonorAccept" message="tns:NPDonorAccept">
+            </wsdl:input>
+            <wsdl:output name="NPDonorAcceptAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault" message="tns:NpcdbAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault" message="tns:NpcdbTechnicalFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject" message="tns:NpcdbReject">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPActivated">
+            <wsdl:input name="NPActivated" message="tns:NPActivated">
+            </wsdl:input>
+            <wsdl:output name="NPActivatedAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault" message="tns:NpcdbAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault" message="tns:NpcdbTechnicalFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject" message="tns:NpcdbReject">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPDeactivated">
+            <wsdl:input name="NPDeactivated" message="tns:NPDeactivated">
+            </wsdl:input>
+            <wsdl:output name="NPDeactivatedAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault" message="tns:NpcdbAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault" message="tns:NpcdbTechnicalFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject" message="tns:NpcdbReject">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPReturn">
+            <wsdl:input name="NPReturn" message="tns:NPReturn">
+            </wsdl:input>
+            <wsdl:output name="NPReturnAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault" message="tns:NpcdbAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault" message="tns:NpcdbTechnicalFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject" message="tns:NpcdbReject">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPReturnCancel">
+            <wsdl:input name="NPReturnCancel" message="tns:NPReturnCancel">
+            </wsdl:input>
+            <wsdl:output name="NPReturnCancelAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault" message="tns:NpcdbAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault" message="tns:NpcdbTechnicalFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject" message="tns:NpcdbReject">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPRingFenceRequest">
+            <wsdl:input name="NPRingFenceRequest" message="tns:NPRingFenceRequest">
+            </wsdl:input>
+            <wsdl:output name="NPRingFenceRequestAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault" message="tns:NpcdbAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault" message="tns:NpcdbTechnicalFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject" message="tns:NpcdbReject">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPEmergencyRestore">
+            <wsdl:input name="NPEmergencyRestore" message="tns:NPEmergencyRestore">
+            </wsdl:input>
+            <wsdl:output name="NPEmergencyRestoreAck" message="tns:MessageAck">
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault" message="tns:NpcdbAccessFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault" message="tns:NpcdbTechnicalFault">
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject" message="tns:NpcdbReject">
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="NpcdbSoap" type="tns:NpcdbPort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="Noop">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/Noop" />
+            <wsdl:input name="Noop">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="NoopResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPRequest">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/NPRequest"/>
+            <wsdl:input name="NPRequest">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPRequestAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault">
+                <soap:fault name="NpcdbAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject">
+                <soap:fault name="NpcdbReject" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPRequestCancel">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/NPRequestCancel"/>
+            <wsdl:input name="NPRequestCancel">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPRequestCancelAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault">
+                <soap:fault name="NpcdbAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject">
+                <soap:fault name="NpcdbReject" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPDonorReject">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/NPDonorReject"/>
+            <wsdl:input name="NPDonorReject">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPDonorRejectAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault">
+                <soap:fault name="NpcdbAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject">
+                <soap:fault name="NpcdbReject" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPDonorAccept">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/NPDonorAccept"/>
+            <wsdl:input name="NPDonorAccept">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPDonorAcceptAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault">
+                <soap:fault name="NpcdbAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject">
+                <soap:fault name="NpcdbReject" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPActivated">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/NPActivated"/>
+            <wsdl:input name="NPActivated">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPActivatedAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault">
+                <soap:fault name="NpcdbAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject">
+                <soap:fault name="NpcdbReject" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPDeactivated">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/NPDeactivated"/>
+            <wsdl:input name="NPDeactivated">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPDeactivatedAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault">
+                <soap:fault name="NpcdbAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject">
+                <soap:fault name="NpcdbReject" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPReturn">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/NPReturn"/>
+            <wsdl:input name="NPReturn">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPReturnAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault">
+                <soap:fault name="NpcdbAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject">
+                <soap:fault name="NpcdbReject" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPReturnCancel">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/NPReturnCancel"/>
+            <wsdl:input name="NPReturnCancel">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPReturnCancelAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault">
+                <soap:fault name="NpcdbAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject">
+                <soap:fault name="NpcdbReject" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPRingFenceRequest">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/NPRingFenceRequest"/>
+            <wsdl:input name="NPRingFenceRequest">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPRingFenceRequestAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault">
+                <soap:fault name="NpcdbAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject">
+                <soap:fault name="NpcdbReject" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="SendNPEmergencyRestore">
+            <soap:operation soapAction="http://np.systor.st/npcdb/NpcdbPort/NPEmergencyRestore"/>
+            <wsdl:input name="NPEmergencyRestore">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="NPEmergencyRestoreAck">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NpcdbAccessFault">
+                <soap:fault name="NpcdbAccessFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbTechnicalFault">
+                <soap:fault name="NpcdbTechnicalFault" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="NpcdbReject">
+                <soap:fault name="NpcdbReject" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="NpcdbService">
+        <wsdl:port name="NpcdbSoap" binding="tns:NpcdbSoap">
+            <soap:address location="https://m2m.nport.tz/services/NpcdbService"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

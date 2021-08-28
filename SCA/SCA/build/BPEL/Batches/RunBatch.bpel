@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="RunBatch"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://xml.smilecoms.com/SCA" xmlns:ns0="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/PM" xmlns:ns2="http://xml.smilecoms.com/schema/AM" 
+    xmlns:ns5="http://xml.smilecoms.com/schema/BS"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions" xmlns:sxed2="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2">
+    <documentation></documentation>
+    
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BS" location="../Partners/BS/BSServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="BS" xmlns:tns="http://xml.smilecoms.com/BS" partnerLinkType="tns:BSServiceDefinition" partnerRole="BS"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="RunOSCommandBatchOut" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" messageType="tns:Done"/>
+        <variable name="RunOSCommandBatchIn" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" messageType="tns:RunOSCommandBatchRequest"/>
+        <variable name="FoundTheBatch" type="xsd:boolean"/>
+        <variable name="BSUpdateScheduleWithRunResultOut" xmlns:tns="http://xml.smilecoms.com/BS" messageType="tns:Done"/>
+        <variable name="BSUpdateScheduleWithRunResultIn" xmlns:tns="http://xml.smilecoms.com/BS" messageType="tns:UpdateScheduleWithRunResultRequest"/>
+        <variable name="SCARunBatchOut" messageType="tns:Done"/>
+        <variable name="SCARunBatchIn" messageType="tns:RunBatchRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch xmlns:tns="http://xml.smilecoms.com/SCASubFlows" faultMessageType="tns:SubFlowError" faultVariable="SubFlowError">
+            <sequence name="Sequence28">
+                <assign name="Assign_SubFlow_Error">
+                    <copy>
+                        <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:TxId</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARunBatchIn.BatchRequest/ns0:BatchId</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:BatchId</to>
+                    </copy>
+                    <copy>
+                        <from>
+                            <literal>ready</literal>
+                        </from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:Status</to>
+                    </copy>
+                    <copy>
+                        <from>
+                            <literal>failed in run</literal>
+                        </from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastStatus</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:current-dateTime()</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastFinished</to>
+                    </copy>
+                    <copy>
+                        <from>concat($SubFlowError.SubFlowError/ErrorCode, ' - ', $SubFlowError.SubFlowError/ErrorDesc)</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastError</to>
+                    </copy>
+                </assign>
+                <invoke name="Update_Schedule_With_SubFlow_Error" partnerLink="BS" operation="UpdateScheduleWithRunResult" xmlns:tns="http://xml.smilecoms.com/BS" portType="tns:BSSoap" inputVariable="BSUpdateScheduleWithRunResultIn" outputVariable="BSUpdateScheduleWithRunResultOut"/>
+            </sequence>
+        </catch>
+         <catch xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" faultName="sxeh:systemFault" faultVariable="faultVar" faultMessageType="sxeh:faultMessage">
+            <sequence name="Sequence31">
+                <assign name="Assign_SubFlow_Error2">
+
+                    <copy>
+                        <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:TxId</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:Tenant</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARunBatchIn.BatchRequest/ns0:BatchId</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:BatchId</to>
+                    </copy>
+                    <copy>
+                        <from>
+                            <literal>ready</literal>
+                        </from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:Status</to>
+                    </copy>
+                    <copy>
+                        <from>
+                            <literal>failed in run</literal>
+                        </from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastStatus</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:current-dateTime()</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastFinished</to>
+                    </copy>
+                    <copy>
+                        <from variable="faultVar" part="fault"/>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastError</to>
+                    </copy>
+                </assign>
+                <invoke name="Invoke1" partnerLink="BS" xmlns:tns="http://xml.smilecoms.com/BS" operation="UpdateScheduleWithRunResult" portType="tns:BSSoap" inputVariable="BSUpdateScheduleWithRunResultIn" outputVariable="BSUpdateScheduleWithRunResultOut"/>
+            </sequence>
+        </catch>
+        <catchAll>
+            <sequence name="Sequence6">
+                <assign name="Assign_Error">
+
+                    <copy>
+                        <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:TxId</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:TxId</to>
+                    </copy>
+                    <copy>
+                        <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:OriginatingIP</to>
+                    </copy>
+                    <copy ignoreMissingFromData="yes">
+                        <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:Tenant</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:Tenant</to>
+                    </copy>
+
+                    <copy>
+                        <from>$SCARunBatchIn.BatchRequest/ns0:BatchId</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:BatchId</to>
+                    </copy>
+                    <copy>
+                        <from>
+                            <literal>ready</literal>
+                        </from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:Status</to>
+                    </copy>
+                    <copy>
+                        <from>
+                            <literal>failed in run</literal>
+                        </from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastStatus</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:current-dateTime()</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastFinished</to>
+                    </copy>
+                    <copy>
+                        <from>'Unknown Error'</from>
+                        <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastError</to>
+                    </copy>
+                </assign>
+                <invoke name="Update_Schedule_With_Error" partnerLink="BS" operation="UpdateScheduleWithRunResult" xmlns:tns="http://xml.smilecoms.com/BS" portType="tns:BSSoap" inputVariable="BSUpdateScheduleWithRunResultIn" outputVariable="BSUpdateScheduleWithRunResultOut"/>
+            </sequence>
+        </catchAll>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="RunBatch" portType="tns:SCASoap" variable="SCARunBatchIn"/>
+
+         <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('BS')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="BS"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="AssignOK">
+            <copy>
+                <from>'true'</from>
+                <to>$SCARunBatchOut.Done/ns0:Done</to>
+            </copy>
+            <copy>
+                <from>true()</from>
+                <to variable="FoundTheBatch"/>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="RunBatch" portType="tns:SCASoap" variable="SCARunBatchOut"/>
+        <if name="Select_Batch">
+                <condition>'OSCommandBatch' = $SCARunBatchIn.BatchRequest/ns0:BatchMethod</condition>
+                <sequence name="Sequence34">
+                    <assign name="Assign28">
+
+                        <copy>
+                            <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:TxId</from>
+                            <to>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/TxId</to>
+                        </copy>
+                        <copy>
+                            <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                            <to>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/OriginatingIP</to>
+                        </copy>
+                        <copy ignoreMissingFromData="yes">
+                            <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:Tenant</from>
+                            <to>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/Tenant</to>
+                        </copy>
+                        <copy>
+                            <from>$SCARunBatchIn.BatchRequest/ns0:BatchId</from>
+                            <to>$RunOSCommandBatchIn.OSCommandBatchRequest/BatchId</to>
+                        </copy>
+                        <copy>
+                            <from>$SCARunBatchIn.BatchRequest/ns0:BatchMethod</from>
+                            <to>$RunOSCommandBatchIn.OSCommandBatchRequest/BatchMethod</to>
+                        </copy>
+                        <copy>
+                            <from>$SCARunBatchIn.BatchRequest/ns0:SeedData</from>
+                            <to>$RunOSCommandBatchIn.OSCommandBatchRequest/SeedData</to>
+                        </copy>
+                         <copy>
+                              <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                              <to>$RunOSCommandBatchIn.OSCommandBatchRequest/SubFlowContext/OriginatingIdentity</to>
+                         </copy>
+                    </assign>
+                    <invoke name="Call_OS_Command_Batch" partnerLink="SCASubFlows" operation="RunOSCommandBatch" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" portType="tns:SCASubFlowsSoap" inputVariable="RunOSCommandBatchIn" outputVariable="RunOSCommandBatchOut"/>
+                </sequence>
+            <else>
+                <assign name="Assign_No_Batch_Found">
+                    <copy>
+                        <from>false()</from>
+                        <to variable="FoundTheBatch"/>
+                    </copy>
+                </assign>
+            </else>
+        </if>
+        <assign name="Assign_Batch_Results">
+
+            <copy>
+                <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:TxId</from>
+                <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:Tenant</from>
+                <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:Tenant</to>
+            </copy>
+            <copy>
+                <from>$SCARunBatchIn.BatchRequest/ns0:BatchId</from>
+                <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:BatchId</to>
+            </copy>
+            <copy>
+                <from>sxxf:current-dateTime()</from>
+                <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastFinished</to>
+            </copy>
+            <copy>
+                <from>
+                    <literal>ready</literal>
+                </from>
+                <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:Status</to>
+            </copy>
+            <copy>
+                <from>
+                    <literal>ranok</literal>
+                </from>
+                <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastStatus</to>
+            </copy>
+             <copy>
+                  <from>$SCARunBatchIn.BatchRequest/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                  <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:PlatformContext/ns5:OriginatingIdentity</to>
+             </copy>
+        </assign>
+        <if name="If1">
+            <condition>not($FoundTheBatch)</condition>
+            <assign name="Assign_Failed">
+                <copy>
+                    <from>'invalid batch'</from>
+                    <to>$BSUpdateScheduleWithRunResultIn.BatchScheduleRunResult/ns5:LastStatus</to>
+                </copy>
+            </assign>
+        </if>
+        <invoke name="Update_Batch_result" partnerLink="BS" operation="UpdateScheduleWithRunResult" xmlns:tns="http://xml.smilecoms.com/BS" portType="tns:BSSoap" inputVariable="BSUpdateScheduleWithRunResultIn" outputVariable="BSUpdateScheduleWithRunResultOut"/>
+    </sequence>
+</process>
+
+
+

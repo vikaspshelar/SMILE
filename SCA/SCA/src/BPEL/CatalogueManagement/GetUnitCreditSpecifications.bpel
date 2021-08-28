@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process
+    name="GetUnitCreditSpecifications"
+    targetNamespace="http://xml.smilecoms.com/SCA"
+    xmlns:tns="http://xml.smilecoms.com/SCA"
+    xmlns:sxxf="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/XPathFunctions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:BPELUtils="java://com.smilecoms.commons.bpel.BPELUtils"
+    xmlns:sxt="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Trace" 
+    xmlns:sxed="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Editor2"
+    xmlns:sxat="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/Attachment"
+    xmlns:sxeh="http://www.sun.com/wsbpel/2.0/process/executable/SUNExtension/ErrorHandling" 
+    xmlns:ns0="http://xml.smilecoms.com/schema/SCA" 
+    xmlns:ns1="http://xml.smilecoms.com/schema/CM" xmlns:ns2="http://xml.smilecoms.com/CM">
+    <import namespace="http://xml.smilecoms.com/SCA" location="../../wsdl/SCAServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    
+    <import namespace="http://xml.smilecoms.com/SCASubFlows" location="../../wsdl/SCASubFlows.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/IM" location="../Partners/IM/IMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/CM" location="../Partners/CM/CMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <import namespace="http://xml.smilecoms.com/BM" location="../Partners/BM/BMServiceDefinition.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <partnerLinks>
+        
+        <partnerLink name="CM" xmlns:tns="http://xml.smilecoms.com/CM" partnerLinkType="tns:CMServiceDefinition" partnerRole="CM"/>
+        <partnerLink name="SCASubFlows" xmlns:tns="http://xml.smilecoms.com/SCASubFlows" partnerLinkType="tns:SCASubFlows" partnerRole="SCASubFlows"/>
+        <partnerLink name="SCA" partnerLinkType="tns:SCA" myRole="SCAImplementation"/>
+    </partnerLinks>
+    <variables>
+        <variable name="TmpString" type="xsd:string"/>
+        <variable name="Fault1FaultVar" messageType="tns:SCAError"/>
+        <variable name="CMGetUnitCreditSpecificationsOut" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:UnitCreditSpecificationsResponse"/>
+        <variable name="CMGetUnitCreditSpecificationsIn" xmlns:tns="http://xml.smilecoms.com/CM" messageType="tns:GetUnitCreditSpecificationsRequest"/>
+        <variable name="SCAGetUnitCreditSpecificationsOut" messageType="tns:UnitCreditSpecificationsResponse"/>
+        <variable name="SCAGetUnitCreditSpecificationsIn" messageType="tns:GetUnitCreditSpecificationsRequest"/>
+    </variables>
+    <faultHandlers>
+        <catch faultVariable="CMError" xmlns:CM="http://xml.smilecoms.com/CM" faultMessageType="CM:CMError">
+            <sequence name="Sequence1">
+                <assign name="Assign4">
+                    <copy>
+                        <from>$CMError.CMError/ns1:ErrorDesc</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorDesc</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns1:ErrorType</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorType</to>
+                    </copy>
+                    <copy>
+                        <from>$CMError.CMError/ns1:ErrorCode</from>
+                        <to>$Fault1FaultVar.SCAError/ns0:ErrorCode</to>
+                    </copy>
+                </assign>
+                <reply name="Reply2" partnerLink="SCA" operation="GetUnitCreditSpecifications" portType="tns:SCASoap" faultName="tns:fault1" variable="Fault1FaultVar"/>
+            </sequence>
+        </catch>
+    </faultHandlers>
+    <sequence>
+        <receive name="Receive1" createInstance="yes" partnerLink="SCA" operation="GetUnitCreditSpecifications" portType="tns:SCASoap" variable="SCAGetUnitCreditSpecificationsIn"/>
+         <scope name="Dynamic_EPR" xmlns:LT="java://com.smilecoms.lt.LT" >
+            <variables>
+                <variable name="EndPoint" type="xsd:string"/>
+            </variables>
+            <sequence name="Dynamic_EPR">
+                <assign name="AssignPLs1">
+                    <copy>
+                        <from>LT:getEndPoint('CM')</from>
+                        <to>$EndPoint</to>
+                    </copy>
+                    <copy>
+                        <from>sxxf:doUnMarshal($EndPoint)</from>
+                        <to partnerLink="CM"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <assign name="Assign1">
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns0:UnitCreditSpecificationId</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:UnitCreditSpecificationId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns0:Verbosity</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:Verbosity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns0:SCAContext/ns0:TxId</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:PlatformContext/ns1:TxId</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns0:SCAContext/ns0:OriginatingIdentity</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:PlatformContext/ns1:OriginatingIdentity</to>
+            </copy>
+            <copy>
+                <from>$SCAGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns0:SCAContext/ns0:OriginatingIP</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:PlatformContext/ns1:OriginatingIP</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns0:SCAContext/ns0:Tenant</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:PlatformContext/ns1:Tenant</to>
+            </copy>
+            <copy ignoreMissingFromData="yes">
+                <from>$SCAGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns0:ItemNumber</from>
+                <to>$CMGetUnitCreditSpecificationsIn.UnitCreditSpecificationQuery/ns1:ItemNumber</to>
+            </copy>
+        </assign>
+        <invoke name="Invoke1" partnerLink="CM" operation="GetUnitCreditSpecifications" xmlns:tns="http://xml.smilecoms.com/CM" portType="tns:CMSoap" inputVariable="CMGetUnitCreditSpecificationsIn" outputVariable="CMGetUnitCreditSpecificationsOut"/>
+        
+        <assign name="AssignResult">
+            <copy>
+                <from>BPELUtils:changeNamespace(sxxf:doMarshal($CMGetUnitCreditSpecificationsOut.UnitCreditSpecificationList), 'http://xml.smilecoms.com/schema/CM', 'http://xml.smilecoms.com/schema/SCA')</from>
+                <to>$TmpString</to>
+            </copy>
+            <copy>
+                <from>sxxf:doUnMarshal($TmpString)</from>
+                <to variable="SCAGetUnitCreditSpecificationsOut" part="UnitCreditSpecificationList"/>
+            </copy>
+        </assign>
+        <reply name="Reply1" partnerLink="SCA" operation="GetUnitCreditSpecifications" portType="tns:SCASoap" variable="SCAGetUnitCreditSpecificationsOut"/>
+    </sequence>
+</process>

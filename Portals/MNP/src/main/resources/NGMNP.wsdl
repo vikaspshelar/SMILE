@@ -1,0 +1,1287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://ws.inpac.telcordia.com" 
+                  xmlns:ns1="http://org.apache.axis2/xsd" 
+                  xmlns:ns="http://ws.inpac.telcordia.com" 
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" 
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+                  xmlns:ttns="http://ws.inpac.telcordia.com" 
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/">
+    <wsdl:documentation>
+        This is WSDL for NPC Web Service
+    </wsdl:documentation>
+    <wsdl:types>
+        
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" 
+                    targetNamespace="http://binding.ws.inpac.telcordia.com" xmlns="http://binding.ws.inpac.telcordia.com">
+
+            <xsd:simpleType name="ErrorCodeType">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:minLength value="7"/>
+
+                    <xsd:maxLength value="10"/>
+
+                    <xsd:pattern value="[A-Za-z0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="HeaderIDType">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:minLength value="1"/>
+
+                    <xsd:maxLength value="10"/>
+
+                    <xsd:pattern value="[0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="IndFlagType">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:pattern value="Y|N"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="Len100Str">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:minLength value="1"/>
+
+                    <xsd:maxLength value="100"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="Len500Str">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:minLength value="1"/>
+
+                    <xsd:maxLength value="500"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="MessageIDType">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:length value="4" fixed="true"/>
+
+                    <xsd:pattern value="[0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="NPTimestampFormat">
+
+                <xsd:annotation>
+
+                    <xsd:documentation>
+
+                        Format: YYYYMMDDhhmiss
+
+                    </xsd:documentation>
+
+                </xsd:annotation>
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:length value="14" fixed="true"/>
+
+                    <xsd:pattern value="[0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="ParticipantID">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:length value="3" fixed="true"/>
+
+                    <xsd:pattern value="[A-Za-z0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="PortingType">
+
+                <xsd:annotation>
+
+                    <xsd:documentation>
+
+                        1:Mobile
+
+                    </xsd:documentation>
+
+                </xsd:annotation>
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:pattern value="1"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="PortReqFormIDType">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:length value="32" fixed="true"/>
+
+                    <xsd:pattern value="[A-Za-z0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="ReasonCodeType">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:minLength value="7"/>
+
+                    <xsd:maxLength value="10"/>
+
+                    <xsd:pattern value="[A-Za-z0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="RejectReasonType">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:minLength value="7"/>
+
+                    <xsd:maxLength value="10"/>
+
+                    <xsd:pattern value="[A-Za-z0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="RouteType">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:length value="2" fixed="true"/>
+
+                    <xsd:pattern value="[0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="SubscriberGenderType">
+
+                <xsd:annotation>
+
+                    <xsd:documentation>
+
+                        M = Male
+
+                        F = Female
+
+                    </xsd:documentation>
+
+                </xsd:annotation>
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:pattern value="M|F"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="SubscriberType">
+
+                <xsd:annotation>
+
+                    <xsd:documentation>
+
+                        0 = Individual;
+
+                        1 = Corporate
+
+                    </xsd:documentation>
+
+                </xsd:annotation>
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:pattern value="0|1"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="TelephoneNumber">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:minLength value="1"/>
+
+                    <xsd:maxLength value="15"/>
+
+                    <xsd:pattern value="[0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="TransactionIDType">
+
+                <xsd:annotation>
+
+                    <xsd:documentation>
+
+                        Format: YYYYMMDDhhmissaaannnn
+
+                        Where
+
+                        YYYY = year (4-digits)
+
+                        MM = month (2-digits)
+
+                        DD = day of month (2-digits)
+
+                        hh = hour (2-digits)
+
+                        mi = minutes (2-digits)
+
+                        ss = seconds (2 digits)
+
+                        aaa = operator ID (3 Digits)
+
+                        nnnn = sequence number (4-digits)
+
+                    </xsd:documentation>
+
+                </xsd:annotation>
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:length value="21" fixed="true"/>
+
+                    <xsd:pattern value="[A-Za-z0-9]*"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="PartRespReasonCodeType">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:pattern value="OPRWS01E|OPRWS02E|OPRWS99E"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <xsd:simpleType name="ResponseFlagType">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:pattern value="Success|Error"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+            <!-- >>>>>>>>>>>>>> COMPLEX TYPES NIGERIA <<<<<<<  -->
+
+            <xsd:complexType name="MessageHeaderType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="HeaderID" type="HeaderIDType"/>
+
+                    <xsd:element name="TransactionID" type="TransactionIDType" minOccurs="0"/>
+
+                    <xsd:element name="PortType" type="PortingType"/>
+
+                    <xsd:element name="MessageID" type="MessageIDType"/>
+
+                    <xsd:element name="MsgCreateTimestamp" type="NPTimestampFormat"/>
+
+                    <xsd:element name="Sender" type="ParticipantID"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="MultiReqRejectReasonType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="RequestRejectReason" type="RejectReasonType"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="MultiNbrRejectReasonType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="NumberRejectReason" type="RejectReasonType"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- >>>>>>>>>>>>>> MASTER ELEMENT NIGERIA<<<<<<<<<<<<<<  -->
+
+            <xsd:element name="NPCData">
+
+                <xsd:complexType>
+
+                    <xsd:sequence>
+
+                        <xsd:element name="MessageHeader" type="MessageHeaderType"/>
+
+                        <xsd:choice>
+
+                            <xsd:element name="NPCMessage" type="NPCMessageType"/>
+
+                            <xsd:element name="NPCWebServiceResponse" type="NPCWebServiceRespType"/>
+
+                            <xsd:element name="PartWebServiceResponse" type="PartWebServiceRespType"/>
+
+                        </xsd:choice>
+
+                    </xsd:sequence>
+
+                </xsd:complexType>
+
+            </xsd:element>
+
+            <xsd:complexType name="NumberListType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="StartNumber" type="TelephoneNumber"/>
+
+                    <xsd:element name="EndNumber" type="TelephoneNumber"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="NumberListWithFlagType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="StartNumber" type="TelephoneNumber"/>
+
+                    <xsd:element name="EndNumber" type="TelephoneNumber"/>
+
+                    <xsd:element name="NumberAcceptFlag" type="IndFlagType"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="NumberListWithFlagReasonType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="StartNumber" type="TelephoneNumber"/>
+
+                    <xsd:element name="EndNumber" type="TelephoneNumber"/>
+
+                    <xsd:element name="NumberAcceptFlag" type="IndFlagType"/>
+
+                    <xsd:element name="NumberRejectReasons" type="MultiNbrRejectReasonType" minOccurs="0" maxOccurs="50"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="NumberListWithErrorCodeType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="StartNumber" type="TelephoneNumber"/>
+
+                    <xsd:element name="EndNumber" type="TelephoneNumber"/>
+
+                    <xsd:element name="ErrorCode" type="ErrorCodeType" minOccurs="1" maxOccurs="10"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="SubscriberDataType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubLastName" type="Len100Str" minOccurs="0"/>
+
+                    <xsd:element name="SubFirstName" type="Len100Str" minOccurs="0"/>
+
+                    <xsd:element name="SubStateOfOrigin" type="Len100Str" minOccurs="0"/>
+
+                    <xsd:element name="SubGender" type="SubscriberGenderType" minOccurs="0"/>
+
+                    <xsd:element name="CompanyName" type="Len100Str" minOccurs="0"/>
+
+                    <xsd:element name="CompanyRegNum" type="Len100Str" minOccurs="0"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1001 Recipient Operator to NPC-->
+
+            <xsd:complexType name="PortAppReqMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                    <xsd:element name="SMSAssocNumber" type="TelephoneNumber"/>
+
+                    <xsd:element name="SubConfirmed" type="IndFlagType"/>
+
+                    <xsd:element name="SubscriberData" type="SubscriberDataType"/>
+
+                    <xsd:element name="RingFenceInd" type="IndFlagType"/>
+
+                    <xsd:element name="RingFenceNumbers" type="NumberListType" minOccurs="0" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1002 NPC to Recipient Operator-->
+
+            <xsd:complexType name="PortOrdValResultMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="NumbersWithFlagReason" type="NumberListWithFlagReasonType" maxOccurs="1000"/>
+
+                    <xsd:element name="RequestAcceptFlag" type="IndFlagType"/>
+
+                    <xsd:element name="RequestRejectReasons" type="MultiReqRejectReasonType" minOccurs="0" maxOccurs="10"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1003 NPC to Donor operator-->
+
+            <xsd:complexType name="PortAppReqDonorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                    <xsd:element name="RingFenceInd" type="IndFlagType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="RingFenceNumbers" type="NumberListType" minOccurs="0" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1004 Donor Operator to NPC-->
+
+            <xsd:complexType name="PortAppRspMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="NumbersWithFlagReason" type="NumberListWithFlagReasonType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1005 NPC to Recipient Operator-->
+
+            <xsd:complexType name="PortAppRspRecipientMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="NumbersWithFlagReason" type="NumberListWithFlagReasonType" maxOccurs="1000"/>
+
+                    <xsd:element name="RequestAcceptFlag" type="IndFlagType"/>
+
+                    <xsd:element name="RequestRejectReasons" type="MultiReqRejectReasonType" minOccurs="0" maxOccurs="10"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1006 Recipient Operator to NPC-->
+
+            <xsd:complexType name="PortDeactReqMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1007 NPC to Donor Operator-->
+
+            <xsd:complexType name="PortDeactReqDonorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1008 NPC to All Operators-->
+
+            <xsd:complexType name="PortActBroadcastMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Route" type="RouteType"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1009 Donor Operator to NPC-->
+
+            <xsd:complexType name="PortDeactRspMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1010 NPC to Recipient Operator-->
+
+            <xsd:complexType name="PortDeactRspRecipientMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1090 NPC to Recipient and Donor operators-->
+
+            <xsd:complexType name="PortAppRspErrorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1091 NPC to Recipient and Donor operators-->
+
+            <xsd:complexType name="PortActErrorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1092 NPC to Recipient and Donor operators-->
+
+            <xsd:complexType name="PortDeactErrorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 1093 NPC to Recipient Operator-->
+
+            <xsd:complexType name="RingFenceValErrorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SubType" type="SubscriberType"/>
+
+                    <xsd:element name="PortReqFormID" type="PortReqFormIDType" minOccurs="0" maxOccurs="1"/>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="NumbersWithFlagReason" type="NumberListWithFlagReasonType" maxOccurs="1000"/>
+
+                    <xsd:element name="RequestAcceptFlag" type="IndFlagType"/>
+
+                    <xsd:element name="RequestRejectReasons" type="MultiReqRejectReasonType" minOccurs="0" maxOccurs="10"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 2001 Last Operator to NPC-->
+
+            <xsd:complexType name="NumberRetReqMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 2002 NPC to Last Operator-->
+
+            <xsd:complexType name="NumberRetValResultMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="NumbersWithFlagReason" type="NumberListWithFlagReasonType" maxOccurs="1000"/>
+
+                    <xsd:element name="RequestAcceptFlag" type="IndFlagType"/>
+
+                    <xsd:element name="RequestRejectReasons" type="MultiReqRejectReasonType" minOccurs="0" maxOccurs="10"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 2003 NPC to Block holder-->
+
+            <xsd:complexType name="NumberRetReqBlockHolderMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 2004 Block Holder to NPC-->
+
+            <xsd:complexType name="NumberRetRspMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 2005 NPC to all operators-->
+
+            <xsd:complexType name="NumberRetBroadcastMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="LastRecipient" type="ParticipantID"/>
+
+                    <xsd:element name="BlockHolder" type="ParticipantID"/>
+
+                    <xsd:element name="Route" type="RouteType"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 3001 Recipient operator to NPC-->
+
+            <xsd:complexType name="PortRevReqMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 3002 NPC to Recipient operator-->
+
+            <xsd:complexType name="PortRevValResultMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="NumbersWithFlagReason" type="NumberListWithFlagReasonType" maxOccurs="1000"/>
+
+                    <xsd:element name="RequestAcceptFlag" type="IndFlagType"/>
+
+                    <xsd:element name="RequestRejectReasons" type="MultiReqRejectReasonType" minOccurs="0" maxOccurs="10"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 3003 NPC to Donor Operator-->
+
+            <xsd:complexType name="PortRevReqDonorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- Msg 3004 Donor Operator to NPC-->
+
+            <xsd:complexType name="PortRevRspMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="NumbersWithFlag" type="NumberListWithFlagType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 3005 NPC to Recipient operator-->
+
+            <xsd:complexType name="PortRevRspRecipientMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="NumbersWithFlag" type="NumberListWithFlagType" maxOccurs="1000"/>
+
+                    <xsd:element name="RequestAcceptFlag" type="IndFlagType"/>
+
+                    <xsd:element name="RequestRejectReasons" type="MultiReqRejectReasonType" minOccurs="0" maxOccurs="10"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 3006 Recipient operator to NPC-->
+
+            <xsd:complexType name="PortRevDeactReqMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 3007 NPC to Donor operator-->
+
+            <xsd:complexType name="PortRevDeactReqDonorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 3008 NPC to All operators-->
+
+            <xsd:complexType name="PortRevActBroadcastMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Route" type="RouteType"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 3009 Donor Operator to NPC-->
+
+            <xsd:complexType name="PortRevDeactRspMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 3010 NPC to Recipient-->
+
+            <xsd:complexType name="PortRevDeactRspRecipientMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 3090 NPC to Donor and Recipient operators-->
+
+            <xsd:complexType name="PortRevRspErrorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 3091  NPC to Donor and recipient operators-->
+
+            <xsd:complexType name="PortRevActErrorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 3092 NPC to Donor and recipient operators-->
+
+            <xsd:complexType name="PortRevDeactErrorMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Donor" type="ParticipantID"/>
+
+                    <xsd:element name="Recipient" type="ParticipantID"/>
+
+                    <xsd:element name="Numbers" type="NumberListType" maxOccurs="1000"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 9999 NPC to sender operator of Invalid message Id-->
+
+            <xsd:complexType name="ErrorNotifMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="InvalidMessageID" type="MessageIDType"/>
+
+                    <xsd:element name="NumbersWithErrorCode" type="NumberListWithErrorCodeType" minOccurs="0" maxOccurs="1000"/>
+
+                    <xsd:element name="ErrorCode" type="ErrorCodeType" minOccurs="0" maxOccurs="10"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <!-- 9901 NPC to sender operator of Invalida message Id-->
+
+            <xsd:complexType name="TransTermNotifMsgType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="InvalidMessageID" type="MessageIDType"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="ValidationType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="ReasonCode" type="ReasonCodeType"/>
+
+                    <xsd:element name="ReasonDesc" type="Len500Str" minOccurs="1"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="PartValidationType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="PartRespReasonCode" type="PartRespReasonCodeType"/>
+
+                    <xsd:element name="PartRespReasonDesc" type="Len500Str" minOccurs="1"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="NPCWebServiceRespType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Response" type="ResponseFlagType"/>
+
+                    <xsd:element name="Validation" type="ValidationType" minOccurs="0" maxOccurs="25"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="PartWebServiceRespType">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Response" type="ResponseFlagType"/>
+
+                    <xsd:element name="PartValidation" type="PartValidationType" minOccurs="0" maxOccurs="1"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+            <xsd:complexType name="NPCMessageType">
+
+                <xsd:choice>
+
+                    <xsd:element name="PortApprovalReq" type="PortAppReqMsgType"/>
+
+                    <xsd:element name="PortOrderValidationResult" type="PortOrdValResultMsgType"/>
+
+                    <xsd:element name="PortApprovalReqDonor" type="PortAppReqDonorMsgType"/>
+
+                    <xsd:element name="PortApprovalRsp" type="PortAppRspMsgType"/>
+
+                    <xsd:element name="PortApprovalRspRecipient" type="PortAppRspRecipientMsgType"/>
+
+                    <xsd:element name="PortDeactReq" type="PortDeactReqMsgType"/>
+
+                    <xsd:element name="PortDeactReqDonor" type="PortDeactReqDonorMsgType"/>
+
+                    <xsd:element name="PortActBroadcast" type="PortActBroadcastMsgType"/>
+
+                    <xsd:element name="PortDeactRsp" type="PortDeactRspMsgType"/>
+
+                    <xsd:element name="PortDeactRspRecipient" type="PortDeactRspRecipientMsgType"/>
+
+                    <xsd:element name="PortApprovalRspError" type="PortAppRspErrorMsgType"/>
+
+                    <xsd:element name="PortActError" type="PortActErrorMsgType"/>
+
+                    <xsd:element name="PortDeactError" type="PortDeactErrorMsgType"/>
+
+                    <xsd:element name="RingFenceValidationError" type="RingFenceValErrorMsgType"/>
+
+                    <xsd:element name="NumberReturnReq" type="NumberRetReqMsgType"/>
+
+                    <xsd:element name="NumberReturnValidationResult" type="NumberRetValResultMsgType"/>
+
+                    <xsd:element name="NumberReturnReqBlockHolder" type="NumberRetReqBlockHolderMsgType"/>
+
+                    <xsd:element name="NumberReturnRsp" type="NumberRetRspMsgType"/>
+
+                    <xsd:element name="NumberReturnBroadcast" type="NumberRetBroadcastMsgType"/>
+
+                    <xsd:element name="PortReversalReq" type="PortRevReqMsgType"/>
+
+                    <xsd:element name="PortReversalValidationResult" type="PortRevValResultMsgType"/>
+
+                    <xsd:element name="PortReversalReqDonor" type="PortRevReqDonorMsgType"/>
+
+                    <xsd:element name="PortReversalRsp" type="PortRevRspMsgType"/>
+
+                    <xsd:element name="PortReversalRspRecipient" type="PortRevRspRecipientMsgType"/>
+
+                    <xsd:element name="PortReversalDeactReq" type="PortRevDeactReqMsgType"/>
+
+                    <xsd:element name="PortReversalDeactReqDonor" type="PortRevDeactReqDonorMsgType"/>
+
+                    <xsd:element name="PortReversalActBroadcast" type="PortRevActBroadcastMsgType"/>
+
+                    <xsd:element name="PortReversalDeactRsp" type="PortRevDeactRspMsgType"/>
+
+                    <xsd:element name="PortReversalDeactRspRecipient" type="PortRevDeactRspRecipientMsgType"/>
+
+                    <xsd:element name="PortReversalRspError" type="PortRevRspErrorMsgType"/>
+
+                    <xsd:element name="PortReversalActError" type="PortRevActErrorMsgType"/>
+
+                    <xsd:element name="PortReversalDeactError" type="PortRevDeactErrorMsgType"/>
+
+                    <xsd:element name="ErrorNotification" type="ErrorNotifMsgType"/>
+
+                    <xsd:element name="TransTermNotification" type="TransTermNotifMsgType"/>
+
+                </xsd:choice>
+
+            </xsd:complexType>
+
+        </xsd:schema>
+
+        
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://ws.inpac.telcordia.com">
+			
+            <xs:simpleType name="Len30StrType">
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="1"/>
+                    <xs:maxLength value="30"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="Len10StrType">
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="1"/>
+                    <xs:maxLength value="10"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:complexType name="AttachedDocType">
+                <xs:sequence>
+                    <xs:element minOccurs="1" name="documentName" nillable="false" type="ttns:Len30StrType"/>
+                    <xs:element minOccurs="1" name="documentType" nillable="true" type="ttns:Len10StrType"/>
+                    <xs:element minOccurs="1" name="documentFile" nillable="false" type="xs:base64Binary"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="processNPCMsgRequest">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="1" name="userID" nillable="false" type="xs:string"/>
+                        <xs:element minOccurs="1" name="password" nillable="false" type="xs:string"/>
+                        <xs:element minOccurs="1" name="xmlMsg" nillable="false" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="attachedDoc" nillable="false" type="ttns:AttachedDocType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="processNPCMsgResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="1" name="response" nillable="false" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="processNPCMsgResponse">
+        <wsdl:part name="parameters" element="ns:processNPCMsgResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="processNPCMsgRequest">
+        <wsdl:part name="parameters" element="ns:processNPCMsgRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="NPCWebServicePortType">
+        <wsdl:operation name="processNPCMsg">
+            <wsdl:input message="ns:processNPCMsgRequest" wsaw:Action="urn:processNPCMsgRequest">
+            </wsdl:input>
+            <wsdl:output message="ns:processNPCMsgResponse" wsaw:Action="urn:processNPCMsgResponse">
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="NPCWebServiceSoap12Binding" type="ns:NPCWebServicePortType">
+        <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="processNPCMsg">
+            <soap12:operation soapAction="urn:processNPCMsg" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="NPCWebService">
+        <wsdl:port name="NPCWebServiceHttpSoap12Endpoint" binding="ns:NPCWebServiceSoap12Binding">
+            <soap12:address location="http://localhost:${HttpDefaultPort}/MNP/NGMNP"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
